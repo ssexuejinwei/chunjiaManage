@@ -85,7 +85,7 @@ const routes = [
       },
       {
         path: '/user',
-        component: () => import('@/views/UserManager/index')
+        component: () => import('@/views/User/index')
       },
       {
         path: '/activity',

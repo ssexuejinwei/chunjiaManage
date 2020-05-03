@@ -8,7 +8,7 @@
         class="logo"
         :class="{ 'is-active': !collapse }"
       >
-        NIKE管理系统
+        春嘉邻聚力后台管理系统
       </div>
       <el-menu
         class="menu"
@@ -20,17 +20,85 @@
         :collapse="collapse"
         :collapse-transition="false"
       >
-        <el-menu-item
-          v-for="menu in menus"
-          :key="menu.path"
-          :index="menu.path"
-        >
-          <i
-            v-if="menu.icon"
-            :class="menu.icon"
-          />
-          <span slot="title">{{ menu.name }}</span>
-        </el-menu-item>
+      <el-menu-item index="/user">
+        <template slot="title">
+          <i class="el-icon-user"></i>
+          <span>用户信息管理</span>
+        </template>
+      </el-menu-item>
+      
+      <el-submenu index="2">
+        <template slot="title">
+          <i class="el-icon-s-flag"></i>
+          <span>党员服务管理</span>
+        </template>
+        <el-menu-item-group>
+          <el-menu-item index="2-1">党员活动管理</el-menu-item>
+          <el-menu-item index="2-3">党员风采管理</el-menu-item>
+        </el-menu-item-group>
+      </el-submenu>
+      
+      <el-menu-item index="3">
+        <template slot="title">
+          <i class="el-icon-info"></i>
+          <span>投诉建议</span>
+        </template>
+      </el-menu-item>
+      
+      <el-submenu index="4">
+        <template slot="title">
+          <i class="el-icon-sell"></i>
+          <span>优你购管理</span>
+        </template>
+        <el-menu-item-group>
+          <el-menu-item index="4-1">商家管理</el-menu-item>
+          <el-menu-item index="4-2">优惠券使用管理</el-menu-item>
+          <el-menu-item index="4-3">优惠券管理</el-menu-item>
+        </el-menu-item-group>
+      </el-submenu>
+      
+      <el-submenu index="5">
+        <template slot="title">
+          <i class="el-icon-star-on"></i>
+          <span>活动/志愿服务管理</span>
+        </template>
+        <el-menu-item-group>
+          <el-menu-item index="5-1">活动</el-menu-item>
+          <el-menu-item index="5-2">志愿服务</el-menu-item>
+        </el-menu-item-group>
+      </el-submenu>
+      
+      <el-menu-item index="6">
+        <template slot="title">
+          <i class="el-icon-house"></i>
+          <span>社区微信息</span>
+        </template>
+      </el-menu-item>
+      
+      <el-submenu index="7">
+        <template slot="title">
+          <i class="el-icon-s-comment"></i>
+          <span>议事</span>
+        </template>
+        <el-menu-item-group>
+          <el-menu-item index="7-1">我来提议</el-menu-item>
+          <el-menu-item index="7-2">请你商量</el-menu-item>
+        </el-menu-item-group>
+      </el-submenu>
+      
+      <el-menu-item index="8">
+        <template slot="title">
+          <i class="el-icon-notebook-2"></i>
+          <span>报事</span>
+        </template>
+      </el-menu-item>
+      
+      <el-menu-item index="9">
+        <template slot="title">
+          <i class="el-icon-edit-outline"></i>
+          <span>办事</span>
+        </template>
+      </el-menu-item>
       </el-menu>
     </el-aside>
     <el-container>
@@ -46,7 +114,7 @@
           class="logo-2"
           :class="{ 'is-active': collapse }"
         >
-          NIKE管理系统
+          春嘉邻聚力后台管理系统
         </div>
         <div class="right">
           <el-button type="text" @click="logout">
@@ -66,6 +134,12 @@ import _ from 'lodash'
 
 const menus = [
   // { name: '首页', path: '/' },
+  { name: '用户信息管理', path: '/activity', icon: 'el-icon-present' },
+  { name: ' ', path: '/product', icon: 'el-icon-goods' },
+  { name: '订单管理', path: '/order', icon: 'el-icon-tickets' },
+  { name: '教务系统', path: '/teach/student', icon: 'el-icon-date' },
+  { name: '用户管理', path: '/user', icon: 'el-icon-user' },
+  { name: '积分管理', path: '/score', icon: 'el-icon-coin' },
   { name: '活动管理', path: '/activity', icon: 'el-icon-present' },
   { name: '商品管理', path: '/product', icon: 'el-icon-goods' },
   { name: '订单管理', path: '/order', icon: 'el-icon-tickets' },
@@ -77,6 +151,7 @@ const menus = [
 export default {
   data () {
     return {
+      path:"/user",
       menus,
       collapse: false
     }
@@ -94,7 +169,7 @@ export default {
     },
 
     sideWidth () {
-      return this.collapse ? '64px' : '180px'
+      return this.collapse ? '80px' : '200px'
     }
   },
 

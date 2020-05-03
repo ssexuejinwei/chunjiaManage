@@ -11,9 +11,9 @@ module.exports = {
       }
     },
     overlay: {
-      warnings: true,
-      errors: true
-    }
+      warnings: false,
+      errors: false
+    },
   },
   configureWebpack: {
     externals: {
