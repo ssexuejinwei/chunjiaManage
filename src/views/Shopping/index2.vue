@@ -1,6 +1,6 @@
 <template>
   <div>
-    <page-header title="投诉建议"/>
+    <page-header title="优惠券使用管理"/>
     <el-container>
       <el-main>
         <el-table
@@ -18,30 +18,17 @@
             sortable="custom"
           />
           <el-table-column
-            prop="info"
-            label="详细信息"
-            align="center"
-            sortable="custom"
-          />
-          <el-table-column
             prop="status"
             label="状态"
             align="center"
             sortable="custom"
           />
           <el-table-column
-            label="操作"
+            prop="info"
+            label="信息"
             align="center"
-          >
-            <template slot-scope="scope">
-              <el-button
-                size="medium"
-                @click="handleEdit(scope.$index,scope.row)"
-              >
-                处理
-              </el-button>
-            </template>
-          </el-table-column>
+            sortable="custom"
+          />
         </el-table>
       </el-main>
     </el-container>
@@ -54,25 +41,19 @@ export default {
     return {
       UserTableData:[
         {
-          name:'投诉x',
-          info:'详细信息.....',
-          status:'处理中'
+          name:'满30减10',
+          status:'已过期',
+          info:'具体内容..........',
         },
         {
-          name:'投诉d',
-          info:'详细信息.....',
-          status:'待处理'
-        },
-        {
-          name:'投诉y',
-          info:'详细信息.....',
-          status:'已解决'
-        },
-        {
-          name:'投诉oo',
-          info:'详细信息.....',
-          status:'处理中'
-        },
+          name:'满30减10',
+          status:'可使用',
+          info:'具体内容..........',
+        },{
+          name:'满30减10',
+          status:'可使用',
+          info:'具体内容..........',
+        }
       ]
     }
   },

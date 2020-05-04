@@ -1,41 +1,96 @@
 <template>
   <div>
-    <!-- <header class='teachHeader'>
-      <h1>用户管理</h1>
-      <div>
-        <el-input placeholder="请输入内容" v-model="search.value" style="width: 500px">
-          <el-select v-model="search.key" slot="prepend" placeholder="请选择" style="width: 100px">
-            <el-option label="用户名" value="name"></el-option>
-            <el-option label="性别" value="sex"></el-option>
-            <el-option label="年龄" value="age"></el-option>
-            <el-option label="电话" value="tel"></el-option>
-            <el-option label="积分" value="score"></el-option>
-            <el-option label="加入时间" value="create_time"></el-option>
-          </el-select>
-          <el-button slot="append" icon="el-icon-search" @click="handleSearch"></el-button>
-        </el-input>
-        <el-button style="margin-left: 16px" v-show="search.value" type="text" @click="handleClearSearch">
-          清空搜索结果
-        </el-button>
-      </div>
-    </header> -->
-
-    <User />
-    <!-- <UserAdd v-if='isAdded'/> -->
+    <page-header title="办事"/>
+    <el-container>
+      <el-main>
+        <el-table
+          :data="UserTableData"
+          highlight-current-row
+          :border="true"
+        >
+          <el-table-column
+            type="selection"
+          />
+          <el-table-column
+            prop="name"
+            label="名称"
+            align="center"
+            sortable="custom"
+          />
+          <el-table-column
+            prop="info"
+            label="详细信息"
+            align="center"
+            sortable="custom"
+          />
+          <el-table-column
+            label="操作"
+            align="center"
+          >
+            <template slot-scope="scope">
+              <el-button
+                size="medium"
+                @click="handleEdit(scope.$index,scope.row)"
+              >
+                修改
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-main>
+      <el-footer>
+        <el-row>
+          <el-col :span="6">
+            <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
+            <el-button
+              @click="deleteUsers"
+            >
+              新增
+            </el-button>
+          </el-col>
+          <el-col :span="6">
+            <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
+            <el-button
+              @click="deleteUsers"
+            >
+              删除
+            </el-button>
+          </el-col>
+        </el-row>
+      </el-footer>
+    </el-container>
   </div>
 </template>
 
 <script>
-import User from './components/user'
 export default {
-  components: { User },
   data () {
     return {
+      UserTableData:[
+        {
+          name:'办事1',
+          info:'详细信息...........',
+        },
+        {
+          name:'办事2',
+          info:'详细信息...........',
+        },
+        {
+          name:'办事3',
+          info:'详细信息...........',
+        }
+      ]
     }
   },
   created () {
   },
   methods: {
+    handleEdit(index,row) {
+      console.log(index,row)
+    },
+    deleteUsers(){
+      
+    }
   }
 }
 </script>

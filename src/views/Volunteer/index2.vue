@@ -1,6 +1,6 @@
 <template>
   <div>
-    <page-header title="投诉建议"/>
+    <page-header title="志愿服务"/>
     <el-container>
       <el-main>
         <el-table
@@ -13,19 +13,19 @@
           />
           <el-table-column
             prop="name"
-            label="名称"
+            label="志愿服务名"
             align="center"
             sortable="custom"
           />
           <el-table-column
-            prop="info"
-            label="详细信息"
+            prop="users"
+            label="报名用户"
             align="center"
             sortable="custom"
           />
           <el-table-column
-            prop="status"
-            label="状态"
+            prop="date"
+            label="时间"
             align="center"
             sortable="custom"
           />
@@ -38,12 +38,32 @@
                 size="medium"
                 @click="handleEdit(scope.$index,scope.row)"
               >
-                处理
+                详细
               </el-button>
             </template>
           </el-table-column>
         </el-table>
       </el-main>
+      <el-footer>
+        <el-row>
+          <el-col :span="6">
+            <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
+            <el-button
+              @click="deleteUsers"
+            >
+              新增志愿服务
+            </el-button>
+          </el-col>
+          <el-col :span="6">
+            <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
+            <el-button
+              @click="deleteUsers"
+            >
+              删除志愿服务
+            </el-button>
+          </el-col>
+        </el-row>
+      </el-footer>
     </el-container>
   </div>
 </template>
@@ -54,25 +74,20 @@ export default {
     return {
       UserTableData:[
         {
-          name:'投诉x',
-          info:'详细信息.....',
-          status:'处理中'
+          name:'义务打扫社区卫生',
+          users:'张三，李四，王五',
+          date:'2020-06-01',
         },
         {
-          name:'投诉d',
-          info:'详细信息.....',
-          status:'待处理'
+          name:'义务打扫社区卫生',
+          users:'张三，李四，王五',
+          date:'2020-06-01',
         },
         {
-          name:'投诉y',
-          info:'详细信息.....',
-          status:'已解决'
-        },
-        {
-          name:'投诉oo',
-          info:'详细信息.....',
-          status:'处理中'
-        },
+          name:'义务打扫社区卫生',
+          users:'张三，李四，王五',
+          date:'2020-06-01',
+        }
       ]
     }
   },

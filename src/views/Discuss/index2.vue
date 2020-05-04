@@ -1,6 +1,6 @@
 <template>
   <div>
-    <page-header title="投诉建议"/>
+    <page-header title="请你商量"/>
     <el-container>
       <el-main>
         <el-table
@@ -19,13 +19,7 @@
           />
           <el-table-column
             prop="info"
-            label="详细信息"
-            align="center"
-            sortable="custom"
-          />
-          <el-table-column
-            prop="status"
-            label="状态"
+            label="详细内容"
             align="center"
             sortable="custom"
           />
@@ -38,12 +32,32 @@
                 size="medium"
                 @click="handleEdit(scope.$index,scope.row)"
               >
-                处理
+                修改
               </el-button>
             </template>
           </el-table-column>
         </el-table>
       </el-main>
+      <el-footer>
+        <el-row>
+          <el-col :span="6">
+            <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
+            <el-button
+              @click="deleteUsers"
+            >
+              发布
+            </el-button>
+          </el-col>
+          <el-col :span="6">
+            <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
+            <el-button
+              @click="deleteUsers"
+            >
+              删除
+            </el-button>
+          </el-col>
+        </el-row>
+      </el-footer>
     </el-container>
   </div>
 </template>
@@ -54,25 +68,17 @@ export default {
     return {
       UserTableData:[
         {
-          name:'投诉x',
-          info:'详细信息.....',
-          status:'处理中'
+          name:'商量1',
+          info:'详细信息...........',
         },
         {
-          name:'投诉d',
-          info:'详细信息.....',
-          status:'待处理'
+          name:'商量2',
+          info:'详细信息...........',
         },
         {
-          name:'投诉y',
-          info:'详细信息.....',
-          status:'已解决'
-        },
-        {
-          name:'投诉oo',
-          info:'详细信息.....',
-          status:'处理中'
-        },
+          name:'商量3',
+          info:'详细信息...........',
+        }
       ]
     }
   },

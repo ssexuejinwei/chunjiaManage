@@ -66,6 +66,62 @@ const routes = [
           }
         ]
       },
+      {
+        path: '/user',
+        component: () => import('@/views/User/index')
+      },
+      {
+        path: '/party1',
+        component: () => import('@/views/PartyInfo/index1')
+      },
+      {
+        path: '/party2',
+        component: () => import('@/views/PartyInfo/index2')
+      },
+      {
+        path: '/complaint',
+        component: () => import('@/views/Complaint/index')
+      },
+      {
+        path: '/shopping',
+        component: () => import('@/views/Shopping/index1')
+      },
+      {
+        path: '/couponUse',
+        component: () => import('@/views/Shopping/index2')
+      },
+      {
+        path: '/coupon',
+        component: () => import('@/views/Shopping/index3')
+      },
+      {
+        path: '/volunteer1',
+        component: () => import('@/views/Volunteer/index1')
+      },
+      {
+        path: '/volunteer2',
+        component: () => import('@/views/Volunteer/index2')
+      },
+      {
+        path: '/communityInfo',
+        component: () => import('@/views/CommunityInfo/index')
+      },
+      {
+        path: '/discuss1',
+        component: () => import('@/views/Discuss/index1')
+      },
+      {
+        path: '/discuss2',
+        component: () => import('@/views/Discuss/index2')
+      },
+      {
+        path: '/report',
+        component: () => import('@/views/Report/index')
+      },
+      {
+        path: '/work',
+        component: () => import('@/views/Work/index')
+      },
       // 添加课程
       {
         path: '/teach/course/add',
@@ -82,10 +138,6 @@ const routes = [
       {
         path: '/teach/team/change',
         component: () => import('@/views/TeachSystem/components/teamEdit')
-      },
-      {
-        path: '/user',
-        component: () => import('@/views/User/index')
       },
       {
         path: '/activity',

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <page-header title="投诉建议"/>
+    <page-header title="党员风采管理"/>
     <el-container>
       <el-main>
         <el-table
@@ -13,21 +13,26 @@
           />
           <el-table-column
             prop="name"
-            label="名称"
+            label="姓名"
             align="center"
             sortable="custom"
           />
           <el-table-column
-            prop="info"
-            label="详细信息"
+            prop="sex"
+            label="性别"
             align="center"
             sortable="custom"
           />
           <el-table-column
-            prop="status"
-            label="状态"
+            prop="age"
+            label="年龄"
             align="center"
             sortable="custom"
+          />
+          <el-table-column
+            prop="tel"
+            label="电话"
+            align="center"
           />
           <el-table-column
             label="操作"
@@ -38,12 +43,32 @@
                 size="medium"
                 @click="handleEdit(scope.$index,scope.row)"
               >
-                处理
+                修改
               </el-button>
             </template>
           </el-table-column>
         </el-table>
       </el-main>
+      <el-footer>
+        <el-row>
+          <el-col :span="6">
+            <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
+            <el-button
+              @click="deleteUsers"
+            >
+              新增
+            </el-button>
+          </el-col>
+          <el-col :span="6">
+            <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
+            <el-button
+              @click="deleteUsers"
+            >
+              删除
+            </el-button>
+          </el-col>
+        </el-row>
+      </el-footer>
     </el-container>
   </div>
 </template>
@@ -54,25 +79,29 @@ export default {
     return {
       UserTableData:[
         {
-          name:'投诉x',
-          info:'详细信息.....',
-          status:'处理中'
+          name:'张三',
+          sex:'男',
+          age:'38',
+          tel:'1382831391'
         },
         {
-          name:'投诉d',
-          info:'详细信息.....',
-          status:'待处理'
+          name:'李四',
+          sex:'女',
+          age:'32',
+          tel:'1382831312'
         },
         {
-          name:'投诉y',
-          info:'详细信息.....',
-          status:'已解决'
+          name:'王五',
+          sex:'女',
+          age:'22',
+          tel:'1362734391'
         },
         {
-          name:'投诉oo',
-          info:'详细信息.....',
-          status:'处理中'
-        },
+          name:'叶六',
+          sex:'男',
+          age:'2',
+          tel:'138415991'
+        }
       ]
     }
   },

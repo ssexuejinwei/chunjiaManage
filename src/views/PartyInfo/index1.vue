@@ -1,6 +1,6 @@
 <template>
   <div>
-    <page-header title="投诉建议"/>
+    <page-header title="党员活动管理"/>
     <el-container>
       <el-main>
         <el-table
@@ -18,14 +18,14 @@
             sortable="custom"
           />
           <el-table-column
-            prop="info"
-            label="详细信息"
+            prop="date"
+            label="时间"
             align="center"
             sortable="custom"
           />
           <el-table-column
-            prop="status"
-            label="状态"
+            prop="content"
+            label="内容"
             align="center"
             sortable="custom"
           />
@@ -38,12 +38,32 @@
                 size="medium"
                 @click="handleEdit(scope.$index,scope.row)"
               >
-                处理
+                修改
               </el-button>
             </template>
           </el-table-column>
         </el-table>
       </el-main>
+      <el-footer>
+        <el-row>
+          <el-col :span="6">
+            <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
+            <el-button
+              @click="deleteUsers"
+            >
+              新增活动
+            </el-button>
+          </el-col>
+          <el-col :span="6">
+            <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
+            <el-button
+              @click="deleteUsers"
+            >
+              删除活动
+            </el-button>
+          </el-col>
+        </el-row>
+      </el-footer>
     </el-container>
   </div>
 </template>
@@ -54,25 +74,19 @@ export default {
     return {
       UserTableData:[
         {
-          name:'投诉x',
-          info:'详细信息.....',
-          status:'处理中'
+          name:'诗朗诵',
+          date:'2020-4-5',
+          content:'具体内容..........',
         },
         {
-          name:'投诉d',
-          info:'详细信息.....',
-          status:'待处理'
-        },
-        {
-          name:'投诉y',
-          info:'详细信息.....',
-          status:'已解决'
-        },
-        {
-          name:'投诉oo',
-          info:'详细信息.....',
-          status:'处理中'
-        },
+          name:'观影',
+          date:'2020-4-6',
+          content:'具体内容..........',
+        },{
+          name:'野营',
+          date:'2020-4-7',
+          content:'具体内容..........',
+        }
       ]
     }
   },

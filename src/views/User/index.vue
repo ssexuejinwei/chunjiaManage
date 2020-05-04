@@ -1,5 +1,6 @@
 <template>
   <div>
+    <page-header title="用户信息管理"/>
     <el-container>
       <el-main>
         <el-table

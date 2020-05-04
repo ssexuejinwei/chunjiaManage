@@ -33,12 +33,12 @@
           <span>党员服务管理</span>
         </template>
         <el-menu-item-group>
-          <el-menu-item index="2-1">党员活动管理</el-menu-item>
-          <el-menu-item index="2-3">党员风采管理</el-menu-item>
+          <el-menu-item index="/party1">党员活动管理</el-menu-item>
+          <el-menu-item index="/party2">党员风采管理</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
       
-      <el-menu-item index="3">
+      <el-menu-item index="/complaint">
         <template slot="title">
           <i class="el-icon-info"></i>
           <span>投诉建议</span>
@@ -51,9 +51,9 @@
           <span>优你购管理</span>
         </template>
         <el-menu-item-group>
-          <el-menu-item index="4-1">商家管理</el-menu-item>
-          <el-menu-item index="4-2">优惠券使用管理</el-menu-item>
-          <el-menu-item index="4-3">优惠券管理</el-menu-item>
+          <el-menu-item index="/shopping">商家管理</el-menu-item>
+          <el-menu-item index="/couponUse">优惠券使用管理</el-menu-item>
+          <el-menu-item index="coupon">优惠券管理</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
       
@@ -63,12 +63,12 @@
           <span>活动/志愿服务管理</span>
         </template>
         <el-menu-item-group>
-          <el-menu-item index="5-1">活动</el-menu-item>
-          <el-menu-item index="5-2">志愿服务</el-menu-item>
+          <el-menu-item index="/volunteer1">活动</el-menu-item>
+          <el-menu-item index="/volunteer2">志愿服务</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
       
-      <el-menu-item index="6">
+      <el-menu-item index="/communityInfo">
         <template slot="title">
           <i class="el-icon-house"></i>
           <span>社区微信息</span>
@@ -81,19 +81,19 @@
           <span>议事</span>
         </template>
         <el-menu-item-group>
-          <el-menu-item index="7-1">我来提议</el-menu-item>
-          <el-menu-item index="7-2">请你商量</el-menu-item>
+          <el-menu-item index="/discuss1">我来提议</el-menu-item>
+          <el-menu-item index="/discuss2">请你商量</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
       
-      <el-menu-item index="8">
+      <el-menu-item index="/report">
         <template slot="title">
           <i class="el-icon-notebook-2"></i>
           <span>报事</span>
         </template>
       </el-menu-item>
       
-      <el-menu-item index="9">
+      <el-menu-item index="/work">
         <template slot="title">
           <i class="el-icon-edit-outline"></i>
           <span>办事</span>
