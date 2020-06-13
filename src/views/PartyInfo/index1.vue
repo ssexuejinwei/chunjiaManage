@@ -1,103 +1,175 @@
 <template>
   <div>
-    <page-header title="党员活动管理"/>
-    <el-container>
-      <el-main>
-        <el-table
-          :data="UserTableData"
-          highlight-current-row
-          :border="true"
-        >
-          <el-table-column
-            type="selection"
-          />
-          <el-table-column
-            prop="name"
-            label="名称"
-            align="center"
-            sortable="custom"
-          />
-          <el-table-column
-            prop="date"
-            label="时间"
-            align="center"
-            sortable="custom"
-          />
-          <el-table-column
-            prop="content"
-            label="内容"
-            align="center"
-            sortable="custom"
-          />
-          <el-table-column
-            label="操作"
-            align="center"
+    <div v-if='!isEdit' class ='activitylist'>
+      <page-header title="党员活动信息管理"/>
+      <el-container>
+        <el-main>
+          <el-table
+            :data="activityTableData"
+            highlight-current-row
+            :border="true"
           >
-            <template slot-scope="scope">
-              <el-button
-                size="medium"
-                @click="handleEdit(scope.$index,scope.row)"
-              >
-                修改
+            <el-table-column
+              type="selection"
+            />
+            <el-table-column
+              prop="name"
+              label="活动名"
+              align="center"
+            />
+            <el-table-column
+              prop="date"
+              label="时间"
+              align="center"
+            />
+            <el-table-column
+              prop="content"
+              label="活动内容"
+              align="center"
+            />
+            <el-table-column
+              label="操作"
+              align="center"
+            >
+              <template slot-scope="scope">
+                <el-button
+                  size="medium"
+                  @click="handleEdit(scope.$index,scope.row)"
+                >
+                  详情
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-main>
+        <el-footer>
+          <el-row style="margin-top:1.5rem; ">
+            <el-col :span="3">
+              <el-button @click='isAdd = true'>添加活动</el-button>
+            </el-col>
+            <el-col :span="5">
+              <el-button @click="deleteactivitys">
+                删除活动
               </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-main>
-      <el-footer>
-        <el-row>
-          <el-col :span="6">
-            <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
-            <el-button
-              @click="deleteUsers"
-            >
-              新增活动
-            </el-button>
-          </el-col>
-          <el-col :span="6">
-            <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
-            <el-button
-              @click="deleteUsers"
-            >
-              删除活动
-            </el-button>
-          </el-col>
-        </el-row>
-      </el-footer>
-    </el-container>
+            </el-col>
+          </el-row>
+        </el-footer>
+      </el-container>
+      <el-dialog
+        title="活动信息"
+        :visible.sync="isAdd "
+      >
+        <el-form
+          :model="activityForm"
+          label-width="100px"
+          style="width:31.25rem;"
+        >
+          <el-form-item
+            label="活动名称"
+            prop="name"
+          >
+            <el-input
+              v-model="activityForm.name"
+              autocomplete="off"
+            />
+          </el-form-item>
+          <el-form-item
+            label="活动日期"
+            prop="date"
+          >
+            <el-col :span="11">
+              <el-date-picker
+                v-model="activityForm.date"
+                type="date"
+                placeholder="选择日期"
+                format="yyyy 年 MM 月 dd 日"
+                value-format="yyyy-MM-dd"
+                style="width: 100%;"
+              />
+            </el-col>
+          </el-form-item>
+          <el-form-item
+            label="活动具体内容"
+            prop="content"
+          >
+          <el-input
+            v-model="activityForm.content"
+            autocomplete="off"
+          />
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="isAdd = false">取 消</el-button>
+            <el-button type="primary" @click="addActivity">确 定</el-button>
+          </span>
+        </el-dialog>
+    </div>
+    <div v-if="isEdit" class ='activityInfo'>
+      <activityEdit :activity='activity' @update="handleEditFinish" @back="backHome"></activityEdit>
+    </div>
   </div>
 </template>
 
 <script>
+  //这里的跳转有问题
+import activityEdit from './components/activityEdit'
 export default {
+  components: {
+    activityEdit
+  },
   data () {
     return {
-      UserTableData:[
-        {
-          name:'诗朗诵',
-          date:'2020-4-5',
-          content:'具体内容..........',
-        },
-        {
-          name:'观影',
-          date:'2020-4-6',
-          content:'具体内容..........',
-        },{
-          name:'野营',
-          date:'2020-4-7',
-          content:'具体内容..........',
-        }
-      ]
+      activity:{},
+      isEdit: false,
+      isAdd: false,
+      activityTableData:[],
+      activityForm:{}
     }
   },
   created () {
+    for (let i = 0; i < 4; i ++) {
+      this.activityTableData.push({
+        id:i,
+        name:'诗朗诵',
+        date:'2020-06-01',
+        content:'朗诵毛选',
+      })
+    }
   },
   methods: {
+    handleEditFinish (val) {
+      if (val) {
+        //获取新数据
+        this.isEdit = false
+      }
+    },
+    backHome (val) {
+      this.isEdit = val
+    },
     handleEdit(index,row) {
+      this.isEdit = true
+      this.activity = this.activityTableData[index]
       console.log(index,row)
     },
-    deleteUsers(){
-      
+    addActivity() {
+      this.isAdd = false
+    },
+    deleteactivity (activity) {
+      console.log('activity', activity)
+      const data = {
+        id: activity.id
+      }
+      // return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
+    },
+    deleteactivitys () {
+      this.$confirm('是否删除选中的活动', '提示', { type: 'warning' }).then(() => {
+        Promise.all(this.selectedactivitys.map(this.deleteactivity))
+          .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
+            console.error(e)
+            this.$alert('删除失败', '错误', { type: 'error' })
+          })
+          .then()
+      })
     }
   }
 }

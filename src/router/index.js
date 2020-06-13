@@ -67,6 +67,18 @@ const routes = [
         ]
       },
       {
+        path: '/grid',
+        component: () => import('@/views/Grid/index')
+      },
+      {
+        path: '/serveUser',
+        component: () => import('@/views/ServeUser/index')
+      },
+      {
+        path: '/communityInfo',
+        component: () => import('@/views/CommunityInfoManager/index')
+      },
+      {
         path: '/user',
         component: () => import('@/views/User/index')
       },
@@ -103,8 +115,8 @@ const routes = [
         component: () => import('@/views/Volunteer/index2')
       },
       {
-        path: '/communityInfo',
-        component: () => import('@/views/CommunityInfo/index')
+        path: '/microCommunityInfo',
+        component: () => import('@/views/CommunityMicroInfo/index')
       },
       {
         path: '/discuss1',

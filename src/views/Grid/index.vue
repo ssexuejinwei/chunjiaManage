@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div v-if='!isEdit' class ='userlist'>
-      <page-header title="用户信息管理"/>
+    <div v-if='!isEdit' class ='gridlist'>
+      <page-header title="网格信息管理"/>
       <el-container>
         <el-main>
           <el-table
-            :data="UserTableData"
+            :data="gridTableData"
             highlight-current-row
             :border="true"
           >
@@ -14,32 +14,32 @@
             />
             <el-table-column
               prop="name"
-              label="姓名"
+              label="网格"
               align="center"
             />
             <el-table-column
-              prop="sex"
-              label="性别"
+              prop="gridLeader"
+              label="网格长"
               align="center"
             />
             <el-table-column
-              prop="tel"
-              label="联系电话"
+              prop="gridPerson"
+              label="网格员"
               align="center"
             />
             <el-table-column
-              prop="political"
-              label="政治面貌"
+              prop="teamLeader"
+              label="居民组长"
               align="center"
             />
             <el-table-column
-              prop="address"
-              label="住址"
+              prop="police"
+              label="辅警"
               align="center"
             />
             <el-table-column
-              prop="grid"
-              label="所属网格"
+              prop="party"
+              label="党员先锋户"
               align="center"
             />
             <el-table-column
@@ -72,35 +72,35 @@
       </el-container>
     </div>
     <div v-if="isEdit" class ='userInfo'>
-      <UserEdit :user='user' @update="handleEditFinish" @back="backHome"></UserEdit>
+      <GridEdit :grid='grid' @update="handleEditFinish" @back="backHome"></GridEdit>
     </div>
   </div>
 </template>
 
 <script>
   //这里的跳转有问题
-import UserEdit from './userEdit'
+import GridEdit from './gridEdit'
 export default {
   components: {
-    UserEdit
+    GridEdit
   },
   data () {
     return {
-      user:{},
+      grid:{},
       isEdit: false,
-      UserTableData:[]
+      gridTableData:[]
     }
   },
   created () {
     for (let i = 0; i < 4; i ++) {
-      this.UserTableData.push({
-        name:'张三',
-        sex:'男',
-        tel:'18238192231',
-        IDNumber:'25131199003012931',
-        political:'党员',
-        address:'上海市同济小区3幢302室',
-        grid:'春嘉网格'
+      this.gridTableData.push({
+        id:i,
+        name:'永嘉网格',
+        gridLeader:'张三',
+        gridPerson:'赵四',
+        teamLeader:'王五',
+        police:'李警官',
+        party:'张三'
       })
     }
   },
@@ -116,18 +116,17 @@ export default {
     },
     handleEdit(index,row) {
       this.isEdit = true
-      this.user = this.UserTableData[index]
+      this.grid = this.gridTableData[index]
       console.log(index,row)
     },
-    deleteUser (user) {
-      console.log('user', user)
+    deleteUser (grid) {
       const data = {
-        id: user.id
+        id: grid.id
       }
       // return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
     },
     deleteUsers () {
-      this.$confirm('是否删除选中的用户', '提示', { type: 'warning' }).then(() => {
+      this.$confirm('是否删除选中的网格', '提示', { type: 'warning' }).then(() => {
         Promise.all(this.selectedUsers.map(this.deleteUser))
           .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
             console.error(e)

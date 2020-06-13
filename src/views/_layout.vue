@@ -26,7 +26,18 @@
           <span>用户信息管理</span>
         </template>
       </el-menu-item>
-      
+      <el-menu-item index="/grid">
+        <template slot="title">
+          <i class="el-icon-s-grid"></i>
+          <span>网格信息管理</span>
+        </template>
+      </el-menu-item>
+      <el-menu-item index="/communityInfo">
+        <template slot="title">
+          <i class="el-icon-s-home"></i>
+          <span>社区信息管理</span>
+        </template>
+      </el-menu-item>
       <el-submenu index="2">
         <template slot="title">
           <i class="el-icon-s-flag"></i>
@@ -37,7 +48,12 @@
           <el-menu-item index="/party2">党员风采管理</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
-      
+      <el-menu-item index="/serveUser">
+        <template slot="title">
+          <i class="el-icon-s-custom"></i>
+          <span>服务人员管理</span>
+        </template>
+      </el-menu-item>
       <el-menu-item index="/complaint">
         <template slot="title">
           <i class="el-icon-info"></i>
@@ -68,7 +84,7 @@
         </el-menu-item-group>
       </el-submenu>
       
-      <el-menu-item index="/communityInfo">
+      <el-menu-item index="/microCommunityInfo">
         <template slot="title">
           <i class="el-icon-house"></i>
           <span>社区微信息</span>

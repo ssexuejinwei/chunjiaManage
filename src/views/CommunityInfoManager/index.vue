@@ -1,6 +1,6 @@
 <template>
   <div>
-    <page-header title="报事"/>
+    <page-header title=""/>
     <el-container>
       <el-main>
         <el-table
@@ -38,6 +38,26 @@
           </el-table-column>
         </el-table>
       </el-main>
+      <el-footer>
+        <el-row>
+          <el-col :span="6">
+            <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
+            <el-button
+              @click="deleteUsers"
+            >
+              发布
+            </el-button>
+          </el-col>
+          <el-col :span="6">
+            <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
+            <el-button
+              @click="deleteUsers"
+            >
+              删除
+            </el-button>
+          </el-col>
+        </el-row>
+      </el-footer>
     </el-container>
   </div>
 </template>
@@ -48,15 +68,15 @@ export default {
     return {
       UserTableData:[
         {
-          name:'报事1',
+          name:'5-4日组织观影',
           info:'详细信息...........',
         },
         {
-          name:'报事2',
+          name:'5-4日组织观影',
           info:'详细信息...........',
         },
         {
-          name:'报事3',
+          name:'5-4日组织观影',
           info:'详细信息...........',
         }
       ]

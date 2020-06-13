@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div v-if='!isEdit' class ='PartyStylelist'>
-      <page-header title="党员风采信息管理"/>
+    <div v-if='!isEdit' class ='serveUserlist'>
+      <page-header title="服务人员信息管理"/>
       <el-container>
         <el-main>
           <el-table
-            :data="PartyStyleTableData"
+            :data="serveUserTableData"
             highlight-current-row
             :border="true"
           >
@@ -18,13 +18,23 @@
               align="center"
             />
             <el-table-column
-              prop="grid"
-              label="所属网格"
+              prop="sex"
+              label="性别"
               align="center"
             />
             <el-table-column
-              prop="content"
-              label="先进事迹"
+              prop="tel"
+              label="联系电话"
+              align="center"
+            />
+            <el-table-column
+              prop="IDNumber"
+              label="身份证号"
+              align="center"
+            />
+            <el-table-column
+              prop="grid"
+              label="所属网格"
               align="center"
             />
             <el-table-column
@@ -45,22 +55,22 @@
         <el-footer>
           <el-row style="margin-top:1.5rem; ">
             <el-col :span="3">
-              <el-button @click='isAdd = true'>添加风采</el-button>
+              <el-button @click='isAdd = true'>添加服务人员</el-button>
             </el-col>
             <el-col :span="5">
-              <el-button @click="deletePartyStyles">
-                删除风采
+              <el-button @click="deleteserveUsers">
+                删除服务人员
               </el-button>
             </el-col>
           </el-row>
         </el-footer>
       </el-container>
       <el-dialog
-        title="风采信息"
+        title="服务人员信息"
         :visible.sync="isAdd "
       >
         <el-form
-          :model="PartyStyleForm"
+          :model="serveUserForm"
           label-width="100px"
           style="width:31.25rem;"
         >
@@ -69,64 +79,93 @@
             prop="name"
           >
             <el-input
-              v-model="PartyStyleForm.name"
+              v-model="serveUserForm.name"
               autocomplete="off"
             />
+          </el-form-item>
+          <el-form-item
+            label="性别"
+            prop="date"
+          >
+            <el-radio-group v-model="serveUserForm.sex">
+              <el-radio label="男">男</el-radio>
+              <el-radio label="女">女</el-radio>
+            </el-radio-group>
+            
+          </el-form-item>
+          <el-form-item
+            label="联系电话"
+            prop="tel"
+          >
+          <el-input
+            v-model="serveUserForm.tel"
+            autocomplete="off"
+          />
+          </el-form-item>
+          <el-form-item
+            label="身份证号"
+            prop="IDNumber"
+          >
+          <el-input
+            v-model="serveUserForm.IDNumber"
+            autocomplete="off"
+          />
           </el-form-item>
           <el-form-item
             label="所属网格"
             prop="grid"
           >
           <el-input
-            v-model="PartyStyleForm.grid"
-            autocomplete="off"
-          />
-          </el-form-item>
-          <el-form-item
-            label="先进事迹"
-            prop="content"
-          >
-          <el-input
-            v-model="PartyStyleForm.content"
+            v-model="serveUserForm.grid"
             autocomplete="off"
           />
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
             <el-button @click="isAdd = false">取 消</el-button>
-            <el-button type="primary" @click="addPartyStyle">确 定</el-button>
+            <el-button type="primary" @click="addserveUser">确 定</el-button>
           </span>
         </el-dialog>
     </div>
-    <div v-if="isEdit" class ='PartyStyleInfo'>
-      <PartyStyleEdit :PartyStyle='PartyStyle' @update="handleEditFinish" @back="backHome"></PartyStyleEdit>
+    <div v-if="isEdit" class ='serveUserInfo'>
+      <serveUserEdit :serveUser='serveUser' @update="handleEditFinish" @back="backHome"></serveUserEdit>
     </div>
   </div>
 </template>
 
 <script>
   //这里的跳转有问题
-import PartyStyleEdit from './components/partyStyleEdit'
+import serveUserEdit from './serveUserEdit'
 export default {
   components: {
-    PartyStyleEdit
+    serveUserEdit
   },
   data () {
     return {
-      PartyStyle:{},
+      serveUser:{},
       isEdit: false,
       isAdd: false,
-      PartyStyleTableData:[],
-      PartyStyleForm:{}
+      serveUserTableData:[],
+      serveUserForm:{
+        name:'',
+        sex:'',
+        tel:'',
+        IDNumber:'',
+        grid:''
+      }
     }
+  },
+  watch: {
   },
   created () {
     for (let i = 0; i < 4; i ++) {
-      this.PartyStyleTableData.push({
+      this.serveUserTableData.push({
         id:i,
-        name:'赵四',
-        grid:'春嘉网格',
-        content:'孝敬父母，尊老爱幼',
+        name:'张三',
+        sex:'男',
+        tel:'18238192231',
+        IDNumber:'25131199003012931',
+        grid:'春嘉网格'
       })
     }
   },
@@ -142,22 +181,23 @@ export default {
     },
     handleEdit(index,row) {
       this.isEdit = true
-      this.PartyStyle = this.PartyStyleTableData[index]
+      this.serveUser = this.serveUserTableData[index]
       console.log(index,row)
     },
-    addPartyStyle() {
+    addserveUser() {
+      // console.log(this.serveUserForm)
       this.isAdd = false
     },
-    deletePartyStyle (PartyStyle) {
-      console.log('PartyStyle', PartyStyle)
+    deleteserveUser (serveUser) {
+      console.log('serveUser', serveUser)
       const data = {
-        id: PartyStyle.id
+        id: serveUser.id
       }
       // return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
     },
-    deletePartyStyles () {
-      this.$confirm('是否删除选中的风采', '提示', { type: 'warning' }).then(() => {
-        Promise.all(this.selectedPartyStyles.map(this.deletePartyStyle))
+    deleteserveUsers () {
+      this.$confirm('是否删除选中的服务人员', '提示', { type: 'warning' }).then(() => {
+        Promise.all(this.selectedserveUsers.map(this.deleteserveUser))
           .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
             console.error(e)
             this.$alert('删除失败', '错误', { type: 'error' })
