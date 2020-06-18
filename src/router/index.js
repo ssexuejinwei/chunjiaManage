@@ -7,21 +7,21 @@ import store from '../store'
 
 Vue.use(VueRouter)
 
-const ifNotAuthenticated = (to, from, next) => {
-  if (!store.getters['user/isLogin']) {
-    next()
-    return
-  }
-  next('/')
-}
+// const ifNotAuthenticated = (to, from, next) => {
+//   if (!store.getters['user/isLogin']) {
+//     next()
+//     return
+//   }
+//   next('/')
+// }
 
-const ifAuthenticated = (to, from, next) => {
-  if (store.getters['user/isLogin']) {
-    next()
-    return
-  }
-  next('/auth')
-}
+// const ifAuthenticated = (to, from, next) => {
+//   if (store.getters['user/isLogin']) {
+//     next()
+//     return
+//   }
+//   next('/auth')
+// }
 
 /** @type {import('vue-router').RouteConfig[]} */
 const routes = [
