@@ -64,7 +64,7 @@
               <el-button
                 @click="deleteUsers"
               >
-                删除用户
+                删除网格
               </el-button>
             </el-col>
           </el-row>

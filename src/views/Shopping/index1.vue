@@ -1,103 +1,183 @@
 <template>
   <div>
-    <page-header title="商家管理"/>
-    <el-container>
-      <el-main>
-        <el-table
-          :data="UserTableData"
-          highlight-current-row
-          :border="true"
-        >
-          <el-table-column
-            type="selection"
-          />
-          <el-table-column
-            prop="name"
-            label="店名"
-            align="center"
-            sortable="custom"
-          />
-          <el-table-column
-            prop="tag"
-            label="标签"
-            align="center"
-            sortable="custom"
-          />
-          <el-table-column
-            prop="info"
-            label="商家信息"
-            align="center"
-            sortable="custom"
-          />
-          <el-table-column
-            label="操作"
-            align="center"
+    <div v-if='!isEdit' class ='shoppinglist'>
+      <page-header title="商家信息管理"/>
+      <el-container>
+        <el-main>
+          <el-table
+            :data="shoppingTableData"
+            highlight-current-row
+            :border="true"
           >
-            <template slot-scope="scope">
-              <el-button
-                size="medium"
-                @click="handleEdit(scope.$index,scope.row)"
-              >
-                修改
+            <el-table-column
+              type="selection"
+            />
+            <el-table-column
+              prop="name"
+              label="商家"
+              align="center"
+            />
+            <el-table-column
+              prop="content"
+              label="经营项目"
+              align="center"
+            />
+            <el-table-column
+              prop="address"
+              label="地址"
+              align="center"
+            />
+            <!-- <el-table-column
+              prop="coupon"
+              label="优惠券"
+              align="center"
+            /> -->
+            <el-table-column
+              label="操作"
+              align="center"
+            >
+              <template slot-scope="scope">
+                <el-button
+                  size="medium"
+                  @click="handleEdit(scope.$index,scope.row)"
+                >
+                  详情
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-main>
+        <el-footer>
+          <el-row style="margin-top:1.5rem; ">
+            <el-col :span="3">
+              <el-button @click='isAdd = true'>添加商家</el-button>
+            </el-col>
+            <el-col :span="5">
+              <el-button @click="deleteshoppings">
+                删除商家
               </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-main>
-      <el-footer>
-        <el-row>
-          <el-col :span="6">
-            <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
-            <el-button
-              @click="deleteUsers"
-            >
-              新增商家
-            </el-button>
-          </el-col>
-          <el-col :span="6">
-            <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
-            <el-button
-              @click="deleteUsers"
-            >
-              删除商家
-            </el-button>
-          </el-col>
-        </el-row>
-      </el-footer>
-    </el-container>
+            </el-col>
+          </el-row>
+        </el-footer>
+      </el-container>
+      <el-dialog
+        title="商家信息"
+        :visible.sync="isAdd "
+      >
+        <el-form
+          :model="shoppingForm"
+          label-width="100px"
+          style="width:31.25rem;"
+        >
+          <el-form-item
+            label="商家名"
+            prop="name"
+          >
+            <el-input
+              v-model="shoppingForm.name"
+              autocomplete="off"
+            />
+          </el-form-item>
+          <el-form-item
+            label="商家地址"
+            prop="address"
+          >
+            <el-input
+              v-model="shoppingForm.address"
+              autocomplete="off"
+            />
+          </el-form-item>
+          <el-form-item
+            label="经营项目"
+            prop="content"
+          >
+            <el-input
+              v-model="shoppingForm.content"
+              autocomplete="off"
+            />
+          </el-form-item>
+         <!-- <el-form-item
+            label="优惠券"
+            prop="coupon"
+          >
+            <el-input
+              v-model="shoppingForm.coupon"
+              autocomplete="off"
+            />
+          </el-form-item> -->
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="isAdd = false">取 消</el-button>
+            <el-button type="primary" @click="addshopping">确 定</el-button>
+          </span>
+        </el-dialog>
+    </div>
+    <div v-if="isEdit" class ='shoppingInfo'>
+      <shoppingEdit :shopping='shopping' @update="handleEditFinish" @back="backHome"></shoppingEdit>
+    </div>
   </div>
 </template>
 
 <script>
+  //这里的跳转有问题
+import shoppingEdit from './components/shoppingEdit'
 export default {
+  components: {
+    shoppingEdit
+  },
   data () {
     return {
-      UserTableData:[
-        {
-          name:'晨光文具',
-          tag:'文具',
-          info:'具体信息..........',
-        },
-        {
-          name:'联华超市',
-          tag:'食品',
-          info:'具体内容..........',
-        },{
-          name:'苏宁',
-          tag:'电器',
-          info:'具体内容..........',
-        }
-      ]
+      shopping:{},
+      isEdit: false,
+      isAdd: false,
+      shoppingTableData:[],
+      shoppingForm:{}
     }
   },
   created () {
+    for (let i = 0; i < 4; i ++) {
+      this.shoppingTableData.push({
+        id:i,
+        name:'朝晖水果店',
+        content:'菠萝、桃子、西瓜、荔枝等',
+        address:'朝阳路130号',
+      })
+    }
   },
   methods: {
+    handleEditFinish (val) {
+      if (val) {
+        //获取新数据
+        this.isEdit = false
+      }
+    },
+    backHome (val) {
+      this.isEdit = val
+    },
     handleEdit(index,row) {
+      this.isEdit = true
+      this.shopping = this.shoppingTableData[index]
       console.log(index,row)
     },
-    deleteUsers(){
-      
+    addshopping() {
+      this.isAdd = false
+    },
+    deleteshopping (shopping) {
+      console.log('shopping', shopping)
+      const data = {
+        id: shopping.id
+      }
+      // return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
+    },
+    deleteshoppings () {
+      this.$confirm('是否删除选中的商家', '提示', { type: 'warning' }).then(() => {
+        Promise.all(this.selectedshoppings.map(this.deleteshopping))
+          .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
+            console.error(e)
+            this.$alert('删除失败', '错误', { type: 'error' })
+          })
+          .then()
+      })
     }
   }
 }
