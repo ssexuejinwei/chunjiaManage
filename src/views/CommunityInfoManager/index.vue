@@ -109,7 +109,7 @@
         </el-main>
         <el-footer>
           <el-row style="margin-top:1.5rem; ">
-            <el-col :span="3">
+            <el-col :span="5">
               <el-button @click='isAdd = true'>添加</el-button>
             </el-col>
             <el-col :span="5">
