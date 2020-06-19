@@ -14,14 +14,34 @@
           <el-radio-button label="2">
             党员支部
           </el-radio-button>
+          <el-radio-button label="3">
+            流动蜂小巢
+          </el-radio-button>
         </el-radio-group>
       </div>
       <el-container v-if="type == 0">
         <el-main>
-          <el-input type="textarea" rows="5" v-model="profile" :disabled="!profileEdit"></el-input>
+          <el-input type="textarea" rows="10" v-model="profile" :disabled="!profileEdit"></el-input>
           <el-row style="margin-top:1.5rem; ">
             <el-col :span="3">
               <el-button @click='profileEdit=true'>修改</el-button>
+            </el-col>
+            <el-col :span="5">
+              <el-button @click="saveProfile">
+                保存
+              </el-button>
+            </el-col>
+          </el-row>
+        </el-main>
+        <el-footer>
+        </el-footer>
+      </el-container>
+      <el-container v-if="type == 3">
+        <el-main>
+          <el-input type="textarea" rows="20" v-model="flowNest" :disabled="!flowNestEdit"></el-input>
+          <el-row style="margin-top:1.5rem; ">
+            <el-col :span="3">
+              <el-button @click='flowNestEdit=true'>修改</el-button>
             </el-col>
             <el-col :span="5">
               <el-button @click="saveProfile">
@@ -204,8 +224,10 @@ export default {
   data () {
     return {
       profileEdit:false,
+      flowNestEdit:false,
       type:0,
       profile:"",
+      flowNest:'',
       communityInfo:{},
       isEdit: false,
       isAdd: false,
@@ -255,10 +277,27 @@ export default {
     "为辖区居民提供理发、义诊、修补、法律援助、政策咨询等服务，并结合节假日开展特色党员服务活动，发挥党员先锋引"+
     "领作用。春嘉社区先后获评\“苏州市和谐示范社区\”、\“苏州市民主法治社区\”、\“苏州市先进投诉站\”、\“相城区示范社"+
     "区\”、 \“相城区文明社区\”等荣誉称号。"
+    this.flowNest = "春嘉社区目前有流动锋小巢，提供美甲美发、磨剪刀、缝补、政策咨询、法律咨询等服务。纳凉锋小巢，在高温季节为辖区老人、室外作业人员提供纳凉服务。电影锋小巢为居民提供电影播放。\n"+
+    "1、朝阳花园\n"+
+    "服务时间：单月的7号上午9:00-11：30 \n"+
+    "服务地点：朝阳花园小公园\n"+
+    "2、永嘉花园\n"+
+    "服务项目：理发、义诊、磨刀、修鞋、缝补、小家电维修\n"+
+    "服务时间：单月的15号上午9:00-11：30\n"+
+    "服务地点：永嘉花园小公园\n"+
+    "3、相韵花园\n"+
+    "服务项目：理发、义诊、磨刀、修鞋、缝补、小家电维修\n"+
+    "服务时间：双月的7号上午9:00-11：30\n"+
+    "服务地点：相韵花园物业管理处\n"+
+    "4、君汇上品\n"+
+    "服务项目：理发、美甲、义诊、磨刀、修鞋、缝补、小家电维修\n"+
+    "服务时间：双月的15号上午9:00-11：30\n"+
+    "服务地点：君汇上品物业服务处北"
   },
   methods: {
     saveProfile() {
       this.profileEdit = false
+      this.flowNestEdit = false
     },
     handleEditFinish (val) {
       if (val) {
