@@ -80,7 +80,15 @@ export default {
     },
     save () {
       //调API
-      this.$emit('update', true)
+      Axios.post('/sellerctr/addActivity', qs.stringify(this.work))
+        .then(() => {
+          this.$alert('保存成功', '成功').then(() => {
+            this.$emit('update', true)
+          })
+        }).catch(e => {
+          console.error(e)
+          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+        })
     },
     goBack() {
       this.$emit('back', false)

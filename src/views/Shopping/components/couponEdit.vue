@@ -13,42 +13,33 @@
           label-width="100px"
           style="width:31.25rem;"
         >
-<!--          <el-form-item label="头像">
-            <el-upload
-              class="avatar-uploader"
-              action="#"
-              accept="image/*"
-              :limit="3"
-              :http-request="handleUpload"
-              :on-success="handleUploadSuccess"
-              :on-change="handleUploadChange"
-              :show-file-list="false"
-            >
-            <img v-if="imageUrl" :src="imageUrl" class="avatar">
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-              <img
-                v-if="squareImageUrl==''?false:true"
-                :src="squareImageUrl"
-                class="avatar"
-              >
-              <i
-                v-else
-                class="el-icon-plus avatar-uploader-icon"
-              />
-            </el-upload> -->
-          <!-- </el-form-item> -->
-          <el-form-item label="商家名">
-            <el-input v-model="coupon.name" />
+          <el-form-item
+            label="优惠券名"
+            prop="title"
+          >
+            <el-input
+              v-model="coupon.title"
+              autocomplete="off"
+            />
           </el-form-item>
-          <el-form-item label="优惠券信息">
-            <el-input v-model="coupon.content" />
+          <el-form-item
+            label="优惠券详细信息"
+            prop="descr"
+          >
+            <el-input
+              v-model="coupon.content"
+              autocomplete="off"
+            />
           </el-form-item>
-          <el-form-item label="数量">
-            <el-input v-model="coupon.number" />
+          <el-form-item
+            label="优惠券数量"
+            prop="number"
+          >
+            <el-input
+              v-model="coupon.number"
+              autocomplete="off"
+            />
           </el-form-item>
-<!--          <el-form-item label="优惠券">
-            <el-input v-model="coupon.coupon" />
-          </el-form-item> -->
           <el-form-item size="large">
             <el-button @click="save" type="success">
               保存
@@ -84,6 +75,16 @@ export default {
   methods: {
     save () {
       //调API
+      Axios.post('/sellerctr/addActivity', qs.stringify(this.coupon))
+        .then(() => {
+          this.$alert('保存成功', '成功').then(() => {
+            this.getData()
+            this.isAdd = false
+          })
+        }).catch(e => {
+          console.error(e)
+          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+        })
       this.$emit('update', true)
     },
     goBack() {
@@ -94,27 +95,4 @@ export default {
 </script>
 
 <style lang="scss">
-.avatar-uploader .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-  .avatar-uploader .el-upload:hover {
-    border-color: #409EFF;
-  }
-  .avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 178px;
-    height: 178px;
-    line-height: 178px;
-    text-align: center;
-  }
-  .avatar {
-    width: 178px;
-    height: 178px;
-    display: block;
-  }
 </style>

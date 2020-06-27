@@ -1,11 +1,12 @@
 <template>
   <div>
     <div v-if='!isEdit' class ='activitylist'>
-      <page-header title="活动信息管理"/>
+      <page-header title="社区活动信息管理"/>
       <el-container>
         <el-main>
           <el-table
             :data="activityTableData"
+            @selection-change="handleSelect"
             highlight-current-row
             :border="true"
           >
@@ -13,23 +14,43 @@
               type="selection"
             />
             <el-table-column
-              prop="name"
-              label="活动名"
+              prop="title"
+              label="活动标题"
               align="center"
             />
             <el-table-column
-              prop="date"
-              label="日期"
+              prop="activity_time"
+              label="活动时间"
               align="center"
             />
             <el-table-column
               prop="address"
-              label="活动地址"
+              label="活动地点"
               align="center"
             />
             <el-table-column
-              prop="signUser"
-              label="报名用户"
+              prop="publisher"
+              label="发布人姓名"
+              align="center"
+            />
+            <el-table-column
+              prop="publisher_contact"
+              label="发布人联系方式"
+              align="center"
+            />
+            <el-table-column
+              prop="participant_number"
+              label="已报名人数"
+              align="center"
+            />
+            <el-table-column
+              prop="max_number"
+              label="最大报名人数"
+              align="center"
+            />
+            <el-table-column
+              prop="status"
+              label="活动状态"
               align="center"
             />
             <el-table-column
@@ -82,20 +103,58 @@
           style="width:31.25rem;"
         >
           <el-form-item
-            label="活动名"
-            prop="name"
+            label="活动标题"
           >
             <el-input
-              v-model="activityForm.name"
+              v-model="activityForm.title"
+              autocomplete="off"
+            />
+          </el-form-item>
+          <el-form-item
+            label="发布人姓名"
+          >
+            <el-input
+              v-model="activityForm.publisher"
+              autocomplete="off"
+            />
+          </el-form-item>
+          <el-form-item
+            label="发布人联系方式"
+          >
+            <el-input
+              v-model="activityForm.publisher_contact"
+              autocomplete="off"
+            />
+          </el-form-item>
+          <el-form-item
+            label="活动地点"
+          >
+            <el-input
+              v-model="activityForm.address"
+              autocomplete="off"
+            />
+          </el-form-item>
+          <el-form-item
+            label="活动详情"
+          >
+            <el-input
+              v-model="activityForm.detail"
+              autocomplete="off"
+            />
+          </el-form-item>
+          <el-form-item
+            label="注意事项"
+          >
+            <el-input
+              v-model="activityForm.notice"
               autocomplete="off"
             />
           </el-form-item>
 		  <el-form-item
 		    label="活动时间"
-		    prop="date"
 		  >
 		      <el-date-picker
-		           v-model="activityForm.date"
+		           v-model="activityForm.activity_time"
 		           type="daterange"
 		           range-separator="至"
 		           start-placeholder="开始日期"
@@ -103,14 +162,26 @@
          </el-date-picker>
 		  </el-form-item>
 		  <el-form-item
-		    label="活动地址"
-		    prop="address"
+		    label="最大报名人数"
 		  >
 		    <el-input
-		      v-model="activityForm.address"
+		      v-model="activityForm.max_number"
 		      autocomplete="off"
 		    />
 		  </el-form-item>
+      <el-form-item
+        label="上传图片"
+      >
+        <el-upload
+          class="upload-demo"
+          action="#"
+          :on-preview="handlePreview"
+          :on-remove="handleRemove"
+          :file-list="fileList"
+          list-type="picture">
+          <el-button size="small" type="primary">点击上传</el-button>
+          </el-upload>
+      </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
             <el-button @click="isAdd = false">取 消</el-button>
@@ -133,6 +204,7 @@ export default {
   },
   data () {
     return {
+      loading:false,
       activity:{},
       isEdit: false,
       isAdd: false,
@@ -143,7 +215,9 @@ export default {
         tel:'',
         IDNumber:'',
         grid:''
-      }
+      },
+      fileList:{},
+      selectedactivitys:[]
     }
   },
   watch: {
@@ -163,6 +237,19 @@ export default {
     }
   },
   methods: {
+    getData () {
+      Axios.get('getUs',{
+        params:{
+          type:0
+        }
+      }).then(response => {
+        this.activityTableData = response.data.data
+      }).catch(e => {
+        console.error(e)
+        this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
+        this.activityTableData = []
+      }).finally(() => { this.loading = false })
+    },
     handleEditFinish (val) {
       if (val) {
         //获取新数据
@@ -182,14 +269,27 @@ export default {
     },
     addactivity() {
       // console.log(this.activityForm)
-      this.isAdd = false
+      Axios.post('/sellerctr/addActivity', qs.stringify({
+        ...this.activityForm,
+        type:0
+      }))
+        .then(() => {
+          this.$alert('添加成功', '成功').then(() => {
+            this.getData()
+            this.isAdd = false
+          })
+        }).catch(e => {
+          console.error(e)
+          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+        })
     },
     deleteactivity (activity) {
       console.log('activity', activity)
       const data = {
-        id: activity.id
+        activity_id: activity.id,
+        type:0
       }
-      // return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      return Axios.post('/sellerctr/deleteParents', qs.stringify(data))
     },
     deleteactivitys () {
       this.$confirm('是否删除选中的活动', '提示', { type: 'warning' }).then(() => {
@@ -200,41 +300,20 @@ export default {
           })
           .then()
       })
+    },
+    handleSelect (val) {
+      this.selectedactivitys = val
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePreview(file) {
+      console.log(file);
+      this.activityForm.pic = file.raw
     }
   }
 }
 </script>
 
 <style lang="scss">
-$Green: #69bc38;
-$Gray: #cdcdcb;
-$Red : #92535e;
-$pink : #FE8083;
-.teachHeader  {
-  padding: 0.5rem 1rem;
-  margin-bottom: 2rem;
-  background: $pink;
-  display: flex;
-  justify-content: space-between;
-
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  h1 {
-    font-size: 1rem;
-    margin: 0;
-  }
-}
-  .chooseMenu{
-    margin-left: 1.25rem;
-    width:12.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
-  }
-  .chooseMenu .el-menu-item.is-active {
-    background-color: $Green ;
-    font-size: x-large !important;
-    border: 1px solid !important;
-  }
 </style>

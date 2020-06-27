@@ -58,6 +58,7 @@
           <el-table
             v-show="type == 1"
             :data="communityInfoTableData"
+            @selection-change="handleSelect"
             highlight-current-row
             :border="true"
           >
@@ -70,7 +71,7 @@
               align="center"
             />
             <el-table-column
-              prop="position"
+              prop="duty"
               label="职位"
               align="center"
             />
@@ -91,6 +92,7 @@
           <el-table
             v-show="type == 2"
             :data="communityInfoTableData"
+            @selection-change="handleSelect"
             highlight-current-row
             :border="true"
           >
@@ -103,12 +105,12 @@
               align="center"
             />
             <el-table-column
-              prop="clerk"
+              prop="chairman"
               label="支部书记"
               align="center"
             />
             <el-table-column
-              prop="tel"
+              prop="phone_number"
               label="联系电话"
               align="center"
             />
@@ -161,10 +163,10 @@
           </el-form-item>
           <el-form-item
             label="职位"
-            prop="position"
+            prop="duty"
           >
             <el-input
-              v-model="communityInfoForm.position"
+              v-model="communityInfoForm.duty"
               autocomplete="off"
             />
           </el-form-item>
@@ -186,19 +188,19 @@
           </el-form-item>
           <el-form-item
             label="支部书记"
-            prop="clerk"
+            prop="chairman"
           >
             <el-input
-              v-model="communityInfoForm.clerk"
+              v-model="communityInfoForm.chairman"
               autocomplete="off"
             />
           </el-form-item>
           <el-form-item
             label="联系电话"
-            prop="tel"
+            prop="phone_number"
           >
             <el-input
-              v-model="communityInfoForm.tel"
+              v-model="communityInfoForm.phone_number"
               autocomplete="off"
             />
           </el-form-item>
@@ -223,10 +225,12 @@ export default {
   },
   data () {
     return {
+      selectedcommunityInfos:[],
+      loading:false,
       profileEdit:false,
       flowNestEdit:false,
       type:0,
-      profile:"",
+      profile:{},
       flowNest:'',
       communityInfo:{},
       isEdit: false,
@@ -268,7 +272,7 @@ export default {
     }
   },
   created () {
-    this.profile = "春嘉社区区域面积1.2平方公里。户籍人口1421人，常住人口约8500人。"+
+    this.profile.content = "春嘉社区区域面积1.2平方公里。户籍人口1421人，常住人口约8500人。"+
     "辖区有相韵花园、春嘉花园、朝阳花园、永嘉花园、君汇上品五个居民小区，原多服公司两幢居民楼（待拆迁）及佰尚广场"+
     "、春菊广场、君汇上品三个商业区域。党总支下设6个党支部，党员63名。近年来，在全面从严治党的新背景下，春嘉社区党"+
     "总支结合自身文化特点，以党员志愿者为主体，开展'文化进社区，党员送春风\”书画志愿党建项目，每年举办\“温情送春联"+
@@ -295,9 +299,69 @@ export default {
     "服务地点：君汇上品物业服务处北"
   },
   methods: {
+    handleSelect (val) {
+      this.selectedcommunityInfos = val
+    },
+    getData () {
+      if(this.type == 0 ){
+        Axios.get('getIntro').then(response => {
+          this.profile = response.data.data
+        }).catch(e => {
+          console.error(e)
+          this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
+          this.profile = []
+        }).finally(() => { this.loading = false })
+      }
+      else if (this.type == 3) {
+        Axios.get('getFlow').then(response => {
+          this.flowNest = response.data.data
+        }).catch(e => {
+          console.error(e)
+          this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
+          this.profile = []
+        }).finally(() => { this.loading = false })
+      }
+      else{
+        Axios.get('getPartyBranch').then(response => {
+          this.communityInfoTableData = response.data.data
+        }).catch(e => {
+          console.error(e)
+          this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
+          this.profile = []
+        }).finally(() => { this.loading = false })
+      }
+    },
     saveProfile() {
-      this.profileEdit = false
-      this.flowNestEdit = false
+      if(type === 0 ){
+        Axios.post('/updateIntro', qs.stringify({
+          intro_id:this.profile.id,
+          content:this.profile.content
+        }))
+          .then(() => {
+            this.$alert('保存成功', '成功').then(() => {
+              this.profileEdit = false
+              this.getData()
+            })
+          }).catch(e => {
+            console.error(e)
+            this.$alert(`错误原因: ${e.message || '未知错误'}`, '保存失败')
+          })
+      }
+      else{
+        Axios.post('/updateHoneyComb', qs.stringify({
+          flow_honeycomb_id:this.flowNest.id,
+          content:this.flowNest.content
+        }))
+          .then(() => {
+            this.$alert('保存成功', '成功').then(() => {
+              this.flowNestEdit = false
+              this.getData()
+            })
+          }).catch(e => {
+            console.error(e)
+            this.$alert(`错误原因: ${e.message || '未知错误'}`, '保存失败')
+          })
+      }
     },
     handleEditFinish (val) {
       if (val) {
@@ -315,14 +379,44 @@ export default {
     },
     addcommunityInfo() {
       // console.log(this.communityInfoForm)
-      this.isAdd = false
+      if(type == 2) {
+        Axios.post('/addPartyBranch', qs.stringify({
+          name : this.communityInfoForm.name,
+          avatar:'ffff',
+          duty:this.communityInfoForm.duty
+        }))
+          .then(() => {
+            this.$alert('保存成功', '成功').then(() => {
+              this.getData()
+              this.isAdd = false
+            })
+          }).catch(e => {
+            console.error(e)
+            this.$alert(`错误原因: ${e.message || '未知错误'}`, '保存失败')
+          })
+      }
+      else {
+        Axios.post('/addPartyBranch', qs.stringify({
+          name:this.communityInfoForm.name,
+          chairman:this.communityInfoForm.chairman,
+          phone_number: this.communityInfoForm.phone_number
+        }))
+          .then(() => {
+            this.$alert('保存成功', '成功').then(() => {
+              this.getData()
+              this.isAdd = false
+            })
+          }).catch(e => {
+            console.error(e)
+            this.$alert(`错误原因: ${e.message || '未知错误'}`, '保存失败')
+          })
+      }
     },
     deletecommunityInfo (communityInfo) {
       console.log('communityInfo', communityInfo)
-      const data = {
-        id: communityInfo.id
-      }
-      // return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      
+      const data = this.type == 1?{party_commission_id: communityInfo.id}:{party_branch_id:communityInfo.id}
+      return this.$axios.post(this.type==1?'/deleteCommissions':'/deletePartyBranchs', qs.stringify(data))
     },
     deletecommunityInfos () {
       this.$confirm('是否删除', '提示', { type: 'warning' }).then(() => {

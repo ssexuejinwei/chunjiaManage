@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // import { responseCodeMap } from './constant'
 
-axios.defaults.baseURL = 'http://124.251.4.221/course/public/index.php/index'
+axios.defaults.baseURL = 'http://47.101.181.233:8000'
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 
 axios.interceptors.request.use(config => {

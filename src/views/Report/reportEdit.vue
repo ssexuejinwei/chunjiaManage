@@ -1,6 +1,6 @@
 <template>
   <div class="reportEditInfo">
-    <page-header title="请您商量详细信息" />
+    <page-header title="报事详细信息" />
     <el-page-header @back="goBack" />
     <br>
     <br>
@@ -25,12 +25,12 @@
           </el-upload>
         </el-form-item>
           <el-form-item label="报事名称">
-            <el-input v-model="report.name" />
+            <el-input v-model="report.title" />
           </el-form-item>
           <el-form-item label="报事类型">
             <el-radio-group v-model="report.type">
-                <el-radio :label="1">群众报事</el-radio>
-                <el-radio :label="2">企业报事</el-radio>
+                <el-radio :label="0">群众报事</el-radio>
+                <el-radio :label="1">企业报事</el-radio>
               </el-radio-group>
           </el-form-item>
           <el-form-item label="报事内容">
@@ -43,7 +43,7 @@
             <el-input v-model="report.grid" />
           </el-form-item>
           <el-form-item label="身份证号">
-            <el-input v-model="report.IDNumber" />
+            <el-input v-model="report.ID_number" />
           </el-form-item>
           <el-form-item label="报事状态">
             <el-radio-group v-model="report.status">
@@ -87,7 +87,15 @@ export default {
   methods: {
     save () {
       //调API
-      this.$emit('update', true)
+      Axios.post('/sellerctr/addActivity', qs.stringify(this.report))
+        .then(() => {
+          this.$alert('保存成功', '成功').then(() => {
+            this.$emit('update', true)
+          })
+        }).catch(e => {
+          console.error(e)
+          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+        })
     },
     goBack() {
       this.$emit('back', false)

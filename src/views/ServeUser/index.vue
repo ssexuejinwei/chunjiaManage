@@ -6,6 +6,7 @@
         <el-main>
           <el-table
             :data="serveUserTableData"
+            @selection-change="handleSelect"
             highlight-current-row
             :border="true"
           >
@@ -18,23 +19,18 @@
               align="center"
             />
             <el-table-column
-              prop="sex"
-              label="性别"
-              align="center"
-            />
-            <el-table-column
-              prop="tel"
+              prop="phone_number"
               label="联系电话"
               align="center"
             />
             <el-table-column
-              prop="IDNumber"
-              label="身份证号"
+              prop="duty"
+              label="职位"
               align="center"
             />
             <el-table-column
-              prop="grid"
-              label="所属网格"
+              prop="company"
+              label="公司"
               align="center"
             />
             <el-table-column
@@ -74,6 +70,17 @@
           label-width="100px"
           style="width:31.25rem;"
         >
+          <el-form-item label="头像">
+            <el-upload
+              class="avatar-uploader"
+              action="#"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              >
+              <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </el-form-item>
           <el-form-item
             label="姓名"
             prop="name"
@@ -84,39 +91,29 @@
             />
           </el-form-item>
           <el-form-item
-            label="性别"
-            prop="date"
-          >
-            <el-radio-group v-model="serveUserForm.sex">
-              <el-radio label="男">男</el-radio>
-              <el-radio label="女">女</el-radio>
-            </el-radio-group>
-            
-          </el-form-item>
-          <el-form-item
             label="联系电话"
-            prop="tel"
+            prop="phone_number"
           >
           <el-input
-            v-model="serveUserForm.tel"
+            v-model="serveUserForm.phone_number"
             autocomplete="off"
           />
           </el-form-item>
           <el-form-item
-            label="身份证号"
-            prop="IDNumber"
+            label="职位"
+            prop="duty"
           >
           <el-input
-            v-model="serveUserForm.IDNumber"
+            v-model="serveUserForm.duty"
             autocomplete="off"
           />
           </el-form-item>
           <el-form-item
-            label="所属网格"
-            prop="grid"
+            label="公司"
+            prop="company"
           >
           <el-input
-            v-model="serveUserForm.grid"
+            v-model="serveUserForm.company"
             autocomplete="off"
           />
           </el-form-item>
@@ -142,6 +139,8 @@ export default {
   },
   data () {
     return {
+      imageUrl:'',
+      selectedserveUsers:[],
       serveUser:{},
       isEdit: false,
       isAdd: false,
@@ -170,9 +169,19 @@ export default {
     }
   },
   methods: {
+		getData () {
+		  Axios.get('getUs').then(response => {
+		    this.serveUserTableData = response.data.data
+		  }).catch(e => {
+		    console.error(e)
+		    this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
+		    this.activityTableData = []
+		  }).finally(() => { this.loading = false })
+		},
     handleEditFinish (val) {
       if (val) {
         //获取新数据
+        this.getData()
         this.isEdit = false
       }
     },
@@ -186,14 +195,23 @@ export default {
     },
     addserveUser() {
       // console.log(this.serveUserForm)
-      this.isAdd = false
+      Axios.post('/sellerctr/addActivity', qs.stringify(this.serveUserForm))
+        .then(() => {
+          this.$alert('添加成功', '成功').then(() => {
+            this.getData()
+            this.isAdd = false
+          })
+        }).catch(e => {
+          console.error(e)
+          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+        })
     },
     deleteserveUser (serveUser) {
       console.log('serveUser', serveUser)
       const data = {
-        id: serveUser.id
+        service_group_id: serveUser.id
       }
-      // return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
     },
     deleteserveUsers () {
       this.$confirm('是否删除选中的服务人员', '提示', { type: 'warning' }).then(() => {
@@ -204,41 +222,39 @@ export default {
           })
           .then()
       })
-    }
+    },
+    handleSelect (val) {
+      this.selectedactivitys = val
+    },
+    handleAvatarSuccess(res, file) {
+      this.serveUserForm.avatar = URL.createObjectURL(file.raw);
+    },
   }
 }
 </script>
 
-<style lang="scss">
-$Green: #69bc38;
-$Gray: #cdcdcb;
-$Red : #92535e;
-$pink : #FE8083;
-.teachHeader  {
-  padding: 0.5rem 1rem;
-  margin-bottom: 2rem;
-  background: $pink;
-  display: flex;
-  justify-content: space-between;
-
-  a {
-    color: inherit;
-    text-decoration: none;
+<style lang="scss" scoped>
+.avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
   }
-
-  h1 {
-    font-size: 1rem;
-    margin: 0;
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
   }
-}
-  .chooseMenu{
-    margin-left: 1.25rem;
-    width:12.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
   }
-  .chooseMenu .el-menu-item.is-active {
-    background-color: $Green ;
-    font-size: x-large !important;
-    border: 1px solid !important;
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
   }
 </style>

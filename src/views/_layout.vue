@@ -60,8 +60,13 @@
           <span>投诉建议</span>
         </template>
       </el-menu-item>
-      
-      <el-submenu index="4">
+      <el-menu-item index="/shopping">
+        <template slot="title">
+          <i class="el-icon-sell"></i>
+          <span>优你购管理</span>
+        </template>
+      </el-menu-item>
+      <!-- <el-submenu index="4">
         <template slot="title">
           <i class="el-icon-sell"></i>
           <span>优你购管理</span>
@@ -71,7 +76,7 @@
           <el-menu-item index="/couponUse">优惠券使用管理</el-menu-item>
           <el-menu-item index="coupon">优惠券管理</el-menu-item>
         </el-menu-item-group>
-      </el-submenu>
+      </el-submenu> -->
       
       <el-submenu index="5">
         <template slot="title">
@@ -79,7 +84,7 @@
           <span>活动/志愿服务管理</span>
         </template>
         <el-menu-item-group>
-          <el-menu-item index="/volunteer1">活动</el-menu-item>
+          <el-menu-item index="/volunteer1">社区活动</el-menu-item>
           <el-menu-item index="/volunteer2">志愿服务</el-menu-item>
         </el-menu-item-group>
       </el-submenu>

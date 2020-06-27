@@ -1,6 +1,6 @@
 <template>
-  <div class="discussEditInfo">
-    <page-header title="请您商量详细信息" />
+  <div class="suggestEditInfo">
+    <page-header title="提议详细信息" />
     <el-page-header @back="goBack" />
     <br>
     <br>
@@ -9,47 +9,40 @@
         <el-form
           ref="form"
           class="form"
-          :model="discuss"
+          :model="suggest"
           label-width="80px"
           style="width:31.25rem;"
         >
-<!--          <el-form-item label="头像">
-            <el-upload
-              class="avatar-uploader"
-              action="#"
-              accept="image/*"
-              :limit="3"
-              :http-request="handleUpload"
-              :on-success="handleUploadSuccess"
-              :on-change="handleUploadChange"
-              :show-file-list="false"
-            >
-            <img v-if="imageUrl" :src="imageUrl" class="avatar">
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-              <img
-                v-if="squareImageUrl==''?false:true"
-                :src="squareImageUrl"
-                class="avatar"
-              >
-              <i
-                v-else
-                class="el-icon-plus avatar-uploader-icon"
-              />
-            </el-upload> -->
-          <!-- </el-form-item> -->
-          <el-form-item label="议题标题">
-            <el-input v-model="discuss.title" />
+          <el-form-item label="提议人">
+            <el-input v-model="suggest.name" />
+          </el-form-item>
+          <el-form-item label="联系电话">
+            <el-input v-model="suggest.phone_number" />
+          </el-form-item>
+          <el-form-item label="提议标题">
+            <el-input v-model="suggest.title" />
+          </el-form-item>
+          <el-form-item label="提议内容">
+            <el-input v-model="suggest.content" />
           </el-form-item>
           <el-form-item label="议题类型">
-            <el-input v-model="discuss.type" />
+             <el-select v-model="suggest.type" placeholder="请选择">
+                <el-option
+                  v-for="item in typeOption"
+                  :key="item.id"
+                  :label="item.type"
+                  :value="item.type">
+                </el-option>
+              </el-select>
+            <el-input v-model="suggest.type" />
           </el-form-item>
-          <el-form-item label="议事时间">
-            <el-input v-model="discuss.date" />
+          <el-form-item label="议题状态">
+            <el-radio-group v-model="suggest.status">
+                <el-radio :label="0">刚上传</el-radio>
+                <el-radio :label="1">已发布</el-radio>
+              </el-radio-group>
           </el-form-item>
-          <el-form-item label="议事内容">
-            <el-input v-model="discuss.content" />
-          </el-form-item>
-          <el-form-item size="large">
+          <el-form-item>
             <el-button @click="save" type="success">
               保存
             </el-button>
@@ -69,22 +62,43 @@ export default {
     VDistpicker
   },
   props: {
-    discuss: {
+    suggest: {
       type: Object,
       default: () => {}
     }
   },
   data () {
     return {
-      defaultdiscuss:{},
+      defaultsuggest:{},
+      typeOption:[]
     }
   },
   created () {
   },
   methods: {
+    getTypeList() {
+      Axios.get('getUs').then(response => {
+        this.typeOption = response.data.data
+      }).catch(e => {
+        console.error(e)
+        this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
+        this.typeOption = []
+      }).finally(() => { })
+    },
     save () {
       //调API
-      this.$emit('update', true)
+      Axios.post('/sellerctr/addActivity', qs.stringify({
+        ...this.activity,
+        type:0
+      }))
+        .then(() => {
+          this.$alert('保存成功', '成功').then(() => {
+            this.$emit('update', true)
+          })
+        }).catch(e => {
+          console.error(e)
+          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+        })
     },
     goBack() {
       this.$emit('back', false)

@@ -5,6 +5,7 @@
         <el-main>
           <el-table
             :data="complaintTableData"
+            @selection-change="handleSelect"
             highlight-current-row
             :border="true"
           >
@@ -13,7 +14,17 @@
             />
             <el-table-column
               prop="name"
-              label="名称"
+              label="投诉人"
+              align="center"
+            />
+            <el-table-column
+              prop="phone_number"
+              label="联系电话"
+              align="center"
+            />
+            <el-table-column
+              prop="title"
+              label="标题"
               align="center"
             />
             <el-table-column
@@ -22,10 +33,15 @@
               align="center"
             />
             <el-table-column
-              prop="status"
               label="状态"
               align="center"
-            />
+            >
+              <template slot-scope="scope">
+                <span v-if="scope.row.status==0">未处理</span>
+                <span v-if="scope.row.sex==1">已处理</span>
+                <span v-if="scope.row.sex==2">不予受理</span>
+              </template>
+            </el-table-column>
             <el-table-column
               label="操作"
               align="center"
@@ -59,16 +75,16 @@
       :visible.sync="isEdit"
     >
       <el-form
-        :model="complaintForm"
+        :model="complaint"
         label-width="100px"
         style="width:31.25rem;"
       >
         <el-form-item
-          label="投诉具体内容"
-          prop="content"
+          label="处理意见"
+          prop="feedback"
         >
           <el-input
-            v-model="complaintForm.content"
+            v-model="complaint.feedback"
             autocomplete="off"
           />
         </el-form-item>
@@ -76,11 +92,13 @@
           label="处理意见"
           prop="advice"
         >
-        <el-input
-          v-model="complaintForm.advice"
-          autocomplete="off"
-        />
+          <el-radio-group v-model="complaint.status">
+            <el-radio :label="0">未处理</el-radio>
+            <el-radio :label="1">已处理</el-radio>
+            <el-radio :label="2">不予受理</el-radio>
+        </el-radio-group>
         </el-form-item>
+        
       </el-form>
       <span slot="footer" class="dialog-footer">
           <el-button @click="isEdit = false">取 消</el-button>
@@ -95,6 +113,8 @@
 export default {
   data () {
     return {
+      selectedUsers:[],
+      dealIndex:1,
       complaint:{},
       complaintForm:{
         id:'',
@@ -116,31 +136,43 @@ export default {
     }
   },
   methods: {
+    getData () {
+      Axios.get('getUs').then(response => {
+        this.complaintTableData = response.data.data
+      }).catch(e => {
+        console.error(e)
+        this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
+        this.complaintTableData = []
+      }).finally(() => { this.loading = false })
+    },
     handleComplaint () {
       this.isEdit = false;
-      this.complaintTableData[this.complaintForm.id].status = '处理完成'
-    },
-    handleEditFinish (val) {
-      if (val) {
-        //获取新数据
-        this.isEdit = false
-      }
-    },
-    backHome (val) {
-      this.isEdit = val
+      Axios.post('/sellerctr/addActivity', qs.stringify({
+        id:this.complaint.id,
+        feedback:this.complaint.feedback,
+        status:this.complaint.status
+      }))
+        .then(() => {
+          this.$alert('处理完成', '成功').then(() => {
+            this.getData()
+            this.isAdd = false
+          })
+        }).catch(e => {
+          console.error(e)
+          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+        })
     },
     handleEdit(index,row) {
       this.isEdit = true
       this.complaint = this.complaintTableData[index]
       this.complaintForm.id = this.complaintTableData[index].id
       this.complaintForm.content = this.complaintTableData[index].content
-      console.log(index,row)
     },
     deleteUser (complaint) {
       const data = {
         id: complaint.id
       }
-      // return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
     },
     deleteUsers () {
       this.$confirm('是否删除选中的网格', '提示', { type: 'warning' }).then(() => {
@@ -151,6 +183,9 @@ export default {
           })
           .then()
       })
+    },
+    handleSelect (val) {
+      this.selectedUsers = val
     }
   }
 }

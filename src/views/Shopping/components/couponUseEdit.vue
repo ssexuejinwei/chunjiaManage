@@ -13,30 +13,6 @@
           label-width="80px"
           style="width:31.25rem;"
         >
-<!--          <el-form-item label="头像">
-            <el-upload
-              class="avatar-uploader"
-              action="#"
-              accept="image/*"
-              :limit="3"
-              :http-request="handleUpload"
-              :on-success="handleUploadSuccess"
-              :on-change="handleUploadChange"
-              :show-file-list="false"
-            >
-            <img v-if="imageUrl" :src="imageUrl" class="avatar">
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-              <img
-                v-if="squareImageUrl==''?false:true"
-                :src="squareImageUrl"
-                class="avatar"
-              >
-              <i
-                v-else
-                class="el-icon-plus avatar-uploader-icon"
-              />
-            </el-upload> -->
-          <!-- </el-form-item> -->
           <el-form-item label="商家名">
             <el-input v-model="couponUse.name" />
           </el-form-item>

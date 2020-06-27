@@ -13,38 +13,14 @@
           label-width="80px"
           style="width:31.25rem;"
         >
-<!--          <el-form-item label="头像">
-            <el-upload
-              class="avatar-uploader"
-              action="#"
-              accept="image/*"
-              :limit="3"
-              :http-request="handleUpload"
-              :on-success="handleUploadSuccess"
-              :on-change="handleUploadChange"
-              :show-file-list="false"
-            >
-            <img v-if="imageUrl" :src="imageUrl" class="avatar">
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-              <img
-                v-if="squareImageUrl==''?false:true"
-                :src="squareImageUrl"
-                class="avatar"
-              >
-              <i
-                v-else
-                class="el-icon-plus avatar-uploader-icon"
-              />
-            </el-upload> -->
-          <!-- </el-form-item> -->
           <el-form-item label="标题">
             <el-input v-model="communityMicroInfo.title" />
           </el-form-item>
           <el-form-item label="具体内容">
             <el-input v-model="communityMicroInfo.content" />
           </el-form-item>
-          <el-form-item label="时间截点">
-            <el-input v-model="communityMicroInfo.date" />
+          <el-form-item label="发布人">
+            <el-input v-model="communityMicroInfo.publisher" />
           </el-form-item>
           <el-form-item size="large">
             <el-button @click="save" type="success">
@@ -79,9 +55,30 @@ export default {
   created () {
   },
   methods: {
+    getData () {
+      Axios.get('getUs',{
+        params:{
+          id:this.communityMicroInfo.id
+        }
+      }).then(response => {
+        this.communityMicroInfo = response.data.data
+      }).catch(e => {
+        console.error(e)
+        this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
+        this.communityMicroInfo = []
+      }).finally(() => { console.log("i") })
+    },
     save () {
       //调API
-      this.$emit('update', true)
+      Axios.post('/sellerctr/addActivity', qs.stringify(this.communityMicroInfo))
+        .then(() => {
+          this.$alert('保存成功', '成功').then(() => {
+            this.$emit('update', true)
+          })
+        }).catch(e => {
+          console.error(e)
+          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+        })
     },
     goBack() {
       this.$emit('back', false)

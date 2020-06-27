@@ -1,11 +1,12 @@
 <template>
   <div>
-    <div v-if='!isEdit' class ='userlist'>
+    <div v-if='!isEdit'  v-loading="isLoading" class ='userlist'>
       <page-header title="用户信息管理"/>
       <el-container>
         <el-main>
           <el-table
             :data="UserTableData"
+            @selection-change="handleSelect"
             highlight-current-row
             :border="true"
           >
@@ -18,17 +19,21 @@
               align="center"
             />
             <el-table-column
-              prop="sex"
               label="性别"
               align="center"
-            />
+            >
+              <template slot-scope="scope">
+                <span v-if="scope.row.sex==1">男</span>
+                <span v-if="scope.row.sex==0">女</span>
+              </template>
+            </el-table-column>
             <el-table-column
-              prop="tel"
+              prop="phone_number"
               label="联系电话"
               align="center"
             />
             <el-table-column
-              prop="political"
+              prop="politics_status"
               label="政治面貌"
               align="center"
             />
@@ -58,10 +63,18 @@
           </el-table>
         </el-main>
         <el-footer>
+          <div style="text-align: right;">
+            <el-pagination
+              layout="prev, pager, next"
+              :total="total"
+              :current-page.sync="cur_page"
+            />
+          </div>
           <el-row>
             <el-col :span="6">
               <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
               <el-button
+              :disabled="!selectedData.length"
                 @click="deleteUsers"
               >
                 删除用户
@@ -79,36 +92,68 @@
 
 <script>
   //这里的跳转有问题
+ 
 import UserEdit from './userEdit'
+import Axios from 'axios'
+import qs from 'querystring'
+
 export default {
   components: {
     UserEdit
   },
   data () {
     return {
+      selectedData:[],
       user:{},
       isEdit: false,
-      UserTableData:[]
+      UserTableData:[],
+      isLoading:false,
+      total:100,
+      cur_page:1
     }
   },
   created () {
     for (let i = 0; i < 4; i ++) {
       this.UserTableData.push({
+        id:'1',
         name:'张三',
-        sex:'男',
-        tel:'18238192231',
-        IDNumber:'25131199003012931',
-        political:'党员',
+        sex:1,
+        phone_number:'18238192231',
+        politics_status:'党员',
         address:'上海市同济小区3幢302室',
         grid:'春嘉网格'
       })
     }
   },
+  watch: {
+    cur_page(newValue, oldValue) {
+      this.getData()
+    }
+  },
   methods: {
+    getData () {
+      Axios.get('getUser', {
+        params: {
+          page_index: this.cur_page,
+        }
+      }).then(response => {
+        this.UserTableData = response.data.data.list
+        this.total = response.data.data.page_number
+      }).catch(e => {
+        console.error(e)
+        this.$message.error(`获取用户列表失败: ${e.message || '未知错误'}`)
+        this.UserTableData = []
+        this.total_page = 0
+      }).finally(() => { this.loading = false })
+    },
+    handleSelect (val) {
+      this.selectedData = val
+    },
     handleEditFinish (val) {
       if (val) {
         //获取新数据
         this.isEdit = false
+        this.getData()
       }
     },
     backHome (val) {
@@ -122,13 +167,13 @@ export default {
     deleteUser (user) {
       console.log('user', user)
       const data = {
-        id: user.id
+        user_id: user.id
       }
-      // return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      return this.$axios.post('deleteUser', qs.stringify(data))
     },
     deleteUsers () {
       this.$confirm('是否删除选中的用户', '提示', { type: 'warning' }).then(() => {
-        Promise.all(this.selectedUsers.map(this.deleteUser))
+        Promise.all(this.selectedData.map(this.deleteUser))
           .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
             console.error(e)
             this.$alert('删除失败', '错误', { type: 'error' })
@@ -141,35 +186,4 @@ export default {
 </script>
 
 <style lang="scss">
-$Green: #69bc38;
-$Gray: #cdcdcb;
-$Red : #92535e;
-$pink : #FE8083;
-.teachHeader  {
-  padding: 0.5rem 1rem;
-  margin-bottom: 2rem;
-  background: $pink;
-  display: flex;
-  justify-content: space-between;
-
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  h1 {
-    font-size: 1rem;
-    margin: 0;
-  }
-}
-  .chooseMenu{
-    margin-left: 1.25rem;
-    width:12.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
-  }
-  .chooseMenu .el-menu-item.is-active {
-    background-color: $Green ;
-    font-size: x-large !important;
-    border: 1px solid !important;
-  }
 </style>

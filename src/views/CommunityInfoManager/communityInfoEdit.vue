@@ -12,6 +12,29 @@
             label-width="100px"
             style="width:31.25rem;"
           >
+            <el-form-item label="头像">
+              <el-upload
+                class="avatar-uploader"
+                action="#"
+                accept="image/*"
+                :limit="3"
+                :http-request="handleUpload"
+                :on-success="handleUploadSuccess"
+                :on-change="handleUploadChange"
+                :show-file-list="false"
+              >
+                <img
+                  v-if="squareImageUrl==''?false:true"
+                  :src="squareImageUrl"
+                  class="avatar"
+                >
+                <i
+                  v-else
+                  class="el-icon-plus avatar-uploader-icon"
+                />
+              </el-upload>
+              <!-- <p >头像</p> -->
+            </el-form-item>
             <el-form-item
               label="姓名"
               prop="name"
@@ -53,16 +76,16 @@
             </el-form-item>
             <el-form-item
               label="支部书记"
-              prop="clerk"
+              prop="chairman"
             >
               <el-input
-                v-model="communityInfo.clerk"
+                v-model="communityInfo.chairman"
                 autocomplete="off"
               />
             </el-form-item>
             <el-form-item
               label="联系电话"
-              prop="tel"
+              prop="phone_number"
             >
               <el-input
                 v-model="communityInfo.tel"
@@ -101,18 +124,65 @@ export default {
   data () {
     return {
       defaultcommunityInfo:{},
+      squareImageUrl:'',
+      fileList:{}
     }
   },
   created () {
     console.log(this.communityInfo)
+    this.squareImageUrl = this.communityInfo.avatar
   },
   methods: {
     save () {
       //调API
-      this.$emit('update', true)
+      if(type == 1){ 
+        let form = {
+          party_commission_id:this.communityInfo.id,
+          name:this.communityInfo.name,
+          avatar:this.communityInfo.avatar,
+          duty:this.communityInfo.duty
+        }
+      }
+      else {
+        let form = {
+          party_branch_id:this.communityInfo.id,
+          name:this.communityInfo.name,
+          chairman:this.communityInfo.chairman,
+          phone_number:this.communityInfo.phone_number
+        }
+      }
+      
+      Axios.post(this.type==1?'updateCommissions':'updatePartyBranch', qs.stringify(form))
+        .then(() => {
+          this.$alert('保存成功', '成功').then(() => {
+            this.$emit('update', true)
+          })
+        }).catch(e => {
+          console.error(e)
+          this.$alert(`错误原因: ${e.message || '未知错误'}`, '保存失败')
+        })
     },
     goBack() {
       this.$emit('back', false)
+    },
+    handleUpload (param) {
+      const file = param.file
+      this.communityInfo.avatar = file
+    //   const formData = new FormData()
+    //   formData.append('image_url', file)
+    
+    //   return Axios.post('/sellerctr/save', formData, {
+    //     onUploadProgress: param.onProgress
+    //   })
+    },
+    handleUploadSuccess (res, rawFile) {
+      if (res?.data?.data?.fileName) {
+        rawFile.url = process.env.VUE_APP_UPLOAD_PUBLIC_URL + res?.data?.data?.fileName
+      }
+    },
+    handleUploadChange (file, fileList) {
+      this.fileList = fileList
+      this.squareImageUrl = this.fileList[this.fileList.length - 1].url
     }
   }
 }

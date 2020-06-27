@@ -1,12 +1,11 @@
 <template>
   <div>
-    <div v-if='!isEdit' class ='activitylist'>
-      <page-header title="党员活动信息管理"/>
+    <div v-if='!isEdit' class ='discusslist'>
+      <page-header title="商量信息管理"/>
       <el-container>
         <el-main>
           <el-table
-            :data="activityTableData"
-            @selection-change="handleSelect"
+            :data="discussTableData"
             highlight-current-row
             :border="true"
           >
@@ -14,20 +13,25 @@
               type="selection"
             />
             <el-table-column
-              prop="name"
-              label="活动名"
+              prop="title"
+              label="议题标题"
               align="center"
             />
             <el-table-column
-              prop="activity_time"
-              label="时间"
+              prop="type"
+              label="议题类型"
               align="center"
             />
             <el-table-column
-              prop="content"
-              label="活动内容"
+              prop="date"
+              label="议题时间"
               align="center"
             />
+            <!-- <el-table-column
+              prop="coupon"
+              label="优惠券"
+              align="center"
+            /> -->
             <el-table-column
               label="操作"
               align="center"
@@ -46,112 +50,119 @@
         <el-footer>
           <el-row style="margin-top:1.5rem; ">
             <el-col :span="3">
-              <el-button @click='isAdd = true'>添加活动</el-button>
+              <el-button @click='isAdd = true'>发布</el-button>
             </el-col>
             <el-col :span="5">
-              <el-button @click="deleteactivitys">
-                删除活动
+              <el-button @click="deletediscusss">
+                删除
               </el-button>
             </el-col>
           </el-row>
         </el-footer>
       </el-container>
       <el-dialog
-        title="活动信息"
+        title="商量信息"
         :visible.sync="isAdd "
       >
         <el-form
-          :model="activityForm"
+          :model="discussForm"
           label-width="100px"
           style="width:31.25rem;"
         >
           <el-form-item
-            label="活动名称"
-            prop="name"
+            label="标题"
+            prop="title"
           >
             <el-input
-              v-model="activityForm.name"
+              v-model="discussForm.title"
               autocomplete="off"
             />
           </el-form-item>
           <el-form-item
-            label="活动日期"
-            prop="activity_time"
+            label="议事类型"
+            prop="type"
           >
-            <el-col :span="11">
-              <el-date-picker
-                v-model="activityForm.activity_time"
-                type="date"
-                placeholder="选择日期"
-                format="yyyy 年 MM 月 dd 日"
-                value-format="yyyy-MM-dd"
-                style="width: 100%;"
-              />
-            </el-col>
+            <el-radio-group v-model="discussForm.type">
+              <el-radio :label="1">网格小事</el-radio>
+              <el-radio :label="2">社区大事</el-radio>
+            </el-radio-group>
           </el-form-item>
           <el-form-item
-            label="活动具体内容"
+            label="议事内容"
             prop="content"
           >
-          <el-input
-            v-model="activityForm.content"
-            autocomplete="off"
-          />
+            <el-input
+              v-model="discussForm.content"
+              autocomplete="off"
+            />
+          </el-form-item>
+          <el-form-item
+            label="议事时间"
+            prop="date"
+          >
+          <el-date-picker
+            v-model="discussForm.date"
+            type="date"
+            placeholder="时间">
+          </el-date-picker>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
             <el-button @click="isAdd = false">取 消</el-button>
-            <el-button type="primary" @click="addActivity">确 定</el-button>
+            <el-button type="primary" @click="adddiscuss">确 定</el-button>
           </span>
         </el-dialog>
     </div>
-    <div v-if="isEdit" class ='activityInfo'>
-      <activityEdit :activity='activity' @update="handleEditFinish" @back="backHome"></activityEdit>
+    <div v-if="isEdit" class ='discussInfo'>
+      <discussEdit :discuss='discuss' @update="handleEditFinish" @back="backHome"></discussEdit>
     </div>
   </div>
 </template>
 
 <script>
   //这里的跳转有问题
-import activityEdit from './components/activityEdit'
+import discussEdit from './discussEdit'
 export default {
   components: {
-    activityEdit
+    discussEdit
   },
   data () {
     return {
-      selectedactivitys:[],
-      activity:{},
+      discuss:{},
       isEdit: false,
       isAdd: false,
-      activityTableData:[],
-      activityForm:{}
+      discussTableData:[],
+      discussForm:{}
     }
   },
   created () {
     for (let i = 0; i < 4; i ++) {
-      this.activityTableData.push({
+      this.discussTableData.push({
         id:i,
-        name:'诗朗诵',
-        date:'2020-06-01',
-        content:'朗诵毛选',
+        title:'议题1',
+        type:'网格小事',
+        date:'2020年6月18日',
+        content:'商量是否发放口罩的时间'
       })
     }
   },
   methods: {
-    getData () {
-      Axios.get('getUs').then(response => {
-        this.activityTableData = response.data.data
-      }).catch(e => {
-        console.error(e)
-        this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
-        this.activityTableData = []
-      }).finally(() => { this.loading = false })
-    },
+		getData () {
+		  Axios.get('getUs',{
+		    params:{
+		      tag:1
+		    }
+		  }).then(response => {
+		    this.discussTableData = response.data.data
+		  }).catch(e => {
+		    console.error(e)
+		    this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
+		    this.discussTableData = []
+		  }).finally(() => { this.loading = false })
+		},
     handleEditFinish (val) {
       if (val) {
         //获取新数据
-        this.getData()
         this.isEdit = false
       }
     },
@@ -160,39 +171,28 @@ export default {
     },
     handleEdit(index,row) {
       this.isEdit = true
-      this.activity = this.activityTableData[index]
+      this.discuss = this.discussTableData[index]
       console.log(index,row)
     },
-    addActivity() {
-      Axios.post('/sellerctr/addActivity', qs.stringify(this.activityForm))
-        .then(() => {
-          this.$alert('添加成功', '成功').then(() => {
-            this.getData()
-            this.isAdd = false
-          })
-        }).catch(e => {
-          console.error(e)
-          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
-        })
+    adddiscuss() {
+      this.isAdd = false
     },
-    deleteactivity (activity) {
+    deletediscuss (discuss) {
+      console.log('discuss', discuss)
       const data = {
-        party_activity_id: activity.id
+        id: discuss.id
       }
-      return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      // return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
     },
-    deleteactivitys () {
-      this.$confirm('是否删除选中的活动', '提示', { type: 'warning' }).then(() => {
-        Promise.all(this.selectedactivitys.map(this.deleteactivity))
+    deletediscusss () {
+      this.$confirm('是否删除选中的信息', '提示', { type: 'warning' }).then(() => {
+        Promise.all(this.selecteddiscusss.map(this.deletediscuss))
           .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
             console.error(e)
             this.$alert('删除失败', '错误', { type: 'error' })
           })
           .then()
       })
-    },
-    handleSelect (val) {
-      this.selectedactivitys = val
     }
   }
 }

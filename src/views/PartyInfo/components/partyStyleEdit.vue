@@ -41,7 +41,14 @@
             <el-input v-model="PartyStyle.name" />
           </el-form-item>
           <el-form-item label="所属网格">
-            <el-input v-model="PartyStyle.grid" />
+            <el-select v-model="PartyStyle.grid" placeholder="请选择">
+                <el-option
+                  v-for="item in PartyStyle.options"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
           </el-form-item>
           <el-form-item label="先进事迹">
             <el-input v-model="PartyStyle.content" />
@@ -82,7 +89,19 @@ export default {
   methods: {
     save () {
       //调API
-      this.$emit('update', true)
+      Axios.post('/sellerctr/addActivity', qs.stringify({
+        party_style_id:this.PartyStyle.id,
+        name:this.PartyStyle.name,
+        grid_id:this.PartyStyle.grid,
+        deed:this.PartyStyle.deed
+      })).then(() => {
+          this.$alert('修改成功', '成功').then(() => {
+            this.$emit('update', true)
+          })
+        }).catch(e => {
+          console.error(e)
+          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+        })
     },
     goBack() {
       this.$emit('back', false)

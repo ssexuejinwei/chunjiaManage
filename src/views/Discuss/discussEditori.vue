@@ -1,6 +1,6 @@
 <template>
-  <div class="shoppingEditInfo">
-    <page-header title="商家详细信息" />
+  <div class="discussEditInfo">
+    <page-header title="请您商量详细信息" />
     <el-page-header @back="goBack" />
     <br>
     <br>
@@ -9,49 +9,45 @@
         <el-form
           ref="form"
           class="form"
-          :model="shopping"
+          :model="discuss"
           label-width="80px"
           style="width:31.25rem;"
         >
-          <el-form-item
-            label="logo"
-          >
+<!--          <el-form-item label="头像">
             <el-upload
               class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
+              action="#"
+              accept="image/*"
+              :limit="3"
+              :http-request="handleUpload"
+              :on-success="handleUploadSuccess"
+              :on-change="handleUploadChange"
               :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-            </el-upload>
+            >
+            <img v-if="imageUrl" :src="imageUrl" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              <img
+                v-if="squareImageUrl==''?false:true"
+                :src="squareImageUrl"
+                class="avatar"
+              >
+              <i
+                v-else
+                class="el-icon-plus avatar-uploader-icon"
+              />
+            </el-upload> -->
+          <!-- </el-form-item> -->
+          <el-form-item label="议题标题">
+            <el-input v-model="discuss.title" />
           </el-form-item>
-          <el-form-item
-            label="商家名"
-            prop="name"
-          >
-            <el-input
-              v-model="shopping.name"
-              autocomplete="off"
-            />
+          <el-form-item label="议题类型">
+            <el-input v-model="discuss.type" />
           </el-form-item>
-          <el-form-item
-            label="商家地址"
-            prop="address"
-          >
-            <el-input
-              v-model="shopping.address"
-              autocomplete="off"
-            />
+          <el-form-item label="议事时间">
+            <el-input v-model="discuss.date" />
           </el-form-item>
-          <el-form-item
-            label="联系电话"
-            prop="phone_number"
-          >
-            <el-input
-              v-model="shopping.phone_number"
-              autocomplete="off"
-            />
+          <el-form-item label="议事内容">
+            <el-input v-model="discuss.content" />
           </el-form-item>
           <el-form-item size="large">
             <el-button @click="save" type="success">
@@ -73,14 +69,14 @@ export default {
     VDistpicker
   },
   props: {
-    shopping: {
+    discuss: {
       type: Object,
       default: () => {}
     }
   },
   data () {
     return {
-      defaultshopping:{},
+      defaultdiscuss:{},
     }
   },
   created () {
@@ -88,16 +84,6 @@ export default {
   methods: {
     save () {
       //调API
-      Axios.post('/sellerctr/addActivity', qs.stringify(this.shopping))
-        .then(() => {
-          this.$alert('添加成功', '成功').then(() => {
-            this.getData()
-            this.isAdd = false
-          })
-        }).catch(e => {
-          console.error(e)
-          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
-        })
       this.$emit('update', true)
     },
     goBack() {

@@ -6,6 +6,7 @@
         <el-main>
           <el-table
             :data="shoppingTableData"
+            @selection-change="handleSelect"
             highlight-current-row
             :border="true"
           >
@@ -18,8 +19,8 @@
               align="center"
             />
             <el-table-column
-              prop="content"
-              label="经营项目"
+              prop="phone_number"
+              label="联系电话"
               align="center"
             />
             <el-table-column
@@ -27,11 +28,6 @@
               label="地址"
               align="center"
             />
-            <!-- <el-table-column
-              prop="coupon"
-              label="优惠券"
-              align="center"
-            /> -->
             <el-table-column
               label="操作"
               align="center"
@@ -42,6 +38,12 @@
                   @click="handleEdit(scope.$index,scope.row)"
                 >
                   详情
+                </el-button>
+                <el-button
+                  size="medium"
+                  @click="checkCoupon(scope.$index,scope.row)"
+                >
+                  优惠券信息
                 </el-button>
               </template>
             </el-table-column>
@@ -70,6 +72,19 @@
           style="width:31.25rem;"
         >
           <el-form-item
+            label="logo"
+          >
+            <el-upload
+              class="avatar-uploader"
+              action="https://jsonplaceholder.typicode.com/posts/"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload">
+              <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </el-form-item>
+          <el-form-item
             label="商家名"
             prop="name"
           >
@@ -88,23 +103,14 @@
             />
           </el-form-item>
           <el-form-item
-            label="经营项目"
-            prop="content"
+            label="联系电话"
+            prop="phone_number"
           >
             <el-input
-              v-model="shoppingForm.content"
+              v-model="shoppingForm.phone_number"
               autocomplete="off"
             />
           </el-form-item>
-         <!-- <el-form-item
-            label="优惠券"
-            prop="coupon"
-          >
-            <el-input
-              v-model="shoppingForm.coupon"
-              autocomplete="off"
-            />
-          </el-form-item> -->
         </el-form>
         <span slot="footer" class="dialog-footer">
             <el-button @click="isAdd = false">取 消</el-button>
@@ -127,11 +133,14 @@ export default {
   },
   data () {
     return {
+      selectedshoppings:[],
       shopping:{},
       isEdit: false,
       isAdd: false,
       shoppingTableData:[],
-      shoppingForm:{}
+      shoppingForm:{},
+      imageUrl:'',
+      image:''
     }
   },
   created () {
@@ -145,6 +154,23 @@ export default {
     }
   },
   methods: {
+    getData () {
+      Axios.get('getUs').then(response => {
+        this.shoppingTableData = response.data.data
+      }).catch(e => {
+        console.error(e)
+        this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
+        this.activityTableData = []
+      }).finally(() => { this.loading = false })
+    },
+    checkCoupon(index,row) {
+      this.$router.push({
+        path: '/couponUse',
+        query: {
+          shopping: this.shoppingTableData[index]
+        }
+      })
+    },
     handleEditFinish (val) {
       if (val) {
         //获取新数据
@@ -160,7 +186,19 @@ export default {
       console.log(index,row)
     },
     addshopping() {
-      this.isAdd = false
+      Axios.post('/sellerctr/addActivity', qs.stringify({
+        ...this.shoppingForm,
+        logo:this.image
+        }))
+        .then(() => {
+          this.$alert('添加成功', '成功').then(() => {
+            this.getData()
+            this.isAdd = false
+          })
+        }).catch(e => {
+          console.error(e)
+          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+        })
     },
     deleteshopping (shopping) {
       console.log('shopping', shopping)
@@ -178,41 +216,40 @@ export default {
           })
           .then()
       })
+    },
+    handleAvatarSuccess(res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw);
+      this.image = file.raw
+    },
+    handleSelect (val) {
+      this.selectedactivitys = val
     }
   }
 }
 </script>
 
 <style lang="scss">
-$Green: #69bc38;
-$Gray: #cdcdcb;
-$Red : #92535e;
-$pink : #FE8083;
-.teachHeader  {
-  padding: 0.5rem 1rem;
-  margin-bottom: 2rem;
-  background: $pink;
-  display: flex;
-  justify-content: space-between;
-
-  a {
-    color: inherit;
-    text-decoration: none;
+.avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
   }
-
-  h1 {
-    font-size: 1rem;
-    margin: 0;
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
   }
-}
-  .chooseMenu{
-    margin-left: 1.25rem;
-    width:12.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
   }
-  .chooseMenu .el-menu-item.is-active {
-    background-color: $Green ;
-    font-size: x-large !important;
-    border: 1px solid !important;
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
   }
 </style>

@@ -6,6 +6,7 @@
         <el-main>
           <el-table
             :data="PartyStyleTableData"
+            @selection-change="handleSelect"
             highlight-current-row
             :border="true"
           >
@@ -23,7 +24,7 @@
               align="center"
             />
             <el-table-column
-              prop="content"
+              prop="deed"
               label="先进事迹"
               align="center"
             />
@@ -75,21 +76,37 @@
           </el-form-item>
           <el-form-item
             label="所属网格"
-            prop="grid"
           >
-          <el-input
-            v-model="PartyStyleForm.grid"
-            autocomplete="off"
-          />
+          <el-select v-model="PartyStyleForm.grid_id" placeholder="请选择">
+              <el-option
+                v-for="item in gridOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item
             label="先进事迹"
-            prop="content"
+            prop="deed"
           >
           <el-input
             v-model="PartyStyleForm.content"
             autocomplete="off"
           />
+          </el-form-item>
+          <el-form-item label="照片">
+            <el-upload
+              class="upload-demo"
+              action="#"
+              :http-request="handleUpload"
+              :on-success="handleUploadSuccess"
+              :on-change="handleUploadChange"
+              :file-list="fileList"
+              list-type="picture">
+              <el-button size="small" type="primary">点击上传</el-button>
+              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+            </el-upload>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -117,7 +134,9 @@ export default {
       isEdit: false,
       isAdd: false,
       PartyStyleTableData:[],
-      PartyStyleForm:{}
+      PartyStyleForm:{},
+      gridOptions:[],
+      fileList:{}
     }
   },
   created () {
@@ -131,9 +150,27 @@ export default {
     }
   },
   methods: {
+    getGridItem() {
+      Axios.get('getItem').then(response => {
+        this.gridOptions = this.response.data.data.grid
+      }).catch(e => {
+        console.error(e)
+        this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
+      }).finally(() => { console.log('1') })
+    },
+    getData () {
+      Axios.get('getUs').then(response => {
+        this.PartyStyleTableData = response.data.data
+      }).catch(e => {
+        console.error(e)
+        this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
+        this.PartyStyleTableData = []
+      }).finally(() => { this.loading = false })
+    },
     handleEditFinish (val) {
       if (val) {
         //获取新数据
+        this.getData()
         this.isEdit = false
       }
     },
@@ -142,18 +179,31 @@ export default {
     },
     handleEdit(index,row) {
       this.isEdit = true
-      this.PartyStyle = this.PartyStyleTableData[index]
+      this.PartyStyle = 
+      this.PartyStyle = {
+        ...this.PartyStyleTableData[index],
+        options:this.gridOptions
+      }
       console.log(index,row)
     },
     addPartyStyle() {
-      this.isAdd = false
+      Axios.post('/sellerctr/addActivity', qs.stringify(this.PartyStyleForm))
+        .then(() => {
+          this.$alert('添加成功', '成功').then(() => {
+            this.getData()
+            this.isAdd = false
+          })
+        }).catch(e => {
+          console.error(e)
+          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+        })
     },
     deletePartyStyle (PartyStyle) {
       console.log('PartyStyle', PartyStyle)
       const data = {
-        id: PartyStyle.id
+        party_style_id: PartyStyle.id
       }
-      // return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
     },
     deletePartyStyles () {
       this.$confirm('是否删除选中的风采', '提示', { type: 'warning' }).then(() => {
@@ -164,41 +214,31 @@ export default {
           })
           .then()
       })
+    },
+    handleSelect (val) {
+      this.selectedactivitys = val
+    },
+    handleUpload (param) {
+      const file = param.file
+      this.PartyStyleForm.images.push(file)
+    //   const formData = new FormData()
+    //   formData.append('image_url', file)
+    
+    //   return Axios.post('/sellerctr/save', formData, {
+    //     onUploadProgress: param.onProgress
+    //   })
+    },
+    handleUploadSuccess (res, rawFile) {
+      if (res?.data?.data?.fileName) {
+        rawFile.url = process.env.VUE_APP_UPLOAD_PUBLIC_URL + res?.data?.data?.fileName
+      }
+    },
+    handleUploadChange (file, fileList) {
+      this.fileList = fileList
     }
   }
 }
 </script>
 
 <style lang="scss">
-$Green: #69bc38;
-$Gray: #cdcdcb;
-$Red : #92535e;
-$pink : #FE8083;
-.teachHeader  {
-  padding: 0.5rem 1rem;
-  margin-bottom: 2rem;
-  background: $pink;
-  display: flex;
-  justify-content: space-between;
-
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  h1 {
-    font-size: 1rem;
-    margin: 0;
-  }
-}
-  .chooseMenu{
-    margin-left: 1.25rem;
-    width:12.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
-  }
-  .chooseMenu .el-menu-item.is-active {
-    background-color: $Green ;
-    font-size: x-large !important;
-    border: 1px solid !important;
-  }
 </style>

@@ -1,11 +1,13 @@
 <template>
   <div>
     <div v-if='!isEdit' class ='couponUselist'>
-      <page-header title="优惠券使用管理"/>
+      <page-header :title="this.$route.query.coupon.title+'优惠券使用管理'"/>
+      <el-page-header @back="goBack" />
       <el-container>
         <el-main>
           <el-table
             :data="couponUseTableData"
+            @selection-change="handleSelect"
             highlight-current-row
             :border="true"
           >
@@ -13,35 +15,30 @@
               type="selection"
             />
             <el-table-column
-              prop="name"
-              label="店铺"
+              label="用户"
               align="center"
-            />
+            >
+              <template slot-scope="scope">
+                <span>{{scope.row.user.name}}</span>
+              </template>
+            </el-table-column>
             <el-table-column
-              prop="address"
-              label="地址"
-              align="center"
-            />
-            <el-table-column
-              prop="content"
-              label="优惠券内容"
-              align="center"
-            />
-            <el-table-column
-              prop="all"
-              label="全部"
-              align="center"
-            />
-            <el-table-column
-              prop="use"
-              label="已使用"
-              align="center"
-            />
-            <!-- <el-table-column
-              prop="coupon"
               label="优惠券"
               align="center"
-            /> -->
+            >
+            <template slot-scope="scope">
+                <span>{{scope.row.coupon.title}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="使用情况"
+              align="center"
+            >
+              <template slot-scope="scope">
+                <span v-if="scope.row.status==1">已使用</span>
+                <span v-if="scope.row.status==0">未使用</span>
+              </template>
+            </el-table-column>
             <el-table-column
               label="操作"
               align="center"
@@ -51,7 +48,13 @@
                   size="medium"
                   @click="handleEdit(scope.$index,scope.row)"
                 >
-                  详情
+                  变更使用情况
+                </el-button>
+                <el-button
+                  size="medium"
+                  @click="checkCoupon(scope.$index,scope.row)"
+                >
+                  优惠券信息
                 </el-button>
               </template>
             </el-table-column>
@@ -68,29 +71,25 @@
         </el-footer>
       </el-container>
     </div>
-    <div v-if="isEdit" class ='couponUseInfo'>
-      <couponUseEdit :couponUse='couponUse' @update="handleEditFinish" @back="backHome"></couponUseEdit>
-    </div>
   </div>
 </template>
 
 <script>
   //这里的跳转有问题
-import couponUseEdit from './components/couponUseEdit'
 export default {
-  components: {
-    couponUseEdit
-  },
   data () {
     return {
+      couponId:'',
       couponUse:{},
       isEdit: false,
       isAdd: false,
       couponUseTableData:[],
-      couponUseForm:{}
+      couponUseForm:{},
+      selectedcouponUses:[]
     }
   },
   created () {
+    this.couponId = this.$route.query.coupon.id
     for (let i = 0; i < 4; i ++) {
       this.couponUseTableData.push({
         id:i,
@@ -103,6 +102,19 @@ export default {
     }
   },
   methods: {
+    getData () {
+      Axios.get('getUs',{
+        params:{
+          coupon_id:this.couponId
+        }
+      }).then(response => {
+        this.couponUseTableData = response.data.data
+      }).catch(e => {
+        console.error(e)
+        this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
+        this.couponUseTableData = []
+      }).finally(() => { this.loading = false })
+    },
     handleEditFinish (val) {
       if (val) {
         //获取新数据
@@ -114,8 +126,18 @@ export default {
     },
     handleEdit(index,row) {
       this.isEdit = true
-      this.couponUse = this.couponUseTableData[index]
-      console.log(index,row)
+      let changeStatus = this.couponUseTableData[index].status == 0?1:0
+      Axios.post('/sellerctr/addActivity', qs.stringify({
+        coupon_id:this.couponId,
+        status:changeStatus
+        }))
+        .then(() => {
+          this.$alert('修改成功', '成功').then(() => {
+            this.couponUseTableData[index].status = changeStatus
+          })
+        }).catch(e => {
+          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+        })
     },
     addcouponUse() {
       this.isAdd = false
@@ -136,41 +158,17 @@ export default {
           })
           .then()
       })
+    },
+    handleSelect (val) {
+      this.selectedcouponUses = val
+    },
+    goBack(){
+      this.$router.go(-1)
     }
   }
 }
 </script>
 
 <style lang="scss">
-$Green: #69bc38;
-$Gray: #cdcdcb;
-$Red : #92535e;
-$pink : #FE8083;
-.teachHeader  {
-  padding: 0.5rem 1rem;
-  margin-bottom: 2rem;
-  background: $pink;
-  display: flex;
-  justify-content: space-between;
 
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  h1 {
-    font-size: 1rem;
-    margin: 0;
-  }
-}
-  .chooseMenu{
-    margin-left: 1.25rem;
-    width:12.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
-  }
-  .chooseMenu .el-menu-item.is-active {
-    background-color: $Green ;
-    font-size: x-large !important;
-    border: 1px solid !important;
-  }
 </style>

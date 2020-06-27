@@ -6,6 +6,7 @@
         <el-main>
           <el-table
             :data="gridTableData"
+            @selection-change="handleSelect"
             highlight-current-row
             :border="true"
           >
@@ -18,30 +19,45 @@
               align="center"
             />
             <el-table-column
-              prop="gridLeader"
               label="网格长"
               align="center"
-            />
+            >
+              <template slot-scope="scope">
+                <span>{{scope.row.admin.name}}</span>
+              </template>
+            </el-table-column>
             <el-table-column
-              prop="gridPerson"
               label="网格员"
               align="center"
-            />
+            >
+              <template slot-scope="scope">
+                <span>{{scope.row.member.name}}</span>
+              </template>
+            </el-table-column>
             <el-table-column
-              prop="teamLeader"
               label="居民组长"
               align="center"
-            />
+            >
+              <template slot-scope="scope">
+                <span>{{scope.row.leader.name}}</span>
+              </template>
+            </el-table-column>
             <el-table-column
-              prop="police"
               label="辅警"
               align="center"
-            />
+            >
+              <template slot-scope="scope">
+                <span>{{scope.row.police.name}}</span>
+              </template>
+            </el-table-column>
             <el-table-column
-              prop="party"
               label="党员先锋户"
               align="center"
-            />
+            >
+              <template slot-scope="scope">
+                <span>{{scope.row.pioneer.name}}</span>
+              </template>
+            </el-table-column>
             <el-table-column
               label="操作"
               align="center"
@@ -58,18 +74,42 @@
           </el-table>
         </el-main>
         <el-footer>
-          <el-row>
-            <el-col :span="6">
-              <!-- <el-button type='danger' @click='isAdd = true'>添加新用户</el-button> -->
-              <el-button
-                @click="deleteUsers"
-              >
-                删除网格
-              </el-button>
-            </el-col>
-          </el-row>
+            <el-row style="margin-top:1.5rem; ">
+              <el-col :span="3">
+                <el-button @click='isAdd = true'>添加网格</el-button>
+              </el-col>
+              <el-col :span="5">
+                <el-button @click="deleteDatas">
+                  删除网格
+                </el-button>
+              </el-col>
+            </el-row>
         </el-footer>
       </el-container>
+      <el-dialog
+        title="活动信息"
+        :visible.sync="isAdd "
+      >
+        <el-form
+          :model="gridForm"
+          label-width="100px"
+          style="width:31.25rem;"
+        >
+          <el-form-item
+            label="网格名称"
+            prop="name"
+          >
+            <el-input
+              v-model="gridForm.name"
+              autocomplete="off"
+            />
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="isAdd = false">取 消</el-button>
+            <el-button type="primary" @click="addGrid">确 定</el-button>
+          </span>
+        </el-dialog>
     </div>
     <div v-if="isEdit" class ='userInfo'>
       <GridEdit :grid='grid' @update="handleEditFinish" @back="backHome"></GridEdit>
@@ -86,9 +126,14 @@ export default {
   },
   data () {
     return {
+      api:'/user/manage/grid',
+      gridForm:{},
+      isAdd:false,
+      selectedData:[],
       grid:{},
       isEdit: false,
-      gridTableData:[]
+      gridTableData:[],
+      loading:false
     }
   },
   created () {
@@ -105,9 +150,41 @@ export default {
     }
   },
   methods: {
+    addGrid () {
+      this.gridForm = {
+        ...this.gridForm,
+        admin_id:22,
+        member_id:17,
+        leader_id:13,
+        police_id:6,
+        pioneer_id:2
+      }
+      Axios.post('/addGrid', qs.stringify(this.gridForm))
+        .then(() => {
+          this.$alert('保存成功', '成功').then(() => {
+            this.getData()
+          })
+        }).catch(e => {
+          console.error(e)
+          this.$alert(`错误原因: ${e.message || '未知错误'}`, '保存失败')
+        })
+    },
+    getData () {
+      Axios.get('getGrid').then(response => {
+        this.gridTableData = response.data.data
+      }).catch(e => {
+        console.error(e)
+        this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
+        this.gridTableData = []
+      }).finally(() => { this.loading = false })
+    },
+    handleSelect (val) {
+      this.selectedData = val
+    },
     handleEditFinish (val) {
       if (val) {
         //获取新数据
+        this.getData()
         this.isEdit = false
       }
     },
@@ -119,20 +196,19 @@ export default {
       this.grid = this.gridTableData[index]
       console.log(index,row)
     },
-    deleteUser (grid) {
+    deleteData (grid) {
       const data = {
-        id: grid.id
+        grid_id: grid.id
       }
-      // return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      return Axios.post('/sellerctr/deleteParents', qs.stringify(data))
     },
-    deleteUsers () {
+    deleteDatas () {
       this.$confirm('是否删除选中的网格', '提示', { type: 'warning' }).then(() => {
-        Promise.all(this.selectedUsers.map(this.deleteUser))
+        Promise.all(this.selectedData.map(this.deleteData))
           .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
             console.error(e)
             this.$alert('删除失败', '错误', { type: 'error' })
           })
-          .then()
       })
     }
   }
@@ -140,35 +216,4 @@ export default {
 </script>
 
 <style lang="scss">
-$Green: #69bc38;
-$Gray: #cdcdcb;
-$Red : #92535e;
-$pink : #FE8083;
-.teachHeader  {
-  padding: 0.5rem 1rem;
-  margin-bottom: 2rem;
-  background: $pink;
-  display: flex;
-  justify-content: space-between;
-
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  h1 {
-    font-size: 1rem;
-    margin: 0;
-  }
-}
-  .chooseMenu{
-    margin-left: 1.25rem;
-    width:12.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
-  }
-  .chooseMenu .el-menu-item.is-active {
-    background-color: $Green ;
-    font-size: x-large !important;
-    border: 1px solid !important;
-  }
 </style>

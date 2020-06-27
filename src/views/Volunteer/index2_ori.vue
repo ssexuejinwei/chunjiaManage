@@ -1,12 +1,11 @@
 <template>
   <div>
     <div v-if='!isEdit' class ='volunteerlist'>
-      <page-header title="志愿活动信息管理"/>
+      <page-header title="志愿服务信息管理"/>
       <el-container>
         <el-main>
           <el-table
             :data="volunteerTableData"
-            @selection-change="handleSelect"
             highlight-current-row
             :border="true"
           >
@@ -14,43 +13,23 @@
               type="selection"
             />
             <el-table-column
-              prop="title"
-              label="活动标题"
+              prop="name"
+              label="志愿服务名"
               align="center"
             />
             <el-table-column
-              prop="volunteer_time"
-              label="活动时间"
+              prop="date"
+              label="日期"
               align="center"
             />
             <el-table-column
               prop="address"
-              label="活动地点"
+              label="志愿服务地址"
               align="center"
             />
             <el-table-column
-              prop="publisher"
-              label="发布人姓名"
-              align="center"
-            />
-            <el-table-column
-              prop="publisher_contact"
-              label="发布人联系方式"
-              align="center"
-            />
-            <el-table-column
-              prop="participant_number"
-              label="已报名人数"
-              align="center"
-            />
-            <el-table-column
-              prop="max_number"
-              label="最大报名人数"
-              align="center"
-            />
-            <el-table-column
-              prop="status"
-              label="活动状态"
+              prop="signUser"
+              label="报名用户"
               align="center"
             />
             <el-table-column
@@ -83,18 +62,18 @@
         <el-footer>
           <el-row style="margin-top:1.5rem; ">
             <el-col :span="3">
-              <el-button @click='isAdd = true'>添加活动</el-button>
+              <el-button @click='isAdd = true'>添加志愿服务</el-button>
             </el-col>
             <el-col :span="5">
               <el-button @click="deletevolunteers">
-                删除活动
+                删除志愿服务
               </el-button>
             </el-col>
           </el-row>
         </el-footer>
       </el-container>
       <el-dialog
-        title="活动信息"
+        title="志愿服务信息"
         :visible.sync="isAdd "
       >
         <el-form
@@ -103,58 +82,20 @@
           style="width:31.25rem;"
         >
           <el-form-item
-            label="活动标题"
+            label="志愿服务名"
+            prop="name"
           >
             <el-input
-              v-model="volunteerForm.title"
-              autocomplete="off"
-            />
-          </el-form-item>
-          <el-form-item
-            label="发布人姓名"
-          >
-            <el-input
-              v-model="volunteerForm.publisher"
-              autocomplete="off"
-            />
-          </el-form-item>
-          <el-form-item
-            label="发布人联系方式"
-          >
-            <el-input
-              v-model="volunteerForm.publisher_contact"
-              autocomplete="off"
-            />
-          </el-form-item>
-          <el-form-item
-            label="活动地点"
-          >
-            <el-input
-              v-model="volunteerForm.address"
-              autocomplete="off"
-            />
-          </el-form-item>
-          <el-form-item
-            label="活动详情"
-          >
-            <el-input
-              v-model="volunteerForm.detail"
-              autocomplete="off"
-            />
-          </el-form-item>
-          <el-form-item
-            label="注意事项"
-          >
-            <el-input
-              v-model="volunteerForm.notice"
+              v-model="volunteerForm.name"
               autocomplete="off"
             />
           </el-form-item>
 		  <el-form-item
-		    label="活动时间"
+		    label="志愿服务时间"
+		    prop="date"
 		  >
 		      <el-date-picker
-		           v-model="volunteerForm.volunteer_time"
+		           v-model="volunteerForm.date"
 		           type="daterange"
 		           range-separator="至"
 		           start-placeholder="开始日期"
@@ -162,26 +103,14 @@
          </el-date-picker>
 		  </el-form-item>
 		  <el-form-item
-		    label="最大报名人数"
+		    label="志愿服务地址"
+		    prop="address"
 		  >
 		    <el-input
-		      v-model="volunteerForm.max_number"
+		      v-model="volunteerForm.address"
 		      autocomplete="off"
 		    />
 		  </el-form-item>
-      <el-form-item
-        label="上传图片"
-      >
-        <el-upload
-          class="upload-demo"
-          action="#"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :file-list="fileList"
-          list-type="picture">
-          <el-button size="small" type="primary">点击上传</el-button>
-          </el-upload>
-      </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
             <el-button @click="isAdd = false">取 消</el-button>
@@ -204,7 +133,6 @@ export default {
   },
   data () {
     return {
-      loading:false,
       volunteer:{},
       isEdit: false,
       isAdd: false,
@@ -215,9 +143,7 @@ export default {
         tel:'',
         IDNumber:'',
         grid:''
-      },
-      fileList:{},
-      selectedvolunteers:[]
+      }
     }
   },
   watch: {
@@ -237,19 +163,6 @@ export default {
     }
   },
   methods: {
-    getData () {
-      Axios.get('getUs',{
-        params:{
-          type:1
-        }
-      }).then(response => {
-        this.volunteerTableData = response.data.data
-      }).catch(e => {
-        console.error(e)
-        this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
-        this.volunteerTableData = []
-      }).finally(() => { this.loading = false })
-    },
     handleEditFinish (val) {
       if (val) {
         //获取新数据
@@ -269,30 +182,17 @@ export default {
     },
     addvolunteer() {
       // console.log(this.volunteerForm)
-      Axios.post('/sellerctr/addvolunteer', qs.stringify({
-        ...this.volunteerForm,
-        type:1
-      }))
-        .then(() => {
-          this.$alert('添加成功', '成功').then(() => {
-            this.getData()
-            this.isAdd = false
-          })
-        }).catch(e => {
-          console.error(e)
-          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
-        })
+      this.isAdd = false
     },
     deletevolunteer (volunteer) {
       console.log('volunteer', volunteer)
       const data = {
-        volunteer_id: volunteer.id,
-        type:1
+        id: volunteer.id
       }
-      return Axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      // return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
     },
     deletevolunteers () {
-      this.$confirm('是否删除选中的活动', '提示', { type: 'warning' }).then(() => {
+      this.$confirm('是否删除选中的志愿服务', '提示', { type: 'warning' }).then(() => {
         Promise.all(this.selectedvolunteers.map(this.deletevolunteer))
           .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
             console.error(e)
@@ -300,20 +200,41 @@ export default {
           })
           .then()
       })
-    },
-    handleSelect (val) {
-      this.selectedvolunteers = val
-    },
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
-    },
-    handlePreview(file) {
-      console.log(file);
-      this.volunteerForm.pic = file.raw
     }
   }
 }
 </script>
 
 <style lang="scss">
+$Green: #69bc38;
+$Gray: #cdcdcb;
+$Red : #92535e;
+$pink : #FE8083;
+.teachHeader  {
+  padding: 0.5rem 1rem;
+  margin-bottom: 2rem;
+  background: $pink;
+  display: flex;
+  justify-content: space-between;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  h1 {
+    font-size: 1rem;
+    margin: 0;
+  }
+}
+  .chooseMenu{
+    margin-left: 1.25rem;
+    width:12.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
+  }
+  .chooseMenu .el-menu-item.is-active {
+    background-color: $Green ;
+    font-size: x-large !important;
+    border: 1px solid !important;
+  }
 </style>

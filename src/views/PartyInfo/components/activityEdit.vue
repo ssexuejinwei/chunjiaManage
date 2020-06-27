@@ -13,36 +13,22 @@
           label-width="80px"
           style="width:31.25rem;"
         >
-<!--          <el-form-item label="头像">
-            <el-upload
-              class="avatar-uploader"
-              action="#"
-              accept="image/*"
-              :limit="3"
-              :http-request="handleUpload"
-              :on-success="handleUploadSuccess"
-              :on-change="handleUploadChange"
-              :show-file-list="false"
-            >
-            <img v-if="imageUrl" :src="imageUrl" class="avatar">
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-              <img
-                v-if="squareImageUrl==''?false:true"
-                :src="squareImageUrl"
-                class="avatar"
-              >
-              <i
-                v-else
-                class="el-icon-plus avatar-uploader-icon"
-              />
-            </el-upload> -->
-          <!-- </el-form-item> -->
           <el-form-item label="活动名">
             <el-input v-model="activity.name" />
           </el-form-item>
-          <el-form-item label="时间">
-            <el-input v-model="activity.date" />
-          </el-form-item>
+          <el-form-item
+            label="活动日期"
+            prop="activity_time"
+          >
+            <el-date-picker
+              v-model="activityForm.activity_time"
+              type="date"
+              placeholder="选择日期"
+              format="yyyy 年 MM 月 dd 日"
+              value-format="yyyy-MM-dd"
+              style="width: 100%;"
+            />
+        </el-form-item>
           <el-form-item label="活动内容">
             <el-input v-model="activity.content" />
           </el-form-item>
@@ -81,7 +67,15 @@ export default {
   methods: {
     save () {
       //调API
-      this.$emit('update', true)
+      Axios.post('/sellerctr/addActivity', qs.stringify(this.activity))
+        .then(() => {
+          this.$alert('添加成功', '成功').then(() => {
+            this.$emit('update', true)
+          })
+        }).catch(e => {
+          console.error(e)
+          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+        })
     },
     goBack() {
       this.$emit('back', false)

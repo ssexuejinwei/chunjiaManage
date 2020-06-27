@@ -6,6 +6,7 @@
         <el-main>
           <el-table
             :data="workTableData"
+            @selection-change="handleSelect"
             highlight-current-row
             :border="true"
           >
@@ -143,6 +144,7 @@ export default {
   },
   data () {
     return {
+      selectedworks:[],
       fileList:{},
       work:{},
       isEdit: false,
@@ -164,6 +166,15 @@ export default {
     }
   },
   methods: {
+    getData () {
+      Axios.get('getUs').then(response => {
+        this.workTableData = response.data.data
+      }).catch(e => {
+        console.error(e)
+        this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
+        this.workTableData = []
+      }).finally(() => { this.loading = false })
+    },
     handleChange(file, fileList) {
       this.fileList = fileList.slice(-3)
     },
@@ -200,6 +211,9 @@ export default {
           })
           .then()
       })
+    },
+    handleSelect (val) {
+      this.selectedactivitys = val
     }
   }
 }

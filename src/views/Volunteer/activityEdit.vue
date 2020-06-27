@@ -11,56 +11,106 @@
          label-width="100px"
          style="width:31.25rem;"
        >
-       <el-form-item label="精彩回顾">
+       <el-form
+           :model="activity"
+           label-width="100px"
+           style="width:31.25rem;"
+         >
+           <el-form-item
+             label="活动标题"
+           >
+             <el-input
+               v-model="activity.title"
+               autocomplete="off"
+             />
+           </el-form-item>
+           <el-form-item
+             label="发布人姓名"
+           >
+             <el-input
+               v-model="activity.publisher"
+               autocomplete="off"
+             />
+           </el-form-item>
+           <el-form-item
+             label="发布人联系方式"
+           >
+             <el-input
+               v-model="activity.publisher_contact"
+               autocomplete="off"
+             />
+           </el-form-item>
+           <el-form-item
+             label="活动地点"
+           >
+             <el-input
+               v-model="activity.address"
+               autocomplete="off"
+             />
+           </el-form-item>
+           <el-form-item
+             label="活动详情"
+           >
+             <el-input
+               v-model="activity.detail"
+               autocomplete="off"
+             />
+           </el-form-item>
+           <el-form-item
+             label="注意事项"
+           >
+             <el-input
+               v-model="activity.notice"
+               autocomplete="off"
+             />
+           </el-form-item>
+       <el-form-item
+         label="活动时间"
+       >
+           <el-date-picker
+                v-model="activity.activity_time"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+          </el-date-picker>
+       </el-form-item>
+       <el-form-item
+         label="最大报名人数"
+       >
+         <el-input
+           v-model="activity.max_number"
+           autocomplete="off"
+         />
+       </el-form-item>
+       <el-form-item
+         label="当前报名人数"
+       >
+         <el-input
+           v-model="activity.participant_number"
+           autocomplete="off"
+         />
+       </el-form-item>
+       <el-form-item
+         label="精彩回顾"
+       >
          <el-upload
-           class="avatar-uploader"
-           action="https://jsonplaceholder.typicode.com/posts/"
-           :show-file-list="false"
-           :on-success="handleAvatarSuccess"
-           :before-upload="beforeAvatarUpload">
-           <img v-if="imageUrl" :src="imageUrl" class="avatar">
-           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+           class="upload-demo"
+           action="#"
+           :on-preview="handlePreview"
+           :on-remove="handleRemove"
+           :file-list="fileList"
+           list-type="picture">
+           <el-button size="small" type="primary">点击上传</el-button>
          </el-upload>
+       </el-form-item>
+         <el-form-item>
+           <el-radio-group v-model="activity.status">
+               <el-radio :label="0">可报名</el-radio>
+               <el-radio :label="1">报名结束</el-radio>
+             </el-radio-group>
          </el-form-item>
-         <el-form-item
-           label="活动名"
-           prop="name"
-         >
-           <el-input
-             v-model="activity.name"
-             autocomplete="off"
-           />
-         </el-form-item>
-         <el-form-item
-           label="活动时间"
-           prop="date"
-         >
-         <el-date-picker
-               v-model="activity.date"
-               type="daterange"
-               range-separator="至"
-               start-placeholder="开始日期"
-               end-placeholder="结束日期">
-         </el-date-picker>
-         </el-form-item>
-         <el-form-item
-           label="活动地址"
-           prop="address"
-         >
-         <el-input
-           v-model="activity.address"
-           autocomplete="off"
-         />
-         </el-form-item>
-         <el-form-item
-           label="报名用户"
-           prop="<signUser></signUser>"
-         >
-         <el-input
-           v-model="activity.signUser"
-           autocomplete="off"
-         />
-         </el-form-item>
+       </el-form>
           <el-form-item size="large">
             <el-button @click="save" type="success">
               保存
@@ -104,7 +154,18 @@ export default {
     },
     save () {
       //调API
-      this.$emit('update', true)
+      Axios.post('/sellerctr/addActivity', qs.stringify({
+        ...this.activity,
+        type:0
+      }))
+        .then(() => {
+          this.$alert('保存成功', '成功').then(() => {
+            this.$emit('update', true)
+          })
+        }).catch(e => {
+          console.error(e)
+          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+        })
     },
     goBack() {
       this.$emit('back', false)

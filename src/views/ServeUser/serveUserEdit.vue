@@ -6,63 +6,64 @@
     <br>
     <el-container style="width: 100%;">
         <el-main>
-       <el-form
-         :model="serveUser"
-         label-width="100px"
-         style="width:31.25rem;"
-       >
-         <el-form-item
-           label="姓名"
-           prop="name"
-         >
-           <el-input
-             v-model="serveUser.name"
-             autocomplete="off"
-           />
-         </el-form-item>
-         <el-form-item
-           label="性别"
-           prop="date"
-         >
-           <el-radio-group v-model="serveUser.sex">
-             <el-radio label="男">男</el-radio>
-             <el-radio label="女">女</el-radio>
-           </el-radio-group>
-           
-         </el-form-item>
-         <el-form-item
-           label="联系电话"
-           prop="tel"
-         >
-         <el-input
-           v-model="serveUser.tel"
-           autocomplete="off"
-         />
-         </el-form-item>
-         <el-form-item
-           label="身份证号"
-           prop="IDNumber"
-         >
-         <el-input
-           v-model="serveUser.IDNumber"
-           autocomplete="off"
-         />
-         </el-form-item>
-         <el-form-item
-           label="所属网格"
-           prop="grid"
-         >
-         <el-input
-           v-model="serveUser.grid"
-           autocomplete="off"
-         />
-         </el-form-item>
-          <el-form-item size="large">
-            <el-button @click="save" type="success">
-              保存
-            </el-button>
-          </el-form-item>
-        </el-form>
+          <el-form
+            :model="serveUser"
+            label-width="100px"
+            style="width:31.25rem;"
+          >
+            <el-form-item label="头像">
+              <el-upload
+                class="avatar-uploader"
+                action="#"
+                :show-file-list="false"
+                :on-success="handleAvatarSuccess"
+                >
+                <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              </el-upload>
+            </el-form-item>
+            <el-form-item
+              label="姓名"
+              prop="name"
+            >
+              <el-input
+                v-model="serveUser.name"
+                autocomplete="off"
+              />
+            </el-form-item>
+            <el-form-item
+              label="联系电话"
+              prop="phone_number"
+            >
+            <el-input
+              v-model="serveUser.phone_number"
+              autocomplete="off"
+            />
+            </el-form-item>
+            <el-form-item
+              label="职位"
+              prop="duty"
+            >
+            <el-input
+              v-model="serveUser.duty"
+              autocomplete="off"
+            />
+            </el-form-item>
+            <el-form-item
+              label="公司"
+              prop="company"
+            >
+            <el-input
+              v-model="serveUser.company"
+              autocomplete="off"
+            />
+            </el-form-item>
+            <el-form-item size="large">
+              <el-button @click="save" type="success">
+                保存
+              </el-button>
+            </el-form-item>
+          </el-form>
         </el-main>
     </el-container>
   </div>
@@ -92,7 +93,15 @@ export default {
   methods: {
     save () {
       //调API
-      this.$emit('update', true)
+      Axios.post('/sellerctr/addActivity', qs.stringify(this.serveUserForm))
+        .then(() => {
+          this.$alert('保存成功', '成功').then(() => {
+            this.$emit('update', true)
+          })
+        }).catch(e => {
+          console.error(e)
+          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+        })
     },
     goBack() {
       this.$emit('back', false)

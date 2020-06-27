@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if='!isEdit' class ='suggestlist'>
-      <page-header title="提议管理"/>
+      <page-header title="用户提议管理"/>
       <el-container>
         <el-main>
           <el-table
@@ -18,20 +18,37 @@
               align="center"
             />
             <el-table-column
-              prop="tel"
+              prop="phone_number"
               label="联系方式"
               align="center"
             />
             <el-table-column
               prop="title"
-              label="议题标题"
+              label="提议标题"
               align="center"
             />
             <el-table-column
-              prop="type"
-              label="议题类型"
+              label="提议类型"
+              align="center"
+            >
+              <template slot-scope="scope">
+                <span>{{scope.row.type}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="content"
+              label="提议内容"
               align="center"
             />
+            <el-table-column
+              label="提议状态"
+              align="center"
+            >
+              <template slot-scope="scope">
+                <span v-if="scope.row.status == 0">刚上传</span>
+                <span v-if="scope.row.status == 1">已发布</span>
+              </template>
+            </el-table-column>
             <el-table-column
               label="操作"
               align="center"
@@ -48,60 +65,8 @@
           </el-table>
         </el-main>
         <el-footer>
-          <!-- <el-row style="margin-top:1.5rem; ">
-            <el-col :span="3">
-              <el-button @click='isAdd = true'>添加微信息</el-button>
-            </el-col>
-            <el-col :span="5">
-              <el-button @click="deletesuggests">
-                删除微信息
-              </el-button>
-            </el-col>
-          </el-row> -->
         </el-footer>
       </el-container>
-    <!--  <el-dialog
-        title="提议"
-        :visible.sync="isAdd "
-      >
-        <el-form
-          :model="suggestForm"
-          label-width="100px"
-          style="width:31.25rem;"
-        >
-          <el-form-item
-            label="标题"
-            prop="title"
-          >
-            <el-input
-              v-model="suggestForm.title"
-              autocomplete="off"
-            />
-          </el-form-item>
-          <el-form-item
-            label="具体内容"
-            prop="content"
-          >
-            <el-input
-              v-model="suggestForm.content"
-              autocomplete="off"
-            />
-          </el-form-item>
-          <el-form-item
-            label="时间截点"
-            prop="date"
-          >
-            <el-input
-              v-model="suggestForm.date"
-              autocomplete="off"
-            />
-          </el-form-item>
-        </el-form>
-        <span slot="footer" class="dialog-footer">
-            <el-button @click="isAdd = false">取 消</el-button>
-            <el-button type="primary" @click="addsuggest">确 定</el-button>
-          </span>
-        </el-dialog> -->
     </div>
     <div v-if="isEdit" class ='suggestInfo'>
       <suggestEdit :suggest='suggest' @update="handleEditFinish" @back="backHome"></suggestEdit>
@@ -139,6 +104,19 @@ export default {
     }
   },
   methods: {
+    getData () {
+      Axios.get('getUs',{
+        params:{
+          tag:0
+        }
+      }).then(response => {
+        this.suggestTableData = response.data.data
+      }).catch(e => {
+        console.error(e)
+        this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
+        this.suggestTableData = []
+      }).finally(() => { this.loading = false })
+    },
     handleEditFinish (val) {
       if (val) {
         //获取新数据
@@ -178,35 +156,4 @@ export default {
 </script>
 
 <style lang="scss">
-$Green: #69bc38;
-$Gray: #cdcdcb;
-$Red : #92535e;
-$pink : #FE8083;
-.teachHeader  {
-  padding: 0.5rem 1rem;
-  margin-bottom: 2rem;
-  background: $pink;
-  display: flex;
-  justify-content: space-between;
-
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  h1 {
-    font-size: 1rem;
-    margin: 0;
-  }
-}
-  .chooseMenu{
-    margin-left: 1.25rem;
-    width:12.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
-  }
-  .chooseMenu .el-menu-item.is-active {
-    background-color: $Green ;
-    font-size: x-large !important;
-    border: 1px solid !important;
-  }
 </style>

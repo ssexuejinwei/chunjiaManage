@@ -13,7 +13,7 @@
               type="selection"
             />
             <el-table-column
-              prop="name"
+              prop="title"
               label="报事名称"
               align="center"
             />
@@ -22,29 +22,31 @@
               align="center"
             >
             <template slot-scope="scope">
-              <p v-if="reportTableData[scope.$index].type==1"> 群众报事</p>
-              <p v-else> 企业报事</p>
+              <span v-if="reportTableData[scope.$index].type==0"> 群众报事</span>
+              <span v-else> 企业报事</span>
             </template>
             </el-table-column>
             <el-table-column
-              prop="grid"
-              label="报给"
-              align="center"
-            />
-            <el-table-column
-              prop="position"
-              label="位置"
-              align="center"
-            />
-            <el-table-column
-              label="状态"
+              label="报事人"
               align="center"
             >
-            <template slot-scope="scope">
-              <p v-if="reportTableData[scope.$index].status==1"> 待解决</p>
-              <p v-else> 已解决</p>
-            </template>
+              <template slot-scope="scope">
+                <span>{{scope.row.reporter.name}} </span>
+              </template>
             </el-table-column>
+            <el-table-column
+              label="报给"
+              align="center"
+            >
+              <template slot-scope="scope">
+                <span>{{scope.row.report_to.name}} </span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="ID_number"
+              label="身份证号"
+              align="center"
+            />
             <el-table-column
               label="操作"
               align="center"
@@ -61,60 +63,8 @@
           </el-table>
         </el-main>
         <el-footer>
-          <!-- <el-row style="margin-top:1.5rem; ">
-            <el-col :span="3">
-              <el-button @click='isAdd = true'>添加微信息</el-button>
-            </el-col>
-            <el-col :span="5">
-              <el-button @click="deletereports">
-                删除微信息
-              </el-button>
-            </el-col>
-          </el-row> -->
         </el-footer>
       </el-container>
-    <!--  <el-dialog
-        title="报事"
-        :visible.sync="isAdd "
-      >
-        <el-form
-          :model="reportForm"
-          label-width="100px"
-          style="width:31.25rem;"
-        >
-          <el-form-item
-            label="标题"
-            prop="title"
-          >
-            <el-input
-              v-model="reportForm.title"
-              autocomplete="off"
-            />
-          </el-form-item>
-          <el-form-item
-            label="具体内容"
-            prop="content"
-          >
-            <el-input
-              v-model="reportForm.content"
-              autocomplete="off"
-            />
-          </el-form-item>
-          <el-form-item
-            label="时间截点"
-            prop="date"
-          >
-            <el-input
-              v-model="reportForm.date"
-              autocomplete="off"
-            />
-          </el-form-item>
-        </el-form>
-        <span slot="footer" class="dialog-footer">
-            <el-button @click="isAdd = false">取 消</el-button>
-            <el-button type="primary" @click="addreport">确 定</el-button>
-          </span>
-        </el-dialog> -->
     </div>
     <div v-if="isEdit" class ='reportInfo'>
       <reportEdit :report='report' @update="handleEditFinish" @back="backHome"></reportEdit>
@@ -154,6 +104,15 @@ export default {
     }
   },
   methods: {
+    getData () {
+      Axios.get('getUs').then(response => {
+        this.reportTableData = response.data.data
+      }).catch(e => {
+        console.error(e)
+        this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
+        this.activityTableData = []
+      }).finally(() => { this.loading = false })
+    },
     handleEditFinish (val) {
       if (val) {
         //获取新数据

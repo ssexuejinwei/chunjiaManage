@@ -6,6 +6,7 @@
         <el-main>
           <el-table
             :data="communityMicroInfoTableData"
+            @selection-change="handleSelect"
             highlight-current-row
             :border="true"
           >
@@ -18,20 +19,15 @@
               align="center"
             />
             <el-table-column
-              prop="content"
-              label="具体信息"
+              prop="publisher"
+              label="发布者"
               align="center"
             />
             <el-table-column
-              prop="date"
-              label="时间截点"
+              prop="publish_time"
+              label="发布时间"
               align="center"
             />
-            <!-- <el-table-column
-              prop="coupon"
-              label="优惠券"
-              align="center"
-            /> -->
             <el-table-column
               label="操作"
               align="center"
@@ -79,32 +75,14 @@
             />
           </el-form-item>
           <el-form-item
-            label="具体内容"
-            prop="content"
+            label="发布人"
+            prop="publisher"
           >
             <el-input
               v-model="communityMicroInfoForm.content"
               autocomplete="off"
             />
           </el-form-item>
-          <el-form-item
-            label="时间截点"
-            prop="date"
-          >
-            <el-input
-              v-model="communityMicroInfoForm.date"
-              autocomplete="off"
-            />
-          </el-form-item>
-         <!-- <el-form-item
-            label="优惠券"
-            prop="coupon"
-          >
-            <el-input
-              v-model="communityMicroInfoForm.coupon"
-              autocomplete="off"
-            />
-          </el-form-item> -->
         </el-form>
         <span slot="footer" class="dialog-footer">
             <el-button @click="isAdd = false">取 消</el-button>
@@ -127,6 +105,7 @@ export default {
   },
   data () {
     return {
+      selectedcommunityMicroInfos:[],
       communityMicroInfo:{},
       isEdit: false,
       isAdd: false,
@@ -145,6 +124,15 @@ export default {
     }
   },
   methods: {
+    getData () {
+      Axios.get('getUs').then(response => {
+        this.communityMicroInfoTableData = response.data.data
+      }).catch(e => {
+        console.error(e)
+        this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
+        this.communityMicroInfoTableData = []
+      }).finally(() => { this.loading = false })
+    },
     handleEditFinish (val) {
       if (val) {
         //获取新数据
@@ -160,6 +148,16 @@ export default {
       console.log(index,row)
     },
     addcommunityMicroInfo() {
+      Axios.post('/sellerctr/addActivity', qs.stringify(this.communityMicroInfoForm))
+        .then(() => {
+          this.$alert('添加成功', '成功').then(() => {
+            this.getData()
+            this.isAdd = false
+          })
+        }).catch(e => {
+          console.error(e)
+          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+        })
       this.isAdd = false
     },
     deletecommunityMicroInfo (communityMicroInfo) {
@@ -178,41 +176,13 @@ export default {
           })
           .then()
       })
+    },
+    handleSelect (val) {
+      this.selectedactivitys = val
     }
   }
 }
 </script>
 
 <style lang="scss">
-$Green: #69bc38;
-$Gray: #cdcdcb;
-$Red : #92535e;
-$pink : #FE8083;
-.teachHeader  {
-  padding: 0.5rem 1rem;
-  margin-bottom: 2rem;
-  background: $pink;
-  display: flex;
-  justify-content: space-between;
-
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  h1 {
-    font-size: 1rem;
-    margin: 0;
-  }
-}
-  .chooseMenu{
-    margin-left: 1.25rem;
-    width:12.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
-  }
-  .chooseMenu .el-menu-item.is-active {
-    background-color: $Green ;
-    font-size: x-large !important;
-    border: 1px solid !important;
-  }
 </style>
