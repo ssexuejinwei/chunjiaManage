@@ -23,11 +23,11 @@
               label="发布者"
               align="center"
             />
-            <!-- <el-table-column
-              prop="publish_time"
-              label="发布时间"
+            <el-table-column
+              prop="content"
+              label="内容"
               align="center"
-            /> -->
+            />
             <el-table-column
               label="操作"
               align="center"

@@ -202,7 +202,7 @@ export default {
     },
 
     sideWidth () {
-      return this.collapse ? '80px' : '200px'
+      return this.collapse ? '80px' : '250px'
     }
   },
 
@@ -223,6 +223,7 @@ export default {
 <style lang="scss" scoped>
 .aside {
   transition: width 200ms ease;
+  width: 300px;
 }
 
 .logo {
