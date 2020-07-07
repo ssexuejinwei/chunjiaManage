@@ -13,7 +13,7 @@
           label-width="80px"
           style="width:31.25rem;"
         >
-          <el-form-item
+          <!-- <el-form-item
             label="logo"
           >
             <el-upload
@@ -25,7 +25,7 @@
               <img v-if="imageUrl" :src="imageUrl" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item
             label="商家名"
             prop="name"
@@ -81,6 +81,7 @@ export default {
   data () {
     return {
       defaultshopping:{},
+			api:'/api/community/manage/store/',
     }
   },
   created () {
@@ -88,7 +89,7 @@ export default {
   methods: {
     save () {
       //调API
-      Axios.post('/sellerctr/addActivity', qs.stringify(this.shopping))
+      Axios.put(this.api, qs.stringify(this.shopping))
         .then(() => {
           this.$alert('添加成功', '成功').then(() => {
             this.getData()

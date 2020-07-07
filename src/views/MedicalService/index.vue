@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div v-if='!isEdit' class ='serveUserlist'>
-      <page-header title="服务人员信息管理"/>
+    <div v-if='!isEdit' class ='medicalServicelist'>
+      <page-header title="医疗服务信息管理"/>
       <el-container>
         <el-main>
           <el-table
-            :data="serveUserTableData"
+            :data="medicalServiceTableData"
             @selection-change="handleSelect"
             highlight-current-row
             :border="true"
@@ -14,7 +14,7 @@
               type="selection"
             />
             <el-table-column
-              prop="name"
+              prop="doctor"
               label="姓名"
               align="center"
             />
@@ -24,13 +24,23 @@
               align="center"
             />
             <el-table-column
-              prop="duty"
+              prop="position"
               label="职位"
               align="center"
             />
             <el-table-column
-              prop="company"
-              label="公司"
+              prop="skill"
+              label="擅长"
+              align="center"
+            />
+            <el-table-column
+              prop="service_address"
+              label="地点"
+              align="center"
+            />
+            <el-table-column
+              prop="service_time"
+              label="服务时间"
               align="center"
             />
             <el-table-column
@@ -51,110 +61,106 @@
         <el-footer>
           <el-row style="margin-top:1.5rem; ">
             <el-col :span="3">
-              <el-button @click='isAdd = true'>添加服务人员</el-button>
+              <el-button @click='isAdd = true'>添加医疗服务</el-button>
             </el-col>
             <el-col :span="5">
-              <el-button @click="deleteserveUsers">
-                删除服务人员
+              <el-button @click="deletemedicalServices">
+                删除医疗服务
               </el-button>
             </el-col>
           </el-row>
         </el-footer>
       </el-container>
       <el-dialog
-        title="服务人员信息"
+        title="医疗服务信息"
         :visible.sync="isAdd "
       >
         <el-form
-          :model="serveUserForm"
+          :model="medicalServiceForm"
           label-width="100px"
           style="width:31.25rem;"
         >
-          <!-- <el-form-item label="头像">
-            <el-upload
-              class="avatar-uploader"
-              action="#"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              >
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-            </el-upload>
-          </el-form-item> -->
           <el-form-item
             label="姓名"
-            prop="name"
           >
             <el-input
-              v-model="serveUserForm.name"
+              v-model="medicalServiceForm.name"
               autocomplete="off"
             />
           </el-form-item>
           <el-form-item
             label="联系电话"
-            prop="phone_number"
           >
           <el-input
-            v-model="serveUserForm.phone_number"
+            v-model="medicalServiceForm.phone_number"
             autocomplete="off"
           />
           </el-form-item>
           <el-form-item
             label="职位"
-            prop="duty"
           >
           <el-input
-            v-model="serveUserForm.duty"
+            v-model="medicalServiceForm.position"
             autocomplete="off"
           />
           </el-form-item>
           <el-form-item
-            label="公司"
-            prop="company"
+            label="擅长"
           >
           <el-input
-            v-model="serveUserForm.company"
+            v-model="medicalServiceForm.skill"
             autocomplete="off"
           />
           </el-form-item>
+          <el-form-item
+            label="地点"
+          >
+          <el-input
+            v-model="medicalServiceForm.service_address"
+            autocomplete="off"
+          />
+          </el-form-item>
+          <el-form-item
+            label="服务时间"
+          >
+          <el-input
+            v-model="medicalServiceForm.service_time"
+            autocomplete="off"
+          />
+          </el-form-item>
+          
         </el-form>
         <span slot="footer" class="dialog-footer">
             <el-button @click="isAdd = false">取 消</el-button>
-            <el-button type="primary" @click="addserveUser">确 定</el-button>
+            <el-button type="primary" @click="addmedicalService">确 定</el-button>
           </span>
         </el-dialog>
     </div>
-    <div v-if="isEdit" class ='serveUserInfo'>
-      <serveUserEdit :serveUser='serveUser' @update="handleEditFinish" @back="backHome"></serveUserEdit>
+    <div v-if="isEdit" class ='medicalServiceInfo'>
+      <medicalServiceEdit :medicalService='medicalService' @update="handleEditFinish" @back="backHome"></medicalServiceEdit>
     </div>
   </div>
 </template>
 
 <script>
   //这里的跳转有问题
-import serveUserEdit from './serveUserEdit'
+import medicalServiceEdit from './medicalServiceEdit'
 import Axios from 'axios'
 import qs from 'querystring'
 export default {
   components: {
-    serveUserEdit
+    medicalServiceEdit
   },
   data () {
     return {
-      api:'/api/community/manage/service_group/',
+      api:'/api/community/manage/medical_service/',
       imageUrl:'',
-      selectedserveUsers:[],
-      serveUser:{},
+      selectedmedicalServices:[],
+      medicalService:{},
       isEdit: false,
       isAdd: false,
-      serveUserTableData:[],
-      serveUserForm:{
-        name:'',
-        sex:'',
-        tel:'',
-        IDNumber:'',
-        grid:''
-      }
+      medicalServiceTableData:[],
+      medicalServiceForm:{}
     }
   },
   watch: {
@@ -165,11 +171,11 @@ export default {
   methods: {
 		getData () {
 		  Axios.get(this.api).then(response => {
-		    this.serveUserTableData = response.data.data
+		    this.medicalServiceTableData = response.data.data
 		  }).catch(e => {
 		    console.error(e)
 		    this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
-		    this.serveUserTableData = []
+		    this.medicalServiceTableData = []
 		  }).finally(() => { this.loading = false })
 		},
     handleEditFinish (val) {
@@ -184,12 +190,12 @@ export default {
     },
     handleEdit(index,row) {
       this.isEdit = true
-      this.serveUser = this.serveUserTableData[index]
+      this.medicalService = this.medicalServiceTableData[index]
       console.log(index,row)
     },
-    addserveUser() {
-      // console.log(this.serveUserForm)
-      Axios.post(this.api, qs.stringify(this.serveUserForm))
+    addmedicalService() {
+      // console.log(this.medicalServiceForm)
+      Axios.post(this.api, qs.stringify(this.medicalServiceForm))
         .then(() => {
           this.$alert('添加成功', '成功').then(() => {
             this.getData()
@@ -200,16 +206,16 @@ export default {
           this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
         })
     },
-    deleteserveUser (serveUser) {
-      console.log('serveUser', serveUser)
+    deletemedicalService (medicalService) {
+      console.log('medicalService', medicalService)
       const data = {
-        id: serveUser.id
+        id: medicalService.id
       }
       return this.$axios.delete(this.api, {data:qs.stringify(data)})
     },
-    deleteserveUsers () {
-      this.$confirm('是否删除选中的服务人员', '提示', { type: 'warning' }).then(() => {
-        Promise.all(this.selectedserveUsers.map(this.deleteserveUser))
+    deletemedicalServices () {
+      this.$confirm('是否删除选中的数据', '提示', { type: 'warning' }).then(() => {
+        Promise.all(this.selectedmedicalServices.map(this.deletemedicalService))
           .then(() => this.$alert('删除成功', '成功', { type: 'success' }).then(()=>{
             this.getData()
           }), (e) => {
@@ -219,10 +225,10 @@ export default {
       })
     },
     handleSelect (val) {
-      this.selectedserveUsers = val
+      this.selectedmedicalServices = val
     },
     handleAvatarSuccess(res, file) {
-      this.serveUserForm.avatar = URL.createObjectURL(file.raw);
+      this.medicalServiceForm.avatar = URL.createObjectURL(file.raw);
     },
   }
 }

@@ -13,15 +13,21 @@
               type="selection"
             />
             <el-table-column
-              prop="name"
               label="投诉人"
               align="center"
-            />
+            >
+              <template slot-scope="scope">
+                <span>{{complaintTableData[scope.$index].user.name}}</span>
+              </template>
+            </el-table-column>
             <el-table-column
-              prop="phone_number"
               label="联系电话"
               align="center"
-            />
+            >
+            <template slot-scope="scope">
+              <span>{{complaintTableData[scope.$index].user.phone_number}}</span>
+            </template>
+            </el-table-column>
             <el-table-column
               prop="title"
               label="标题"
@@ -38,8 +44,8 @@
             >
               <template slot-scope="scope">
                 <span v-if="scope.row.status==0">未处理</span>
-                <span v-if="scope.row.sex==1">已处理</span>
-                <span v-if="scope.row.sex==2">不予受理</span>
+                <span v-if="scope.row.status==1">已处理</span>
+                <span v-if="scope.row.status==2">不予受理</span>
               </template>
             </el-table-column>
             <el-table-column
@@ -109,35 +115,27 @@
 </template>
 
 <script>
+import Axios from 'axios'
+import qs from 'qs'
   //这里的跳转有问题
 export default {
   data () {
     return {
+      api:'/api/community/manage/complaint/',
       selectedUsers:[],
       dealIndex:1,
       complaint:{},
-      complaintForm:{
-        id:'',
-        content:'',
-        advice:''
-      },
+      complaintForm:{},
       isEdit: false,
       complaintTableData:[]
     }
   },
   created () {
-    for (let i = 0; i < 4; i ++) {
-      this.complaintTableData.push({
-        id:i,
-        name:'投诉'+i.toString(),
-        content:'物业漏水',
-        status:'待处理',
-      })
-    }
+    this.getData()
   },
   methods: {
     getData () {
-      Axios.get('getUs').then(response => {
+      Axios.get(this.api).then(response => {
         this.complaintTableData = response.data.data
       }).catch(e => {
         console.error(e)
@@ -147,7 +145,7 @@ export default {
     },
     handleComplaint () {
       this.isEdit = false;
-      Axios.post('/sellerctr/addActivity', qs.stringify({
+      Axios.post(this.api, qs.stringify({
         id:this.complaint.id,
         feedback:this.complaint.feedback,
         status:this.complaint.status
@@ -172,16 +170,17 @@ export default {
       const data = {
         id: complaint.id
       }
-      return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      return this.$axios.delete(this.api, {data:qs.stringify(data)})
     },
     deleteUsers () {
       this.$confirm('是否删除选中的网格', '提示', { type: 'warning' }).then(() => {
         Promise.all(this.selectedUsers.map(this.deleteUser))
-          .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
+          .then(() => this.$alert('删除成功', '成功', { type: 'success' }).then(()=>{
+            this.getData()
+          }), (e) => {
             console.error(e)
             this.$alert('删除失败', '错误', { type: 'error' })
           })
-          .then()
       })
     },
     handleSelect (val) {
@@ -192,35 +191,4 @@ export default {
 </script>
 
 <style lang="scss">
-$Green: #69bc38;
-$Gray: #cdcdcb;
-$Red : #92535e;
-$pink : #FE8083;
-.teachHeader  {
-  padding: 0.5rem 1rem;
-  margin-bottom: 2rem;
-  background: $pink;
-  display: flex;
-  justify-content: space-between;
-
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  h1 {
-    font-size: 1rem;
-    margin: 0;
-  }
-}
-  .chooseMenu{
-    margin-left: 1.25rem;
-    width:12.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
-  }
-  .chooseMenu .el-menu-item.is-active {
-    background-color: $Green ;
-    font-size: x-large !important;
-    border: 1px solid !important;
-  }
 </style>

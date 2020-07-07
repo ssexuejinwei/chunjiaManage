@@ -1,5 +1,5 @@
 <template>
-  <div class="serveUserEditInfo">
+  <div class="medicalServiceEditInfo">
     <page-header title="服务人员详细信息" />
     <el-page-header @back="goBack" />
     <br>
@@ -7,54 +7,55 @@
     <el-container style="width: 100%;">
         <el-main>
           <el-form
-            :model="serveUser"
+            :model="medicalService"
             label-width="100px"
             style="width:31.25rem;"
           >
-            <!-- <el-form-item label="头像">
-              <el-upload
-                class="avatar-uploader"
-                action="#"
-                :show-file-list="false"
-                :on-success="handleAvatarSuccess"
-                >
-                <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-              </el-upload>
-            </el-form-item> -->
             <el-form-item
               label="姓名"
-              prop="name"
             >
               <el-input
-                v-model="serveUser.name"
+                v-model="medicalService.name"
                 autocomplete="off"
               />
             </el-form-item>
             <el-form-item
               label="联系电话"
-              prop="phone_number"
             >
             <el-input
-              v-model="serveUser.phone_number"
+              v-model="medicalService.phone_number"
               autocomplete="off"
             />
             </el-form-item>
             <el-form-item
               label="职位"
-              prop="duty"
             >
             <el-input
-              v-model="serveUser.duty"
+              v-model="medicalService.position"
               autocomplete="off"
             />
             </el-form-item>
             <el-form-item
-              label="公司"
-              prop="company"
+              label="擅长"
             >
             <el-input
-              v-model="serveUser.company"
+              v-model="medicalService.skill"
+              autocomplete="off"
+            />
+            </el-form-item>
+            <el-form-item
+              label="地点"
+            >
+            <el-input
+              v-model="medicalService.service_address"
+              autocomplete="off"
+            />
+            </el-form-item>
+            <el-form-item
+              label="服务时间"
+            >
+            <el-input
+              v-model="medicalService.service_time"
               autocomplete="off"
             />
             </el-form-item>
@@ -78,23 +79,32 @@ export default {
     VDistpicker
   },
   props: {
-    serveUser: {
+    medicalService: {
       type: Object,
       default: () => {}
     }
   },
   data () {
     return {
-      api:'/api/community/manage/service_group/',
-      defaultserveUser:{},
+      api:'/api/community/manage/medical_service/',
+      defaultmedicalService:{},
     }
   },
   created () {
+    this.medicalService.name = this.medicalService.doctor
   },
   methods: {
     save () {
       //调API
-      Axios.put(this.api, qs.stringify(this.serveUser))
+      Axios.put(this.api, qs.stringify({
+        id:this.medicalService.id,
+        name:this.medicalService.name,
+        position:this.medicalService.position,
+        skill:this.medicalService.skill,
+        service_time:this.medicalService.service_time,
+        service_address:this.medicalService.service_address,
+        phone_number:this.medicalService.phone_number,
+      }))
         .then(() => {
           this.$alert('保存成功', '成功').then(() => {
             this.$emit('update', true)
@@ -112,27 +122,4 @@ export default {
 </script>
 
 <style lang="scss">
-.avatar-uploader .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-  .avatar-uploader .el-upload:hover {
-    border-color: #409EFF;
-  }
-  .avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 178px;
-    height: 178px;
-    line-height: 178px;
-    text-align: center;
-  }
-  .avatar {
-    width: 178px;
-    height: 178px;
-    display: block;
-  }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if='!isEdit' class ='activitylist'>
+    <div v-if='!isEdit' v-loading="loading" class ='activitylist'>
       <page-header title="党员活动信息管理"/>
       <el-container>
         <el-main>
@@ -114,33 +114,30 @@
 <script>
   //这里的跳转有问题
 import activityEdit from './components/activityEdit'
+import Axios from 'axios'
+import qs from 'qs'
 export default {
   components: {
     activityEdit
   },
   data () {
     return {
+      api:'/api/community/manage/party_activity/',
       selectedactivitys:[],
       activity:{},
       isEdit: false,
       isAdd: false,
       activityTableData:[],
-      activityForm:{}
+      activityForm:{},
+      loading:true
     }
   },
   created () {
-    for (let i = 0; i < 4; i ++) {
-      this.activityTableData.push({
-        id:i,
-        name:'诗朗诵',
-        date:'2020-06-01',
-        content:'朗诵毛选',
-      })
-    }
+    this.getData()
   },
   methods: {
     getData () {
-      Axios.get('getUs').then(response => {
+      Axios.get(this.api).then(response => {
         this.activityTableData = response.data.data
       }).catch(e => {
         console.error(e)
@@ -164,7 +161,7 @@ export default {
       console.log(index,row)
     },
     addActivity() {
-      Axios.post('/sellerctr/addActivity', qs.stringify(this.activityForm))
+      Axios.post(this.api, qs.stringify(this.activityForm))
         .then(() => {
           this.$alert('添加成功', '成功').then(() => {
             this.getData()
@@ -177,18 +174,19 @@ export default {
     },
     deleteactivity (activity) {
       const data = {
-        party_activity_id: activity.id
+        id: activity.id
       }
-      return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      return this.$axios.delete(this.api, {data:qs.stringify(data)})
     },
     deleteactivitys () {
       this.$confirm('是否删除选中的活动', '提示', { type: 'warning' }).then(() => {
         Promise.all(this.selectedactivitys.map(this.deleteactivity))
-          .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
+          .then(() => this.$alert('删除成功', '成功', { type: 'success' }).then(()=>{
+            this.getData()
+          }), (e) => {
             console.error(e)
             this.$alert('删除失败', '错误', { type: 'error' })
           })
-          .then()
       })
     },
     handleSelect (val) {

@@ -92,8 +92,8 @@ export default {
   },
   data () {
     return {
-      api1:'/user/manage/user',
-      api2:'/user/manage/info_list/',
+      api1:'/api/user/manage/info_list/',
+      api2:'/api/user/manage/user/',
       imageUrl:{},
       selectdPolitical:[],
       selectedGrid:[],
@@ -101,22 +101,40 @@ export default {
     }
   },
   created () {
+    this.getItem()
   },
   methods: {
     getItem() {
-      this.imageUrl = this.$axios.defaults.baseURL+'/'+ this.user.avatar
-      
-      Axios.get('getItem').then(response => {
+      // this.imageUrl = this.$axios.defaults.baseURL+'/'+ this.user.avatar
+      Axios.get(this.api1).then(response => {
         this.selectdPolitical = response.data.data.politics_status
         this.selectedGrid = response.data.data.grid
       }).catch(e => {
-        console.error(e)
         this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
       }).finally(() => { console.log("error") })
     },
     save () {
       //调API
-      Axios.put('/updateUser', qs.stringify(this.user))
+      for(let data of this.selectdPolitical){
+        if(this.user.politics_status == data.name ){
+          this.user.politics_status = data.id
+        }
+      }
+      console.log(this.user.politics_status)
+      for(let data of this.selectedGrid){
+        if(this.user.grid == data.name ){
+          this.user.grid = data.id
+        }
+      }
+      Axios.put(this.api2, qs.stringify({
+        user_id:this.user.id,
+        name:this.user.name,
+        ID_number:this.user.ID_number,
+        politics_status:this.user.politics_status,
+        address:this.user.address,
+        grid_id:this.user.grid,
+        sex:this.user.sex
+      }))
         .then(() => {
           this.$alert('保存成功', '成功').then(() => {
             this.$emit('update', true)

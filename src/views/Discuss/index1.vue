@@ -13,15 +13,22 @@
               type="selection"
             />
             <el-table-column
-              prop="name"
               label="提议人"
               align="center"
-            />
+            >
+            <template slot-scope="scope">
+              <span>{{scope.row.user.name}}</span>
+            </template>
+            </el-table-column>
             <el-table-column
               prop="phone_number"
               label="联系方式"
               align="center"
-            />
+            >
+            <template slot-scope="scope">
+              <span>{{scope.row.user.phone_number}}</span>
+            </template>
+            </el-table-column>
             <el-table-column
               prop="title"
               label="提议标题"
@@ -32,7 +39,7 @@
               align="center"
             >
               <template slot-scope="scope">
-                <span>{{scope.row.type}}</span>
+                <span>{{scope.row.type.type}}</span>
               </template>
             </el-table-column>
             <el-table-column
@@ -77,12 +84,15 @@
 <script>
   //这里的跳转有问题
 import suggestEdit from './suggestEdit'
+import Axios from 'axios'
+import qs from 'qs'
 export default {
   components: {
     suggestEdit
   },
   data () {
     return {
+      api:'/api/community/manage/proposal/',
       suggest:{},
       isEdit: false,
       isAdd: false,
@@ -91,21 +101,11 @@ export default {
     }
   },
   created () {
-    for (let i = 0; i < 4; i ++) {
-      this.suggestTableData.push({
-        id:i,
-        name:'赵四',
-        tel:'13823012412',
-        title:'议题标题1',
-        type:'社区大事',
-        content:'如何在疫情期间分发口罩',
-        date:'2020年6月',
-      })
-    }
+    this.getData()
   },
   methods: {
     getData () {
-      Axios.get('getUs',{
+      Axios.get(this.api,{
         params:{
           tag:0
         }
@@ -120,6 +120,7 @@ export default {
     handleEditFinish (val) {
       if (val) {
         //获取新数据
+        this.getData()
         this.isEdit = false
       }
     },
@@ -139,16 +140,17 @@ export default {
       const data = {
         id: suggest.id
       }
-      // return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      return this.$axios.post(this.api, {data:qs.stringify(data)})
     },
     deletesuggests () {
       this.$confirm('是否删除选中的微信息', '提示', { type: 'warning' }).then(() => {
         Promise.all(this.selectedsuggests.map(this.deletesuggest))
-          .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
+          .then(() => this.$alert('删除成功', '成功', { type: 'success' }).then(()=>{
+            this.getData()
+          }), (e) => {
             console.error(e)
             this.$alert('删除失败', '错误', { type: 'error' })
           })
-          .then()
       })
     }
   }

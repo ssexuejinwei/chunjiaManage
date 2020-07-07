@@ -75,6 +75,14 @@ const routes = [
         component: () => import('@/views/ServeUser/index')
       },
       {
+        path: '/medical',
+        component: () => import('@/views/MedicalService/index')
+      },
+      {
+        path: '/legal',
+        component: () => import('@/views/LegalService/index')
+      },
+      {
         path: '/communityInfo',
         component: () => import('@/views/CommunityInfoManager/index')
       },

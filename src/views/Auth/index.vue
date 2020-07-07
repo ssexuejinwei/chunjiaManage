@@ -44,7 +44,7 @@
 
 <script>
 import { mapState } from 'vuex'
-
+import qs from 'qs'
 export default {
   data () {
     return {

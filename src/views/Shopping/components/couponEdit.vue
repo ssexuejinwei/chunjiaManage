@@ -10,7 +10,7 @@
           ref="form"
           class="form"
           :model="coupon"
-          label-width="100px"
+          label-width="120px"
           style="width:31.25rem;"
         >
           <el-form-item
@@ -27,18 +27,24 @@
             prop="descr"
           >
             <el-input
-              v-model="coupon.content"
+              v-model="coupon.descr"
               autocomplete="off"
             />
           </el-form-item>
           <el-form-item
             label="优惠券数量"
-            prop="number"
+            prop="left_number"
           >
             <el-input
-              v-model="coupon.number"
+              v-model="coupon.left_number"
               autocomplete="off"
             />
+          </el-form-item>
+          <el-form-item label="状态">
+            <el-radio-group v-model="coupon.status">
+                <el-radio :label="0">生效中</el-radio>
+                <el-radio :label="1">过期</el-radio>
+            </el-radio-group>
           </el-form-item>
           <el-form-item size="large">
             <el-button @click="save" type="success">
@@ -67,25 +73,31 @@ export default {
   },
   data () {
     return {
+      api:'/api/community/manage/coupon/',
       defaultcoupon:{},
     }
   },
   created () {
+    console.log(this.coupon)
   },
   methods: {
     save () {
       //调API
-      Axios.post('/sellerctr/addActivity', qs.stringify(this.coupon))
+      Axios.put(this.api, qs.stringify({
+        id:this.coupon.id,
+        title:this.coupon.title,
+        descr:this.coupon.descr,
+        number:this.coupon.left_number,
+        status:this.coupon.status
+      }))
         .then(() => {
           this.$alert('保存成功', '成功').then(() => {
-            this.getData()
-            this.isAdd = false
+            this.$emit('update', true)
           })
         }).catch(e => {
           console.error(e)
-          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+          this.$alert(`错误原因: ${e.message || '未知错误'}`, '保存失败')
         })
-      this.$emit('update', true)
     },
     goBack() {
       this.$emit('back', false)

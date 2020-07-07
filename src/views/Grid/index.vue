@@ -120,13 +120,15 @@
 <script>
   //这里的跳转有问题
 import GridEdit from './gridEdit'
+import Axios from 'axios'
+import qs from 'querystring'
 export default {
   components: {
     GridEdit
   },
   data () {
     return {
-      api:'/user/manage/grid',
+      api:'/api/user/manage/grid/',
       gridForm:{},
       isAdd:false,
       selectedData:[],
@@ -137,40 +139,32 @@ export default {
     }
   },
   created () {
-    for (let i = 0; i < 4; i ++) {
-      this.gridTableData.push({
-        id:i,
-        name:'永嘉网格',
-        gridLeader:'张三',
-        gridPerson:'赵四',
-        teamLeader:'王五',
-        police:'李警官',
-        party:'张三'
-      })
-    }
+    this.getData()
   },
   methods: {
     addGrid () {
       this.gridForm = {
         ...this.gridForm,
-        admin_id:22,
-        member_id:17,
-        leader_id:13,
-        police_id:6,
+        admin_id:2,
+        member_id:2,
+        leader_id:2,
+        police_id:2,
         pioneer_id:2
       }
-      Axios.post('/addGrid', qs.stringify(this.gridForm))
+      Axios.post(this.api, qs.stringify(this.gridForm))
         .then(() => {
-          this.$alert('保存成功', '成功').then(() => {
+          this.$alert('添加成功', '成功').then(() => {
             this.getData()
+            this.isEdit = false
           })
         }).catch(e => {
           console.error(e)
-          this.$alert(`错误原因: ${e.message || '未知错误'}`, '保存失败')
+          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
         })
     },
     getData () {
-      Axios.get('getGrid').then(response => {
+      Axios.get(this.api).then(response => {
+        console.log(response)
         this.gridTableData = response.data.data
       }).catch(e => {
         console.error(e)
@@ -198,14 +192,16 @@ export default {
     },
     deleteData (grid) {
       const data = {
-        grid_id: grid.id
+        id: grid.id
       }
-      return Axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      return Axios.delete(this.api, {data:qs.stringify(data)})
     },
     deleteDatas () {
       this.$confirm('是否删除选中的网格', '提示', { type: 'warning' }).then(() => {
         Promise.all(this.selectedData.map(this.deleteData))
-          .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
+          .then(() => this.$alert('删除成功', '成功', { type: 'success' }).then(() => {
+            this.getData()
+          }), (e) => {
             console.error(e)
             this.$alert('删除失败', '错误', { type: 'error' })
           })

@@ -48,6 +48,18 @@
           <el-menu-item index="/party2">党员风采管理</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
+			<el-menu-item index="/legal">
+			  <template slot="title">
+			    <i class="el-icon-phone"></i>
+			    <span>法律服务管理</span>
+			  </template>
+			</el-menu-item>
+			<el-menu-item index="/medical">
+			  <template slot="title">
+			    <i class="el-icon-circle-plus-outline"></i>
+			    <span>医疗服务管理</span>
+			  </template>
+			</el-menu-item>
       <el-menu-item index="/serveUser">
         <template slot="title">
           <i class="el-icon-s-custom"></i>

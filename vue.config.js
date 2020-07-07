@@ -2,8 +2,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/api': {
-        // target: 'https://www.baidu.com',
-        target: 'http://124.251.4.222/course/public/index.php/index/',
+        target: 'http://47.101.181.233:8000',
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''

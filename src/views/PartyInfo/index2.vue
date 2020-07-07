@@ -18,11 +18,15 @@
               label="姓名"
               align="center"
             />
-            <el-table-column
+            <!-- <el-table-column
               prop="grid"
               label="所属网格"
               align="center"
-            />
+            >
+            <template slot-scope="scope" v-for="(value,index) in gridOptions">
+              <span v-if="PartyStyleTableData[scope.$index].">{{options}}</span>
+            </template>
+            </el-table-column> -->
             <el-table-column
               prop="deed"
               label="先进事迹"
@@ -74,7 +78,7 @@
               autocomplete="off"
             />
           </el-form-item>
-          <el-form-item
+          <!-- <el-form-item
             label="所属网格"
           >
           <el-select v-model="PartyStyleForm.grid_id" placeholder="请选择">
@@ -85,13 +89,13 @@
                 :value="item.id">
               </el-option>
             </el-select>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item
             label="先进事迹"
             prop="deed"
           >
           <el-input
-            v-model="PartyStyleForm.content"
+            v-model="PartyStyleForm.deed"
             autocomplete="off"
           />
           </el-form-item>
@@ -124,34 +128,33 @@
 <script>
   //这里的跳转有问题
 import PartyStyleEdit from './components/partyStyleEdit'
+import Axios from 'axios'
+import qs from 'qs'
 export default {
   components: {
     PartyStyleEdit
   },
   data () {
     return {
+      api:'/api/community/manage/party_style/',
+      api_grid:'/api/user/manage/info_list/',
       PartyStyle:{},
       isEdit: false,
       isAdd: false,
       PartyStyleTableData:[],
       PartyStyleForm:{},
       gridOptions:[],
-      fileList:{}
+      fileList:{},
+      selectedPartyStyles:[]
     }
   },
   created () {
-    for (let i = 0; i < 4; i ++) {
-      this.PartyStyleTableData.push({
-        id:i,
-        name:'赵四',
-        grid:'春嘉网格',
-        content:'孝敬父母，尊老爱幼',
-      })
-    }
+    // this.getGridItem()
+    this.getData()
   },
   methods: {
     getGridItem() {
-      Axios.get('getItem').then(response => {
+      Axios.get(this.api_grid).then(response => {
         this.gridOptions = this.response.data.data.grid
       }).catch(e => {
         console.error(e)
@@ -159,7 +162,8 @@ export default {
       }).finally(() => { console.log('1') })
     },
     getData () {
-      Axios.get('getUs').then(response => {
+      Axios.get(this.api).then(response => {
+        console.log(response)
         this.PartyStyleTableData = response.data.data
       }).catch(e => {
         console.error(e)
@@ -187,7 +191,10 @@ export default {
       console.log(index,row)
     },
     addPartyStyle() {
-      Axios.post('/sellerctr/addActivity', qs.stringify(this.PartyStyleForm))
+      console.log(this.PartyStyleForm)
+      Axios.post(this.api,qs.stringify({
+        ...this.PartyStyleForm,
+      }))
         .then(() => {
           this.$alert('添加成功', '成功').then(() => {
             this.getData()
@@ -201,22 +208,23 @@ export default {
     deletePartyStyle (PartyStyle) {
       console.log('PartyStyle', PartyStyle)
       const data = {
-        party_style_id: PartyStyle.id
+        id: PartyStyle.id
       }
-      return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      return Axios.delete(this.api, {data:qs.stringify(data)})
     },
     deletePartyStyles () {
       this.$confirm('是否删除选中的风采', '提示', { type: 'warning' }).then(() => {
         Promise.all(this.selectedPartyStyles.map(this.deletePartyStyle))
-          .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
-            console.error(e)
+          .then(() => this.$alert('删除成功', '成功', { type: 'success' }) .then(()=>{
+            this.getData()
+          }), (e) => {
             this.$alert('删除失败', '错误', { type: 'error' })
           })
-          .then()
+         
       })
     },
     handleSelect (val) {
-      this.selectedactivitys = val
+      this.selectedPartyStyles = val
     },
     handleUpload (param) {
       const file = param.file

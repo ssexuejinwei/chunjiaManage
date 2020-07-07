@@ -50,12 +50,6 @@
                 >
                   变更使用情况
                 </el-button>
-                <el-button
-                  size="medium"
-                  @click="checkCoupon(scope.$index,scope.row)"
-                >
-                  优惠券信息
-                </el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -75,37 +69,32 @@
 </template>
 
 <script>
+  import Axios from 'axios'
+  import qs from 'qs'
   //这里的跳转有问题
 export default {
   data () {
     return {
+      api:'/api/community/manage/order/',
       couponId:'',
       couponUse:{},
-      isEdit: false,
       isAdd: false,
       couponUseTableData:[],
       couponUseForm:{},
-      selectedcouponUses:[]
+      selectedcouponUses:[],
+      store:{}
     }
   },
   created () {
     this.couponId = this.$route.query.coupon.id
-    for (let i = 0; i < 4; i ++) {
-      this.couponUseTableData.push({
-        id:i,
-        name:'朝晖水果店',
-        address:'朝阳路130号',
-        content:'满30减5',
-        all:'100',
-        use:'30',
-      })
-    }
+    this.store = this.$route.query.shopping
+    this.getData()
   },
   methods: {
     getData () {
-      Axios.get('getUs',{
+      Axios.get(this.api,{
         params:{
-          coupon_id:this.couponId
+          id:this.couponId
         }
       }).then(response => {
         this.couponUseTableData = response.data.data
@@ -119,16 +108,16 @@ export default {
       if (val) {
         //获取新数据
         this.isEdit = false
+        this.getData()
       }
     },
     backHome (val) {
       this.isEdit = val
     },
     handleEdit(index,row) {
-      this.isEdit = true
       let changeStatus = this.couponUseTableData[index].status == 0?1:0
-      Axios.post('/sellerctr/addActivity', qs.stringify({
-        coupon_id:this.couponId,
+      Axios.put(this.api, qs.stringify({
+        id:this.couponId,
         status:changeStatus
         }))
         .then(() => {
@@ -147,23 +136,29 @@ export default {
       const data = {
         id: couponUse.id
       }
-      // return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      return this.$axios.delete(this.api, {data:qs.stringify(data)})
     },
     deletecouponUses () {
       this.$confirm('是否删除选中的优惠券使用', '提示', { type: 'warning' }).then(() => {
         Promise.all(this.selectedcouponUses.map(this.deletecouponUse))
-          .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
+          .then(() => this.$alert('删除成功', '成功', { type: 'success' }).then(()=>{
+            this.getData()
+          }), (e) => {
             console.error(e)
             this.$alert('删除失败', '错误', { type: 'error' })
           })
-          .then()
       })
     },
     handleSelect (val) {
       this.selectedcouponUses = val
     },
     goBack(){
-      this.$router.go(-1)
+      this.$router.push({
+        path: '/coupon',
+        query: {
+          shopping: this.store
+        }
+      })
     }
   }
 }

@@ -7,31 +7,80 @@
     <el-container style="width: 100%;">
         <el-main>
         <el-form
-          ref="form"
-          class="form"
           :model="work"
-          label-width="80px"
-          style="width:31.25rem;">
-          <el-form-item label="办事名">
-            <el-input v-model="work.title" />
-          </el-form-item>
-          <el-form-item label="服务对象">
-            <el-input v-model="work.object" />
-          </el-form-item>
-          <el-form-item label="申请材料">
-            <el-input v-model="work.material" />
-          </el-form-item>
-          <el-form-item label="办理流程">
-            <el-input v-model="work.process" />
+          label-width="100px"
+          style="width:31.25rem;"
+        >
+          <el-form-item
+            label="办事名"
+            prop="title"
+          >
+            <el-input
+              v-model="work.title"
+              autocomplete="off"
+            />
           </el-form-item>
           <el-form-item
-            label="附件"
+            label="服务对象"
+          >
+          <el-input
+            v-model="work.service_target"
+            autocomplete="off"
+          />
+          </el-form-item>
+          <el-form-item label="办事类型">
+            <el-select v-model="work.type.id" placeholder="请选择">
+                <el-option
+                  v-for="item in typeOptions"
+                  :key="item.id"
+                  :label="item.type"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+          </el-form-item>
+          <el-form-item
+            label="申请材料"
+          >
+            <el-input
+              v-model="work.apply_material"
+              autocomplete="off"
+            />
+          </el-form-item>
+          <el-form-item
+            label="办理流程"
+          >
+          <el-input
+            v-model="work.apply_procedure"
+            autocomplete="off"
+          />
+          </el-form-item>
+          <el-form-item
+            label="注意事项"
+          >
+          <el-input
+            v-model="work.caution"
+            autocomplete="off"
+          />
+          </el-form-item>
+          <el-form-item
+            label="相关政策"
+          >
+          <el-input
+            v-model="work.policy"
+            autocomplete="off"
+          />
+          </el-form-item>
+          <el-form-item
+            label="附件上传"
           >
           <el-upload
             class="upload-demo"
             action="https://jsonplaceholder.typicode.com/posts/"
             :on-change="handleChange"
-            :file-list="fileList">
+            :file-list="fileList"
+            :on-remove="handleRemove"
+						:auto-upload="false"
+						>
             <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
           </el-form-item>
@@ -62,25 +111,61 @@ export default {
   },
   data () {
     return {
-      fileList: [{
-          name: 'food.jpeg',
-          url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-        }, {
-          name: 'food2.jpeg',
-          url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-      }],
+      baseURL:'http://47.101.181.233:8000',
+      api:'/api/community/manage/work/',
+      api_type:'/api/community/manage/work_type/',
+      api_upload:'/api/community/manage/work/upload/',
+      fileList: [],
+			files:[],
       defaultwork:{},
+      typeOptions:[]
     }
   },
   created () {
+    this.getType()
+    this.work.attachment.forEach((value,index) => {
+      this.fileList.push({
+        name:value.name,
+        url:this.baseURL+value.file
+      })
+    })
   },
   methods: {
+    getType(){
+      Axios.get(this.api_type).then(response=>{
+        this.typeOptions = response.data.data
+      })
+    },
     handleChange(file, fileList) {
-      this.fileList = fileList.slice(-3);
+      console.log('change')
+      this.files.push(file.raw)
+    },
+    handleRemove(file, fileList) {
+      console.log('move')
     },
     save () {
       //调API
-      Axios.post('/sellerctr/addActivity', qs.stringify(this.work))
+      let formData = new FormData()
+      let name = ''
+      this.files.forEach((value,index) =>{
+        formData.append('files',value)
+        name = name +value.name+','
+      })
+      formData.append('name',name)
+      formData.append('id',this.work.id)
+      Axios.post(this.api_upload,formData).then(response =>{
+        console.log(response)
+      })
+      Axios.put(this.api, qs.stringify({
+        id:this.work.id,
+        title:this.work.title,
+        type_id:this.work.type.id,
+        service_target:this.work.service_target,
+        apply_material:this.work.apply_material,
+        apply_procedure:this.work.apply_procedure,
+        caution:this.work.caution,
+        policy:this.work.policy
+      }))
         .then(() => {
           this.$alert('保存成功', '成功').then(() => {
             this.$emit('update', true)

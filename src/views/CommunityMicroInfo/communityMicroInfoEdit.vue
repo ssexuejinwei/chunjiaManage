@@ -49,28 +49,16 @@ export default {
   },
   data () {
     return {
+      api:'/api/community/manage/micro_community/',
       defaultcommunityMicroInfo:{},
     }
   },
   created () {
   },
   methods: {
-    getData () {
-      Axios.get('getUs',{
-        params:{
-          id:this.communityMicroInfo.id
-        }
-      }).then(response => {
-        this.communityMicroInfo = response.data.data
-      }).catch(e => {
-        console.error(e)
-        this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
-        this.communityMicroInfo = []
-      }).finally(() => { console.log("i") })
-    },
     save () {
       //调API
-      Axios.post('/sellerctr/addActivity', qs.stringify(this.communityMicroInfo))
+      Axios.put(this.api, qs.stringify(this.communityMicroInfo))
         .then(() => {
           this.$alert('保存成功', '成功').then(() => {
             this.$emit('update', true)

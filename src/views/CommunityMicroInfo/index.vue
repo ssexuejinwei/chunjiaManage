@@ -23,11 +23,11 @@
               label="发布者"
               align="center"
             />
-            <el-table-column
+            <!-- <el-table-column
               prop="publish_time"
               label="发布时间"
               align="center"
-            />
+            /> -->
             <el-table-column
               label="操作"
               align="center"
@@ -79,6 +79,15 @@
             prop="publisher"
           >
             <el-input
+              v-model="communityMicroInfoForm.publisher"
+              autocomplete="off"
+            />
+          </el-form-item>
+          <el-form-item
+            label="发布内容"
+            prop="content"
+          >
+            <el-input
               v-model="communityMicroInfoForm.content"
               autocomplete="off"
             />
@@ -99,12 +108,15 @@
 <script>
   //这里的跳转有问题
 import communityMicroInfoEdit from './communityMicroInfoEdit'
+import Axios from 'axios'
+import qs from 'qs'
 export default {
   components: {
     communityMicroInfoEdit
   },
   data () {
     return {
+      api:'/api/community/manage/micro_community/',
       selectedcommunityMicroInfos:[],
       communityMicroInfo:{},
       isEdit: false,
@@ -114,18 +126,11 @@ export default {
     }
   },
   created () {
-    for (let i = 0; i < 4; i ++) {
-      this.communityMicroInfoTableData.push({
-        id:i,
-        title:'政府文件1',
-        content:'每个月每户可以去居委会领取口罩',
-        date:'2020年6月',
-      })
-    }
+    this.getData()
   },
   methods: {
     getData () {
-      Axios.get('getUs').then(response => {
+      Axios.get(this.api).then(response => {
         this.communityMicroInfoTableData = response.data.data
       }).catch(e => {
         console.error(e)
@@ -136,6 +141,7 @@ export default {
     handleEditFinish (val) {
       if (val) {
         //获取新数据
+        this.getData()
         this.isEdit = false
       }
     },
@@ -145,10 +151,11 @@ export default {
     handleEdit(index,row) {
       this.isEdit = true
       this.communityMicroInfo = this.communityMicroInfoTableData[index]
+      console.log(this.communityMicroInfo)
       console.log(index,row)
     },
     addcommunityMicroInfo() {
-      Axios.post('/sellerctr/addActivity', qs.stringify(this.communityMicroInfoForm))
+      Axios.post(this.api, qs.stringify(this.communityMicroInfoForm))
         .then(() => {
           this.$alert('添加成功', '成功').then(() => {
             this.getData()
@@ -165,20 +172,21 @@ export default {
       const data = {
         id: communityMicroInfo.id
       }
-      // return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      return this.$axios.delete(this.api, {data:qs.stringify(data)})
     },
     deletecommunityMicroInfos () {
       this.$confirm('是否删除选中的微信息', '提示', { type: 'warning' }).then(() => {
         Promise.all(this.selectedcommunityMicroInfos.map(this.deletecommunityMicroInfo))
-          .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
+          .then(() => this.$alert('删除成功', '成功', { type: 'success' }).then(()=>{
+            this.getData()
+          }), (e) => {
             console.error(e)
             this.$alert('删除失败', '错误', { type: 'error' })
           })
-          .then()
       })
     },
     handleSelect (val) {
-      this.selectedactivitys = val
+      this.selectedcommunityMicroInfos = val
     }
   }
 }

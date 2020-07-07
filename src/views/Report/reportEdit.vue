@@ -13,7 +13,7 @@
           label-width="80px"
           style="width:31.25rem;"
         >
-        <el-form-item label="图片">
+        <!-- <el-form-item label="图片">
           <el-upload
             class="avatar-uploader"
             action="https://jsonplaceholder.typicode.com/posts/"
@@ -23,7 +23,7 @@
             <img v-if="imageUrl" :src="imageUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
-        </el-form-item>
+        </el-form-item> -->
           <el-form-item label="报事名称">
             <el-input v-model="report.title" />
           </el-form-item>
@@ -36,7 +36,7 @@
           <el-form-item label="报事内容">
             <el-input v-model="report.content" />
           </el-form-item>
-          <el-form-item label="案件定位">
+          <!-- <el-form-item label="案件定位">
             <el-input v-model="report.position" />
           </el-form-item>
           <el-form-item label="报给">
@@ -50,7 +50,7 @@
                 <el-radio :label="1">待解决</el-radio>
                 <el-radio :label="2">已解决</el-radio>
               </el-radio-group>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item size="large">
             <el-button @click="save" type="success">
               保存
@@ -78,6 +78,7 @@ export default {
   },
   data () {
     return {
+      api:'/api/community/manage/report/',
       imageUrl:'',
       defaultreport:{},
     }
@@ -87,7 +88,12 @@ export default {
   methods: {
     save () {
       //调API
-      Axios.post('/sellerctr/addActivity', qs.stringify(this.report))
+      Axios.put(this.api, qs.stringify({
+        id:this.report.id,
+        type:this.report.type,
+        title:this.report.title,
+        content:this.report.content
+      }))
         .then(() => {
           this.$alert('保存成功', '成功').then(() => {
             this.$emit('update', true)

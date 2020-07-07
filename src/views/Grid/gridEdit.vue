@@ -128,6 +128,7 @@
           <template slot-scope="scope">
             <el-button
               size="medium"
+              :disabled="UserTableData[scope.$index].disable"
               @click="handleChoose(scope.$index,scope.row)"
             >
               选择
@@ -166,6 +167,8 @@ export default {
   },
   data () {
     return {
+      api_getUser:'/api/user/manage/user/',
+      api:'/api/user/manage/grid/',
       UserTableData:[],
       isChoose:false,
       defaultgrid:{},
@@ -173,18 +176,11 @@ export default {
       cur_page:1,
       options:[],
       form:{},
+      total:10,
     }
   },
   created () {
-    this.form = {
-      grid_id:this.grid.id,
-      name:this.grid.name,
-      admin_id:0,
-      member_id:0,
-      leader_id:0,
-      police_id:0,
-      pioneer_id:0
-    }
+    this.getData()
   },
   watch: {
     cur_page(newValue, oldValue) {
@@ -197,14 +193,21 @@ export default {
         value:this.UserTableData[index].id,
         label:this.UserTableData[index].name
       })
+      this.UserTableData[index].disable = true
     },
     getData () {
-      Axios.get('getUser', {
+      Axios.get(this.api_getUser, {
         params: {
           page_index: this.cur_page,
         }
       }).then(response => {
         this.UserTableData = response.data.data.list
+        for (let i=0;i<this.UserTableData.length;i++){
+          this.UserTableData[i] = {
+            ...this.UserTableData[i],
+            disable:false
+          }
+        }
         this.total = response.data.data.page_number
       }).catch(e => {
         console.error(e)
@@ -215,7 +218,15 @@ export default {
     },
     save () {
       //调API
-      Axios.post('/updateGrid', qs.stringify(this.form))
+      Axios.post(this.api, qs.stringify({
+        grid_id:this.grid.id,
+        name:this.form.name,
+        admin_id:this.form.admin_id,
+        member_id:this.form.member_id,
+        leader_id:this.form.leader_id,
+        police_id:this.form.police_id,
+        pioneer_id:this.form.pioneer_id
+      }))
         .then(() => {
           this.$alert('保存成功', '成功').then(() => {
             this.$emit('update', true)
@@ -224,7 +235,6 @@ export default {
           console.error(e)
           this.$alert(`错误原因: ${e.message || '未知错误'}`, '保存失败')
         })
-      this.$emit('update', true)
     },
     goBack() {
       this.$emit('back', false)

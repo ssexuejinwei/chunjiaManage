@@ -78,8 +78,8 @@
       >
         <el-form
           :model="couponForm"
-          label-width="100px"
-          style="width:31.25rem;"
+          label-width="120px"
+          style="width:32rem;"
         >
           <el-form-item
             label="优惠券名"
@@ -95,7 +95,7 @@
             prop="descr"
           >
             <el-input
-              v-model="couponForm.content"
+              v-model="couponForm.descr"
               autocomplete="off"
             />
           </el-form-item>
@@ -123,6 +123,8 @@
 
 <script>
   //这里的跳转有问题
+  import Axios from 'axios'
+  import qs from 'qs'
 import couponEdit from './components/couponEdit'
 export default {
   components: {
@@ -130,6 +132,7 @@ export default {
   },
   data () {
     return {
+      api:'/api/community/manage/coupon/',
       storeID:'',
       coupon:{},
       isEdit: false,
@@ -140,33 +143,28 @@ export default {
     }
   },
   created () {
-    for (let i = 0; i < 4; i ++) {
-      this.couponTableData.push({
-        id:i,
-        name:'朝晖水果店',
-        content:'满30减50',
-        number:'100',
-      })
-    }
+    this.storeID = this.$route.query.shopping.id
+    this.getData()
   },
   methods: {
     getData () {
-      Axios.get('getUs',{
+      Axios.get(this.api,{
         params:{
-          store_id:this.storeID
+          id:this.storeID
         }
       }).then(response => {
         this.couponTableData = response.data.data
       }).catch(e => {
         console.error(e)
         this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
-        this.couponUseTableData = []
+        this.couponTableData = []
       }).finally(() => { this.loading = false })
     },
     handleEditFinish (val) {
       if (val) {
         //获取新数据
         this.isEdit = false
+        this.getData()
       }
     },
     backHome (val) {
@@ -178,9 +176,9 @@ export default {
       console.log(index,row)
     },
     addcoupon() {
-      Axios.post('/sellerctr/addActivity', qs.stringify({
+      Axios.post(this.api, qs.stringify({
         ...this.couponForm,
-        store_id:this.storeID
+        id:this.storeID
         }))
         .then(() => {
           this.$alert('添加成功', '成功').then(() => {
@@ -197,12 +195,14 @@ export default {
       const data = {
         id: coupon.id
       }
-      // return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      return this.$axios.delete(this.api, {data:qs.stringify(data)})
     },
     deletecoupons () {
       this.$confirm('是否删除选中的优惠券', '提示', { type: 'warning' }).then(() => {
         Promise.all(this.selectedcoupons.map(this.deletecoupon))
-          .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
+          .then(() => this.$alert('删除成功', '成功', { type: 'success' }).then(()=>{
+            this.getData()
+          }), (e) => {
             console.error(e)
             this.$alert('删除失败', '错误', { type: 'error' })
           })
@@ -212,13 +212,16 @@ export default {
       this.selectedcoupons = val
     },
     goBack(){
-      this.$router.go(-1)
+      this.$router.push({
+        path: '/shopping',
+      })
     },
     checkUse(index,row) {
       this.$router.push({
         path: '/couponUse',
         query: {
-          coupon: this.couponTableData[index]
+          coupon: this.couponTableData[index],
+          shopping:this.$route.query.shopping
         }
       })
     }

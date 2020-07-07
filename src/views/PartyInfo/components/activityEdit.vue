@@ -10,7 +10,7 @@
           ref="form"
           class="form"
           :model="activity"
-          label-width="80px"
+          label-width="100px"
           style="width:31.25rem;"
         >
           <el-form-item label="活动名">
@@ -21,7 +21,7 @@
             prop="activity_time"
           >
             <el-date-picker
-              v-model="activityForm.activity_time"
+              v-model="activity.activity_time"
               type="date"
               placeholder="选择日期"
               format="yyyy 年 MM 月 dd 日"
@@ -31,6 +31,20 @@
         </el-form-item>
           <el-form-item label="活动内容">
             <el-input v-model="activity.content" />
+          </el-form-item>
+
+          <el-form-item label="上传活动图片">
+            <el-upload
+              action="#"
+              ref="upload"
+              list-type="picture-card"
+              :file-list="fileList"
+              :on-remove="handleRemove"
+              :on-change="handleChange"
+              :auto-upload="false"
+              >
+               <i class="el-icon-plus"></i>
+            </el-upload>
           </el-form-item>
           <el-form-item size="large">
             <el-button @click="save" type="success">
@@ -59,17 +73,51 @@ export default {
   },
   data () {
     return {
+      baseURL:'http://47.101.181.233:8000',
+      api:'/api/community/manage/party_activity/',
+      api_upload:'/api/community/manage/party_activity/upload/',
+      fileList:[],
       defaultactivity:{},
+      dialogImageUrl:[],
+      dialogVisible:false,
+      images:[]
     }
   },
   created () {
+    console.log(this.activity)
+    this.activity.images.forEach((value,index) => {
+      this.dialogImageUrl.push(this.baseURL+value)
+      this.fileList.push({
+        name: this.baseURL+value,
+        percentage: 0,
+        raw: {},
+        size: 33049,
+        status: "ready",
+        uid: 1593915945347+index,
+        url: this.baseURL+value,
+      })
+    })
+    
   },
   methods: {
+    handleChange(file, fileList) {
+      console.log('change')
+      this.images.push(file.raw)
+    },
     save () {
       //调API
-      Axios.post('/sellerctr/addActivity', qs.stringify(this.activity))
+      let formData = new FormData()
+      this.images.forEach((value,index) =>{
+        formData.append('images',value)
+      })
+      formData.append('id',this.activity.id)
+      Axios.post(this.api_upload,formData).then(response =>{
+        console.log(response)
+      })
+      // this.activity.images = this.dialogImageUrl
+      Axios.put(this.api, qs.stringify(this.activity))
         .then(() => {
-          this.$alert('添加成功', '成功').then(() => {
+          this.$alert('保存成功', '成功').then(() => {
             this.$emit('update', true)
           })
         }).catch(e => {
@@ -79,12 +127,41 @@ export default {
     },
     goBack() {
       this.$emit('back', false)
+    },
+    handleRemove(file, fileList) {
+      this.dialogImageUrl.forEach((value,index) => {
+        if(value == file.url) {
+          this.dialogImageUrl.splice(index,1)
+        }
+      })
+    },
+    handleUpload (params) {
+      const file = params.file
+      const formData = new FormData()
+      formData.append('images', file)
+      formData.append('id', this.activity.id)
+      console.log(formData)
+      return Axios.post(this.api_upload, formData, {
+        onUploadProgress: params.onProgress
+      })
+    },
+    submitUpload (){
+      this.$refs.upload.submit();
+    },
+    handleUploadSuccess (res, rawFile) {
+      if (res?.data?.data?.fileName) {
+        rawFile.url = process.env.VUE_APP_UPLOAD_PUBLIC_URL + res?.data?.data?.fileName
+      }
     }
   }
 }
 </script>
 
 <style lang="scss">
+  .image {
+      width: 100%;
+      display: block;
+    }
 .avatar-uploader .el-upload {
     border: 1px dashed #d9d9d9;
     border-radius: 6px;

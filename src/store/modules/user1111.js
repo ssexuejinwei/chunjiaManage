@@ -35,18 +35,9 @@ const mutations = {
 const actions = {
   login ({ commit }, { username, password }) {
     commit('DO_LOGIN')
-    return Axios.post('/sellerctr/login', {
-      user_name: username,
-      psw: password
-    }).then(({ data }) => {
-      const { token } = data.data
-      localStorage.setItem(tokenKey, token)
-      commit('LOGIN', { username, token })
-    }).catch(error => {
-      Message.error(`登录失败: ${error.message || '未知错误'}`)
-      console.error(error)
-      commit('LOGIN', { error })
-    })
+    const token ='123'
+    localStorage.setItem(tokenKey, token)
+    commit('LOGIN', { username, token })
   },
   logout ({ commit }) {
     localStorage.removeItem(tokenKey)

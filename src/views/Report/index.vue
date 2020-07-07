@@ -43,10 +43,13 @@
               </template>
             </el-table-column>
             <el-table-column
-              prop="ID_number"
-              label="身份证号"
+              label="联系电话"
               align="center"
-            />
+            >
+            <template slot-scope="scope">
+              <span>{{scope.row.reporter.phone_number}} </span>
+            </template>
+            </el-table-column>
             <el-table-column
               label="操作"
               align="center"
@@ -75,12 +78,15 @@
 <script>
   //这里的跳转有问题
 import reportEdit from './reportEdit'
+import Axios from 'axios'
+import qs from 'qs'
 export default {
   components: {
     reportEdit
   },
   data () {
     return {
+      api:'/api/community/manage/report/',
       report:{},
       isEdit: false,
       isAdd: false,
@@ -89,23 +95,11 @@ export default {
     }
   },
   created () {
-    for (let i = 0; i < 4; i ++) {
-      this.reportTableData.push({
-        id:i,
-        name:'漏水',
-        title:'议题标题1',
-        type:1,
-        content:'17号209室一直漏水',
-        position:"17号楼",
-        status:1,
-        grid:'永嘉网格-王可欣',
-        IDNumber:'123141525351213'
-      })
-    }
+    this.getData()
   },
   methods: {
     getData () {
-      Axios.get('getUs').then(response => {
+      Axios.get(this.api).then(response => {
         this.reportTableData = response.data.data
       }).catch(e => {
         console.error(e)
@@ -116,6 +110,7 @@ export default {
     handleEditFinish (val) {
       if (val) {
         //获取新数据
+        this.getData()
         this.isEdit = false
       }
     },
@@ -135,7 +130,7 @@ export default {
       const data = {
         id: report.id
       }
-      // return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      return this.$axios.delete(this.api, {data:qs.stringify(data)})
     },
     deletereports () {
       this.$confirm('是否删除选中的微信息', '提示', { type: 'warning' }).then(() => {
@@ -144,7 +139,6 @@ export default {
             console.error(e)
             this.$alert('删除失败', '错误', { type: 'error' })
           })
-          .then()
       })
     }
   }
@@ -152,35 +146,4 @@ export default {
 </script>
 
 <style lang="scss">
-$Green: #69bc38;
-$Gray: #cdcdcb;
-$Red : #92535e;
-$pink : #FE8083;
-.teachHeader  {
-  padding: 0.5rem 1rem;
-  margin-bottom: 2rem;
-  background: $pink;
-  display: flex;
-  justify-content: space-between;
-
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  h1 {
-    font-size: 1rem;
-    margin: 0;
-  }
-}
-  .chooseMenu{
-    margin-left: 1.25rem;
-    width:12.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
-  }
-  .chooseMenu .el-menu-item.is-active {
-    background-color: $Green ;
-    font-size: x-large !important;
-    border: 1px solid !important;
-  }
 </style>

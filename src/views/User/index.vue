@@ -103,27 +103,18 @@ export default {
   },
   data () {
     return {
+      api:'/api/user/manage/user/',
       selectedData:[],
       user:{},
       isEdit: false,
       UserTableData:[],
-      isLoading:false,
+      isLoading:true,
       total:100,
       cur_page:1
     }
   },
   created () {
-    for (let i = 0; i < 4; i ++) {
-      this.UserTableData.push({
-        id:'1',
-        name:'张三',
-        sex:1,
-        phone_number:'18238192231',
-        politics_status:'党员',
-        address:'上海市同济小区3幢302室',
-        grid:'春嘉网格'
-      })
-    }
+    this.getData()
   },
   watch: {
     cur_page(newValue, oldValue) {
@@ -132,19 +123,20 @@ export default {
   },
   methods: {
     getData () {
-      Axios.get('getUser', {
+      this.$axios.get(this.api, {
         params: {
           page_index: this.cur_page,
         }
       }).then(response => {
+        console.log(response)
         this.UserTableData = response.data.data.list
         this.total = response.data.data.page_number
       }).catch(e => {
-        console.error(e)
+        console.log(e)
         this.$message.error(`获取用户列表失败: ${e.message || '未知错误'}`)
         this.UserTableData = []
         this.total_page = 0
-      }).finally(() => { this.loading = false })
+      }).finally(() => {this.isLoading = false  })
     },
     handleSelect (val) {
       this.selectedData = val
@@ -169,16 +161,18 @@ export default {
       const data = {
         user_id: user.id
       }
-      return this.$axios.post('deleteUser', qs.stringify(data))
+      return Axios.delete(this.api, {data:qs.stringify(data)})
     },
     deleteUsers () {
       this.$confirm('是否删除选中的用户', '提示', { type: 'warning' }).then(() => {
         Promise.all(this.selectedData.map(this.deleteUser))
-          .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
+          .then(() => {
+            this.$alert('删除成功', '成功', { type: 'success' })
+            this.getData()
+          }, (e) => {
             console.error(e)
             this.$alert('删除失败', '错误', { type: 'error' })
           })
-          .then()
       })
     }
   }

@@ -48,18 +48,18 @@
               label="最大报名人数"
               align="center"
             />
-            <el-table-column
+            <!-- <el-table-column
               prop="status"
               label="活动状态"
               align="center"
-            />
+            /> -->
             <el-table-column
               label="操作"
               align="center"
             >
               <template slot-scope="scope">
                 <el-row>
-                  <el-col :span="1" :offset="3">
+                  <el-col >
                     <el-button
                       size="medium"
                       @click="handleEdit(scope.$index,scope.row)"
@@ -67,7 +67,7 @@
                       详情
                     </el-button>
                   </el-col>
-                  <el-col :span="1" :offset="8">
+                  <el-col >
                     <el-button
                       size="medium"
                       @click="download(scope.$index,scope.row)"
@@ -99,8 +99,8 @@
       >
         <el-form
           :model="activityForm"
-          label-width="100px"
-          style="width:31.25rem;"
+          label-width="140px"
+          style="width:40rem;"
         >
           <el-form-item
             label="活动标题"
@@ -153,13 +153,18 @@
 		  <el-form-item
 		    label="活动时间"
 		  >
-		      <el-date-picker
-		           v-model="activityForm.activity_time"
-		           type="daterange"
-		           range-separator="至"
-		           start-placeholder="开始日期"
-		           end-placeholder="结束日期">
-         </el-date-picker>
+        <el-date-picker
+              v-model="activityForm.activity_time"
+              type="date"
+              value-format="yyyy-MM-dd"
+              placeholder="日期">
+        </el-date-picker>
+        
+        <!-- <el-time-picker
+            v-model="time"
+            value-format="HH-mm"
+            placeholder="具体时间">
+        </el-time-picker> -->
 		  </el-form-item>
 		  <el-form-item
 		    label="最大报名人数"
@@ -169,7 +174,7 @@
 		      autocomplete="off"
 		    />
 		  </el-form-item>
-      <el-form-item
+      <!-- <el-form-item
         label="上传图片"
       >
         <el-upload
@@ -181,7 +186,7 @@
           list-type="picture">
           <el-button size="small" type="primary">点击上传</el-button>
           </el-upload>
-      </el-form-item>
+      </el-form-item> -->
         </el-form>
         <span slot="footer" class="dialog-footer">
             <el-button @click="isAdd = false">取 消</el-button>
@@ -198,24 +203,23 @@
 <script>
   //这里的跳转有问题
 import activityEdit from './activityEdit'
+import Axios from 'axios'
+import qs from 'qs'
 export default {
   components: {
     activityEdit
   },
   data () {
     return {
+      date:'',
+      time:'',
+      api:'/api/community/manage/activity/',
       loading:false,
       activity:{},
       isEdit: false,
       isAdd: false,
       activityTableData:[],
-      activityForm:{
-        name:'',
-        sex:'',
-        tel:'',
-        IDNumber:'',
-        grid:''
-      },
+      activityForm:{},
       fileList:{},
       selectedactivitys:[]
     }
@@ -226,23 +230,16 @@ export default {
     }
   },
   created () {
-    for (let i = 0; i < 4; i ++) {
-      this.activityTableData.push({
-        id:i,
-        name:'舞蹈班',
-        date:'2020年3月1日-2020年6月1日',
-        address:'春嘉居委会103',
-        signUser:'张三、王五、张柳',
-      })
-    }
+    this.getData()
   },
   methods: {
     getData () {
-      Axios.get('getUs',{
+      Axios.get(this.api,{
         params:{
           type:0
         }
       }).then(response => {
+        console.log(response.data)
         this.activityTableData = response.data.data
       }).catch(e => {
         console.error(e)
@@ -253,6 +250,7 @@ export default {
     handleEditFinish (val) {
       if (val) {
         //获取新数据
+        this.getData()
         this.isEdit = false
       }
     },
@@ -260,16 +258,23 @@ export default {
       this.isEdit = val
     },
     download(index, row) {
-      console.log(this.activityTableData[index])
+      let api = '/community/manage/activity/download/'+index+'/'
+      let link = document.createElement('a');
+      link.style.display = 'none';
+      link.href = 'http://47.101.181.233:8000'+api;
+      document.body.appendChild(link);
+      link.click();
     },
     handleEdit(index,row) {
       this.isEdit = true
       this.activity = this.activityTableData[index]
+      this.activity.activity_time = this.date+this.time
       console.log(index,row)
     },
     addactivity() {
       // console.log(this.activityForm)
-      Axios.post('/sellerctr/addActivity', qs.stringify({
+      console.log(this.activityForm)
+      Axios.post(this.api, qs.stringify({
         ...this.activityForm,
         type:0
       }))
@@ -286,19 +291,20 @@ export default {
     deleteactivity (activity) {
       console.log('activity', activity)
       const data = {
-        activity_id: activity.id,
+        id: activity.id,
         type:0
       }
-      return Axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      return Axios.delete(this.api, {data:qs.stringify(data)})
     },
     deleteactivitys () {
       this.$confirm('是否删除选中的活动', '提示', { type: 'warning' }).then(() => {
         Promise.all(this.selectedactivitys.map(this.deleteactivity))
-          .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
+          .then(() => this.$alert('删除成功', '成功', { type: 'success' }).then(()=>{
+            this.getData()
+          }), (e) => {
             console.error(e)
             this.$alert('删除失败', '错误', { type: 'error' })
           })
-          .then()
       })
     },
     handleSelect (val) {

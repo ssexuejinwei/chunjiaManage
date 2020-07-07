@@ -12,7 +12,7 @@
             label-width="100px"
             style="width:31.25rem;"
           >
-            <el-form-item label="头像">
+            <!-- <el-form-item label="头像">
               <el-upload
                 class="avatar-uploader"
                 action="#"
@@ -33,8 +33,7 @@
                   class="el-icon-plus avatar-uploader-icon"
                 />
               </el-upload>
-              <!-- <p >头像</p> -->
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item
               label="姓名"
               prop="name"
@@ -46,10 +45,10 @@
             </el-form-item>
             <el-form-item
               label="职位"
-              prop="postion"
+              prop="duty"
             >
               <el-input
-                v-model="communityInfo.position"
+                v-model="communityInfo.duty"
                 autocomplete="off"
               />
             </el-form-item>
@@ -88,7 +87,7 @@
               prop="phone_number"
             >
               <el-input
-                v-model="communityInfo.tel"
+                v-model="communityInfo.phone_number"
                 autocomplete="off"
               />
             </el-form-item>
@@ -123,9 +122,12 @@ export default {
   },
   data () {
     return {
+      api_com:'/api/community/manage/commission/',
+      api_party:'/api/community/manage/party_branch/',
       defaultcommunityInfo:{},
       squareImageUrl:'',
-      fileList:{}
+      fileList:{},
+      formData:{},
     }
   },
   created () {
@@ -135,24 +137,25 @@ export default {
   methods: {
     save () {
       //调API
-      if(type == 1){ 
-        let form = {
-          party_commission_id:this.communityInfo.id,
+      let form = {}
+      if(this.type == 1){ 
+        form = {
+          id:this.communityInfo.id,
           name:this.communityInfo.name,
-          avatar:this.communityInfo.avatar,
+          avatar:'xxxx',
           duty:this.communityInfo.duty
         }
       }
       else {
-        let form = {
-          party_branch_id:this.communityInfo.id,
+        form = {
+          id:this.communityInfo.id,
           name:this.communityInfo.name,
           chairman:this.communityInfo.chairman,
           phone_number:this.communityInfo.phone_number
         }
       }
       
-      Axios.post(this.type==1?'updateCommissions':'updatePartyBranch', qs.stringify(form))
+      Axios.put(this.type==1?this.api_com:this.api_party, qs.stringify(form))
         .then(() => {
           this.$alert('保存成功', '成功').then(() => {
             this.$emit('update', true)
@@ -167,13 +170,10 @@ export default {
     },
     handleUpload (param) {
       const file = param.file
-      this.communityInfo.avatar = file
-    //   const formData = new FormData()
-    //   formData.append('image_url', file)
-    
-    //   return Axios.post('/sellerctr/save', formData, {
-    //     onUploadProgress: param.onProgress
-    //   })
+      
+      this.formData = new FormData()
+      this.formData.append('avatar', file)
+      console.log(this.formData)
     },
     handleUploadSuccess (res, rawFile) {
       if (res?.data?.data?.fileName) {

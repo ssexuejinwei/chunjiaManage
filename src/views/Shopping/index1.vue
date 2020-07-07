@@ -71,7 +71,7 @@
           label-width="100px"
           style="width:31.25rem;"
         >
-          <el-form-item
+          <!-- <el-form-item
             label="logo"
           >
             <el-upload
@@ -83,7 +83,7 @@
               <img v-if="imageUrl" :src="imageUrl" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item
             label="商家名"
             prop="name"
@@ -127,12 +127,15 @@
 <script>
   //这里的跳转有问题
 import shoppingEdit from './components/shoppingEdit'
+import Axios from 'axios'
+import qs from 'qs'
 export default {
   components: {
     shoppingEdit
   },
   data () {
     return {
+      api:'/api/community/manage/store/',
       selectedshoppings:[],
       shopping:{},
       isEdit: false,
@@ -144,28 +147,21 @@ export default {
     }
   },
   created () {
-    for (let i = 0; i < 4; i ++) {
-      this.shoppingTableData.push({
-        id:i,
-        name:'朝晖水果店',
-        content:'菠萝、桃子、西瓜、荔枝等',
-        address:'朝阳路130号',
-      })
-    }
+    this.getData()
   },
   methods: {
     getData () {
-      Axios.get('getUs').then(response => {
+      Axios.get(this.api).then(response => {
         this.shoppingTableData = response.data.data
       }).catch(e => {
         console.error(e)
         this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
-        this.activityTableData = []
+        this.shoppingTableData = []
       }).finally(() => { this.loading = false })
     },
     checkCoupon(index,row) {
       this.$router.push({
-        path: '/couponUse',
+        path: '/coupon',
         query: {
           shopping: this.shoppingTableData[index]
         }
@@ -183,10 +179,9 @@ export default {
     handleEdit(index,row) {
       this.isEdit = true
       this.shopping = this.shoppingTableData[index]
-      console.log(index,row)
     },
     addshopping() {
-      Axios.post('/sellerctr/addActivity', qs.stringify({
+      Axios.post(this.api, qs.stringify({
         ...this.shoppingForm,
         logo:this.image
         }))
@@ -201,20 +196,20 @@ export default {
         })
     },
     deleteshopping (shopping) {
-      console.log('shopping', shopping)
       const data = {
         id: shopping.id
       }
-      // return this.$axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      return this.$axios.delete(this.api, {data:qs.stringify(data)})
     },
     deleteshoppings () {
       this.$confirm('是否删除选中的商家', '提示', { type: 'warning' }).then(() => {
         Promise.all(this.selectedshoppings.map(this.deleteshopping))
-          .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
+          .then(() => this.$alert('删除成功', '成功', { type: 'success' }).then(()=>{
+            this.getData()
+          }), (e) => {
             console.error(e)
             this.$alert('删除失败', '错误', { type: 'error' })
           })
-          .then()
       })
     },
     handleAvatarSuccess(res, file) {
@@ -222,7 +217,7 @@ export default {
       this.image = file.raw
     },
     handleSelect (val) {
-      this.selectedactivitys = val
+      this.selectedshoppings = val
     }
   }
 }

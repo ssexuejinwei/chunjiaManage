@@ -19,7 +19,7 @@
               align="center"
             />
             <el-table-column
-              prop="volunteer_time"
+              prop="activity_time"
               label="活动时间"
               align="center"
             />
@@ -52,29 +52,32 @@
               prop="status"
               label="活动状态"
               align="center"
-            />
+            >
+            <template slot-scope="scope">
+              <span v-if="scope.row.status == 0">可报名</span>
+              <span v-if="scope.row.status == 1">报名结束</span>
+            </template>
+            </el-table-column>
             <el-table-column
               label="操作"
               align="center"
             >
               <template slot-scope="scope">
                 <el-row>
-                  <el-col :span="1" :offset="3">
                     <el-button
                       size="medium"
                       @click="handleEdit(scope.$index,scope.row)"
                     >
                       详情
                     </el-button>
-                  </el-col>
-                  <el-col :span="1" :offset="8">
+                </el-row>
+                <el-row>
                     <el-button
                       size="medium"
                       @click="download(scope.$index,scope.row)"
                     >
                       下载
                     </el-button>
-                  </el-col>
                 </el-row>
               </template>
             </el-table-column>
@@ -99,8 +102,8 @@
       >
         <el-form
           :model="volunteerForm"
-          label-width="100px"
-          style="width:31.25rem;"
+          label-width="120px"
+          style="width:40rem;"
         >
           <el-form-item
             label="活动标题"
@@ -153,13 +156,12 @@
 		  <el-form-item
 		    label="活动时间"
 		  >
-		      <el-date-picker
-		           v-model="volunteerForm.volunteer_time"
-		           type="daterange"
-		           range-separator="至"
-		           start-placeholder="开始日期"
-		           end-placeholder="结束日期">
-         </el-date-picker>
+		     <el-date-picker
+		           v-model="volunteerForm.activity_time"
+		           type="date"
+		           value-format="yyyy-MM-dd"
+		           placeholder="日期">
+		     </el-date-picker>
 		  </el-form-item>
 		  <el-form-item
 		    label="最大报名人数"
@@ -169,19 +171,6 @@
 		      autocomplete="off"
 		    />
 		  </el-form-item>
-      <el-form-item
-        label="上传图片"
-      >
-        <el-upload
-          class="upload-demo"
-          action="#"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :file-list="fileList"
-          list-type="picture">
-          <el-button size="small" type="primary">点击上传</el-button>
-          </el-upload>
-      </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
             <el-button @click="isAdd = false">取 消</el-button>
@@ -198,26 +187,25 @@
 <script>
   //这里的跳转有问题
 import volunteerEdit from './volunteerEdit'
+import Axios from 'axios'
+import qs from 'qs'
 export default {
   components: {
     volunteerEdit
   },
   data () {
     return {
+      api:'/api/community/manage/activity/',
       loading:false,
       volunteer:{},
       isEdit: false,
       isAdd: false,
       volunteerTableData:[],
-      volunteerForm:{
-        name:'',
-        sex:'',
-        tel:'',
-        IDNumber:'',
-        grid:''
-      },
+      volunteerForm:{},
       fileList:{},
-      selectedvolunteers:[]
+      selectedvolunteers:[],
+      date:'',
+      time:''
     }
   },
   watch: {
@@ -226,19 +214,11 @@ export default {
     }
   },
   created () {
-    for (let i = 0; i < 4; i ++) {
-      this.volunteerTableData.push({
-        id:i,
-        name:'舞蹈班',
-        date:'2020年3月1日-2020年6月1日',
-        address:'春嘉居委会103',
-        signUser:'张三、王五、张柳',
-      })
-    }
+    this.getData()
   },
   methods: {
     getData () {
-      Axios.get('getUs',{
+      Axios.get(this.api,{
         params:{
           type:1
         }
@@ -253,6 +233,7 @@ export default {
     handleEditFinish (val) {
       if (val) {
         //获取新数据
+        this.getData()
         this.isEdit = false
       }
     },
@@ -261,6 +242,13 @@ export default {
     },
     download(index, row) {
       console.log(this.volunteerTableData[index])
+      let api = '/community/manage/activity/download/'+index+'/'
+        let link = document.createElement('a');
+        link.style.display = 'none';
+        link.href = 'http://47.101.181.233:8000'+api;
+        document.body.appendChild(link);
+        link.click();
+      
     },
     handleEdit(index,row) {
       this.isEdit = true
@@ -269,7 +257,7 @@ export default {
     },
     addvolunteer() {
       // console.log(this.volunteerForm)
-      Axios.post('/sellerctr/addvolunteer', qs.stringify({
+      Axios.post(this.api, qs.stringify({
         ...this.volunteerForm,
         type:1
       }))
@@ -286,19 +274,20 @@ export default {
     deletevolunteer (volunteer) {
       console.log('volunteer', volunteer)
       const data = {
-        volunteer_id: volunteer.id,
+        id: volunteer.id,
         type:1
       }
-      return Axios.post('/sellerctr/deleteParents', qs.stringify(data))
+      return Axios.delete(this.api, {data:qs.stringify(data)})
     },
     deletevolunteers () {
       this.$confirm('是否删除选中的活动', '提示', { type: 'warning' }).then(() => {
         Promise.all(this.selectedvolunteers.map(this.deletevolunteer))
-          .then(() => this.$alert('删除成功', '成功', { type: 'success' }), (e) => {
+          .then(() => this.$alert('删除成功', '成功', { type: 'success' }).then(()=>{
+            this.getData()
+          }), (e) => {
             console.error(e)
             this.$alert('删除失败', '错误', { type: 'error' })
           })
-          .then()
       })
     },
     handleSelect (val) {

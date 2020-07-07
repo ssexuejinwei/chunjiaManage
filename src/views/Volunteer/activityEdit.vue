@@ -7,14 +7,9 @@
     <el-container style="width: 100%;">
         <el-main>
        <el-form
-         :model="activity"
-         label-width="100px"
-         style="width:31.25rem;"
-       >
-       <el-form
            :model="activity"
-           label-width="100px"
-           style="width:31.25rem;"
+           label-width="120px"
+           style="width:40rem;"
          >
            <el-form-item
              label="活动标题"
@@ -67,13 +62,12 @@
        <el-form-item
          label="活动时间"
        >
-           <el-date-picker
-                v-model="activity.activity_time"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期">
-          </el-date-picker>
+       <el-date-picker
+             v-model="activity.activity_time"
+             type="date"
+             value-format="yyyy-MM-dd"
+             placeholder="日期">
+       </el-date-picker>
        </el-form-item>
        <el-form-item
          label="最大报名人数"
@@ -91,17 +85,19 @@
            autocomplete="off"
          />
        </el-form-item>
-       <el-form-item
-         label="精彩回顾"
-       >
+       <el-form-item label="精彩回顾">
          <el-upload
-           class="upload-demo"
            action="#"
-           :on-preview="handlePreview"
-           :on-remove="handleRemove"
+           ref="upload"
+           list-type="picture-card"
            :file-list="fileList"
-           list-type="picture">
-           <el-button size="small" type="primary">点击上传</el-button>
+           :on-remove="handleRemove"
+           :http-request="handleUpload"
+           :on-success="handleUploadSuccess"
+           :on-change="handleUploadChange"
+           :auto-upload="true"
+           >
+            <i class="el-icon-plus"></i>
          </el-upload>
        </el-form-item>
          <el-form-item>
@@ -110,7 +106,6 @@
                <el-radio :label="1">报名结束</el-radio>
              </el-radio-group>
          </el-form-item>
-       </el-form>
           <el-form-item size="large">
             <el-button @click="save" type="success">
               保存
@@ -138,23 +133,32 @@ export default {
   },
   data () {
     return {
-      imageUrl:'',
+      baseURL:'http://47.101.181.233:8000',
+      api:'/api/community/manage/activity/',
+      api_upload:'/api/community/manage/activity/upload/',
+      fileList:[],
       defaultactivity:{},
+      dialogImageUrl:[],
+      dialogVisible:false,
+      images:[]
     }
   },
   created () {
+    this.fileList.push({
+      name: this.baseURL+this.activity.pic,
+      percentage: 0,
+      raw: {},
+      size: 33049,
+      status: "ready",
+      uid: 1593915945347,
+      url: this.baseURL+this.activity.pic,
+    })
   },
   methods: {
-    handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw);
-    },
-    beforeAvatarUpload(file) {
-    const isJPG = file.type === 'image/jpeg';
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    },
     save () {
       //调API
-      Axios.post('/sellerctr/addActivity', qs.stringify({
+      delete this.activity.pic
+      Axios.put(this.api, qs.stringify({
         ...this.activity,
         type:0
       }))
@@ -169,6 +173,34 @@ export default {
     },
     goBack() {
       this.$emit('back', false)
+    },
+    handleRemove(file, fileList) {
+      this.dialogImageUrl.forEach((value,index) => {
+        if(value == file.url) {
+          this.dialogImageUrl.splice(index,1)
+        }
+      })
+    },
+    handleUpload (params) {
+      const file = params.file
+      const formData = new FormData()
+      formData.append('image', file)
+      formData.append('id', this.activity.id)
+      console.log(formData)
+      return Axios.post(this.api_upload, formData, {
+        onUploadProgress: params.onProgress
+      })
+    },
+    submitUpload (){
+      this.$refs.upload.submit();
+    },
+    handleUploadSuccess (res, rawFile) {
+      if (res?.data?.data?.fileName) {
+        rawFile.url = process.env.VUE_APP_UPLOAD_PUBLIC_URL + res?.data?.data?.fileName
+      }
+    },
+    handleUploadChange (file, fileList) {
+      this.dialogImageUrl.push(file.raw);
     }
   }
 }
