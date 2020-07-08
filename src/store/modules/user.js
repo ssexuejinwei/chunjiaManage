@@ -47,6 +47,8 @@ const actions = {
       cookies.set(statusKey,status)
       if(status ==202){
         Message.error(`用户名或者密码错误`)
+        let error = 202
+				commit('LOGIN', {error})
       }else{
         commit('LOGIN', { username, status })
       }
