@@ -17,7 +17,7 @@
             <el-input v-model="grid.name" />
           </el-form-item>
           <el-form-item label="网格长">
-            <el-select v-model="form.admin_id" placeholder="请选择">
+            <el-select v-model="grid.admin_id" placeholder="请选择">
                 <el-option
                   v-for="item in options"
                   :key="item.value"
@@ -28,7 +28,7 @@
               <el-button type="primary" @click="isChoose=true">选择候选人员</el-button>
           </el-form-item>
           <el-form-item label="网格员">
-            <el-select v-model="form.member_id" placeholder="请选择">
+            <el-select v-model="grid.member_id" placeholder="请选择">
                 <el-option
                   v-for="item in options"
                   :key="item.value"
@@ -38,7 +38,7 @@
               </el-select>
           </el-form-item>
           <el-form-item label="居民组长">
-            <el-select v-model="form.leader_id" placeholder="请选择">
+            <el-select v-model="grid.leader_id" placeholder="请选择">
                 <el-option
                   v-for="item in options"
                   :key="item.value"
@@ -48,7 +48,7 @@
               </el-select>
           </el-form-item>
           <el-form-item label="辅警">
-            <el-select v-model="form.police_id" placeholder="请选择">
+            <el-select v-model="grid.police_id" placeholder="请选择">
                 <el-option
                   v-for="item in options"
                   :key="item.value"
@@ -58,7 +58,7 @@
               </el-select>
           </el-form-item>
           <el-form-item label="党员先锋户">
-            <el-select v-model="form.pioneer_id" placeholder="请选择">
+            <el-select v-model="grid.pioneer_id" placeholder="请选择">
                 <el-option
                   v-for="item in options"
                   :key="item.value"
@@ -218,14 +218,14 @@ export default {
     },
     save () {
       //调API
-      Axios.post(this.api, qs.stringify({
-        grid_id:this.grid.id,
-        name:this.form.name,
-        admin_id:this.form.admin_id,
-        member_id:this.form.member_id,
-        leader_id:this.form.leader_id,
-        police_id:this.form.police_id,
-        pioneer_id:this.form.pioneer_id
+      Axios.put(this.api, qs.stringify({
+        id:this.grid.id,
+        name:this.grid.name,
+        admin_id:this.grid.admin_id,
+        member_id:this.grid.member_id,
+        leader_id:this.grid.leader_id,
+        police_id:this.grid.police_id,
+        pioneer_id:this.grid.pioneer_id
       }))
         .then(() => {
           this.$alert('保存成功', '成功').then(() => {
