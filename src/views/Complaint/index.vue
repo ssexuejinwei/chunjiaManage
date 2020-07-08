@@ -1,6 +1,6 @@
 <template>
   <div>
-      <page-header title="网格信息管理"/>
+      <page-header title="投诉建议管理"/>
       <el-container>
         <el-main>
           <el-table
