@@ -87,7 +87,7 @@
         </el-footer>
       </el-container>
       <el-dialog
-        title="活动信息"
+        title="网格信息"
         :visible.sync="isAdd "
       >
         <el-form
@@ -145,17 +145,12 @@ export default {
     addGrid () {
       this.gridForm = {
         ...this.gridForm,
-        admin_id:2,
-        member_id:2,
-        leader_id:2,
-        police_id:2,
-        pioneer_id:2
       }
       Axios.post(this.api, qs.stringify(this.gridForm))
         .then(() => {
           this.$alert('添加成功', '成功').then(() => {
             this.getData()
-            this.isEdit = false
+            this.isAdd = false
           })
         }).catch(e => {
           console.error(e)
