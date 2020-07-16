@@ -187,6 +187,7 @@ export default {
     },
     backHome (val) {
       this.isEdit = val
+      this.getData()
     },
     handleEdit(index,row) {
       this.isEdit = true

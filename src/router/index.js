@@ -36,37 +36,6 @@ const routes = [
         component: () => import('@/views/Home')
       },
       {
-        path: '/teach',
-        component: () => import('@/views/TeachSystem/index'),
-        children: [
-          // 学员管理
-          {
-            path: 'student',
-            component: () => import('@/views/TeachSystem/student')
-          },
-          // 教练管理
-          {
-            path: 'coach',
-            component: () => import('@/views/TeachSystem/coach')
-          },
-          // 队伍管理
-          {
-            path: 'team',
-            component: () => import('@/views/TeachSystem/team')
-          },
-          // 课程管理
-          {
-            path: 'course',
-            component: () => import('@/views/TeachSystem/course')
-          },
-          // 排课管理
-          {
-            path: 'schedule',
-            component: () => import('@/views/TeachSystem/schedule')
-          }
-        ]
-      },
-      {
         path: '/grid',
         component: () => import('@/views/Grid/index')
       },
@@ -141,84 +110,6 @@ const routes = [
       {
         path: '/work',
         component: () => import('@/views/Work/index')
-      },
-      // 添加课程
-      {
-        path: '/teach/course/add',
-        component: () => import('@/views/TeachSystem/components/courseAdd')
-      },
-      {
-        path: '/teach/course/change',
-        component: () => import('@/views/TeachSystem/components/courseEdit')
-      },
-      {
-        path: '/teach/team/add',
-        component: () => import('@/views/TeachSystem/components/teamAdd')
-      },
-      {
-        path: '/teach/team/change',
-        component: () => import('@/views/TeachSystem/components/teamEdit')
-      },
-      {
-        path: '/activity',
-        component: () => import('@/views/Activity/index')
-      },
-      {
-        path: '/activity/add',
-        component: () => import('@/views/Activity/add')
-      },
-      {
-        path: '/activity/:id',
-        component: () => import('@/views/Activity/_id')
-      },
-      {
-        path: '/product',
-        component: () => import('@/views/Product/index')
-      },
-      {
-        path: '/product/add',
-        component: () => import('@/views/Product/add')
-      },
-      {
-        path: '/product/edit/:id',
-        component: () => import('@/views/Product/edit/_id')
-      },
-      {
-        path: '/product/type',
-        component: () => import('@/views/Product/type')
-      },
-      {
-        path: '/order',
-        component: () => import('@/views/Order/_layout'),
-        children: [
-          {
-            path: '',
-            component: () => import('@/views/Order/index')
-          }
-        ]
-      },
-      {
-        path: '/score',
-        component: () => import('@/views/Score/index'),
-        children: [
-          { path: '', redirect: 'overview' },
-          {
-            path: 'overview',
-            component: () => import('@/views/Score/overview')
-          },
-          {
-            path: 'recharge-record',
-            component: () => import('@/views/Score/recharge')
-          },
-          {
-            path: 'bill-record',
-            component: () => import('@/views/Score/bill')
-          },
-          {
-            path: 'return-record',
-            component: () => import('@/views/Score/return')
-          }
-        ]
       }
     ]
   },

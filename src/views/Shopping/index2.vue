@@ -113,6 +113,7 @@ export default {
     },
     backHome (val) {
       this.isEdit = val
+      this.getData()
     },
     handleEdit(index,row) {
       let changeStatus = this.couponUseTableData[index].status == 0?1:0

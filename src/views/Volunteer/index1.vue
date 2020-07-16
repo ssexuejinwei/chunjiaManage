@@ -256,6 +256,7 @@ export default {
     },
     backHome (val) {
       this.isEdit = val
+      this.getData()
     },
     download(index, row) {
       let api = '/community/manage/activity/download/'+index+'/'

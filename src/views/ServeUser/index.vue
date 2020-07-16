@@ -30,7 +30,7 @@
             />
             <el-table-column
               prop="company"
-              label="公司"
+              label="公司/社区"
               align="center"
             />
             <el-table-column
@@ -109,7 +109,7 @@
           />
           </el-form-item>
           <el-form-item
-            label="公司"
+            label="公司/社区"
             prop="company"
           >
           <el-input
@@ -181,6 +181,7 @@ export default {
     },
     backHome (val) {
       this.isEdit = val
+      this.getData()
     },
     handleEdit(index,row) {
       this.isEdit = true

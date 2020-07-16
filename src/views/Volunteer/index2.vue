@@ -239,6 +239,7 @@ export default {
     },
     backHome (val) {
       this.isEdit = val
+      this.getData()
     },
     download(index, row) {
       console.log(this.volunteerTableData[index])

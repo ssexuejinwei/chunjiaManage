@@ -344,6 +344,7 @@ export default {
       }
     },
     backHome (val) {
+      this.getData()
       this.isEdit = val
     },
     handleEdit(index,row) {

@@ -15,7 +15,7 @@
             />
             <el-table-column
               prop="name"
-              label="姓名"
+              label="名称"
               align="center"
             />
             <!-- <el-table-column
@@ -70,7 +70,7 @@
           style="width:31.25rem;"
         >
           <el-form-item
-            label="姓名"
+            label="名称"
             prop="name"
           >
             <el-input
@@ -94,12 +94,9 @@
             label="先进事迹"
             prop="deed"
           >
-          <el-input
-            v-model="PartyStyleForm.deed"
-            autocomplete="off"
-          />
+          <el-input type="textarea" rows="15" v-model="PartyStyleForm.deed"></el-input>
           </el-form-item>
-          <el-form-item label="照片">
+          <!-- <el-form-item label="照片">
             <el-upload
               class="upload-demo"
               action="#"
@@ -111,7 +108,7 @@
               <el-button size="small" type="primary">点击上传</el-button>
               <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
             </el-upload>
-          </el-form-item>
+          </el-form-item> -->
         </el-form>
         <span slot="footer" class="dialog-footer">
             <el-button @click="isAdd = false">取 消</el-button>
@@ -180,6 +177,7 @@ export default {
     },
     backHome (val) {
       this.isEdit = val
+      this.getData()
     },
     handleEdit(index,row) {
       this.isEdit = true
