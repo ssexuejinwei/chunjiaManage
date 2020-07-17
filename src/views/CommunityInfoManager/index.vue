@@ -38,7 +38,25 @@
       </el-container>
       <el-container v-loading="isLoading"  v-if="type == 3">
         <el-main>
-          <el-input type="textarea" rows="20" v-model="flowNest.content" :disabled="!flowNestEdit"></el-input>
+          <el-form>
+            <el-form-item>
+              <el-upload
+                action="#"
+                ref="upload"
+                list-type="picture-card"
+                :file-list="fileList"
+                :on-remove="handleRemove"
+                :on-change="handleChange"
+                :auto-upload="false"
+                >
+                 <i class="el-icon-plus"></i>
+              </el-upload>
+            </el-form-item>
+            <el-form-item>
+              <el-input type="textarea" rows="20" v-model="flowNest.content" :disabled="!flowNestEdit"></el-input>
+            </el-form-item>
+            
+          </el-form>
           <el-row style="margin-top:1.5rem; ">
             <el-col :span="3">
               <el-button @click='flowNestEdit=true'>修改</el-button>
@@ -227,10 +245,12 @@ export default {
   },
   data () {
     return {
+      baseURL:'http://47.101.181.233:8000',
       api_intro:'/api/community/manage/community_intro/',
       api_flow:'/api/community/manage/flow_honeycomb/',
       api_com:'/api/community/manage/commission/',
       api_party:'/api/community/manage/party_branch/',
+      api_upload:'/api/community/manage/flow_honeycomb/upload/',
       selectedcommunityInfos:[],
       isLoading:true,
       profileEdit:false,
@@ -248,7 +268,9 @@ export default {
         tel:'',
         IDNumber:'',
         grid:''
-      }
+      },
+      images:[],
+      fileList:[],
     }
   },
   watch: {
@@ -260,6 +282,11 @@ export default {
     this.getData()
   },
   methods: {
+    handleChange(file, fileList) {
+      // this.images = fileList
+      // console.log(this.images)
+      this.images.push(file.raw)
+    },
     handleSelect (val) {
       this.selectedcommunityInfos = val
     },
@@ -277,6 +304,12 @@ export default {
       else if (this.type == 3) {
         Axios.get(this.api_flow).then(response => {
           this.flowNest = response.data.data
+          this.flowNest.images.forEach((value,index) => {
+            this.fileList.push({
+              name: this.baseURL+value,
+              url: this.baseURL+value,
+            })
+          })
           console.log(response.data)
         }).catch(e => {
           console.error(e)
@@ -321,6 +354,16 @@ export default {
           })
       }
       else{
+        let formData = new FormData()
+        this.images.forEach((value,index) =>{
+          console.log(value.raw)
+          formData.append('images',value.raw)
+        })
+        
+        formData.append('id',this.flowNest.id)
+        Axios.post(this.api_upload,formData).then(response =>{
+          console.log(response)
+        })
         Axios.put(this.api_flow, qs.stringify({
           id:this.flowNest.id,
           content:this.flowNest.content

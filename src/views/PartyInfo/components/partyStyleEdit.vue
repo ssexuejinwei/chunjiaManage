@@ -74,25 +74,21 @@ export default {
       this.dialogImageUrl.push(this.baseURL+value)
       this.fileList.push({
         name: this.baseURL+value,
-        percentage: 0,
-        raw: {},
-        size: 33049,
-        status: "ready",
-        uid: 1593915945347+index,
         url: this.baseURL+value,
       })
     })
   },
   methods: {
     handleChange(file, fileList) {
-      console.log('change')
+      // this.images = fileList
+      // console.log(this.images)
       this.images.push(file.raw)
     },
     save () {
       //调API
       let formData = new FormData()
       this.images.forEach((value,index) =>{
-        formData.append('images',value)
+        formData.append('images',value.raw)
       })
       formData.append('id',this.PartyStyle.id)
       Axios.post(this.api_upload,formData).then(response =>{

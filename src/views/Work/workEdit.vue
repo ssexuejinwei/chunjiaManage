@@ -129,6 +129,7 @@ export default {
         url:this.baseURL+value.file
       })
     })
+    console.log(this.fileList)
   },
   methods: {
     getType(){

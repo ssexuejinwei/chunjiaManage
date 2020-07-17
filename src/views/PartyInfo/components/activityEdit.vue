@@ -78,38 +78,40 @@ export default {
       api_upload:'/api/community/manage/party_activity/upload/',
       fileList:[],
       defaultactivity:{},
-      dialogImageUrl:[],
       dialogVisible:false,
-      images:[]
+      images:[],
+      ruleForm: {
+        coverUrl: "",
+        coverFile: ""
+      },
+      file:{}
     }
   },
   created () {
-    console.log(this.activity)
     this.activity.images.forEach((value,index) => {
-      this.dialogImageUrl.push(this.baseURL+value)
+      console.log(this.file)
       this.fileList.push({
         name: this.baseURL+value,
-        percentage: 0,
-        raw: {},
-        size: 33049,
-        status: "ready",
-        uid: 1593915945347+index,
         url: this.baseURL+value,
       })
     })
     
   },
   methods: {
+    //url2img
     handleChange(file, fileList) {
-      console.log('change')
+      // this.images = fileList
+      // console.log(this.images)
       this.images.push(file.raw)
     },
     save () {
       //调API
       let formData = new FormData()
       this.images.forEach((value,index) =>{
-        formData.append('images',value)
+        console.log(value.raw)
+        formData.append('images',value.raw)
       })
+      
       formData.append('id',this.activity.id)
       Axios.post(this.api_upload,formData).then(response =>{
         console.log(response)
