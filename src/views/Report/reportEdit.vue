@@ -36,6 +36,12 @@
           <el-form-item label="报事内容">
             <el-input v-model="report.content" />
           </el-form-item>
+          <el-form-item label="状态">
+            <el-radio-group v-model="report.status">
+                <el-radio :label="0">待解决</el-radio>
+                <el-radio :label="1">未解决</el-radio>
+              </el-radio-group>
+          </el-form-item>
           <!-- <el-form-item label="案件定位">
             <el-input v-model="report.position" />
           </el-form-item>
@@ -92,7 +98,8 @@ export default {
         id:this.report.id,
         type:this.report.type,
         title:this.report.title,
-        content:this.report.content
+        content:this.report.content,
+        status:this.report.status
       }))
         .then(() => {
           this.$alert('保存成功', '成功').then(() => {

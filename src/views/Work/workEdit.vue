@@ -115,6 +115,7 @@ export default {
       api:'/api/community/manage/work/',
       api_type:'/api/community/manage/work_type/',
       api_upload:'/api/community/manage/work/upload/',
+      api_delete:'/api/community/manage/work/upload/',
       fileList: [],
 			files:[],
       defaultwork:{},
@@ -126,10 +127,10 @@ export default {
     this.work.attachment.forEach((value,index) => {
       this.fileList.push({
         name:value.name,
+        id:value.id,
         url:this.baseURL+value.file
       })
     })
-    console.log(this.fileList)
   },
   methods: {
     getType(){
@@ -139,17 +140,35 @@ export default {
     },
     handleChange(file, fileList) {
       console.log('change')
-      this.files.push(file.raw)
+      this.files.push(file)
     },
     handleRemove(file, fileList) {
-      console.log('move')
+      if(file.hasOwnProperty('id')){
+        Axios.post(this.api_delete, qs.stringify({
+          id:this.work.id,
+          file_id:file.id,
+        }))
+          .then(() => {
+            this.$alert('删除成功', '成功')
+          }).catch(e => {
+            this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+          })
+      }
+      else{
+        this.files.forEach((value,index) =>{
+            if(file.uid == value.uid){
+              this.images.splice(index,1)
+              this.$alert('删除成功', '成功')
+            } 
+        })
+      }
     },
     save () {
       //调API
       let formData = new FormData()
       let name = ''
       this.files.forEach((value,index) =>{
-        formData.append('files',value)
+        formData.append('files',value.raw)
         name = name +value.name+','
       })
       formData.append('name',name)

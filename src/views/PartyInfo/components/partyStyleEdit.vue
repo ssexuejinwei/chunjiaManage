@@ -62,6 +62,7 @@ export default {
       baseURL:'http://47.101.181.233:8000',
       api:'/api/community/manage/party_style/',
       api_upload:'/api/community/manage/party_style/upload/',
+      api_delete:'/api/community/manage/party_style/delete/',
       defaultPartyStyle:{},
       fileList:[],
       dialogImageUrl:[],
@@ -73,8 +74,8 @@ export default {
     this.PartyStyle.images.forEach((value,index) => {
       this.dialogImageUrl.push(this.baseURL+value)
       this.fileList.push({
-        name: this.baseURL+value,
-        url: this.baseURL+value,
+        id: value.id,
+        url: this.baseURL+value.url,
       })
     })
   },
@@ -82,13 +83,13 @@ export default {
     handleChange(file, fileList) {
       // this.images = fileList
       // console.log(this.images)
-      this.images.push(file.raw)
+      this.images.push(file)
     },
     save () {
       //调API
       let formData = new FormData()
       this.images.forEach((value,index) =>{
-        formData.append('images',value)
+        formData.append('images',value.raw)
       })
       formData.append('id',this.PartyStyle.id)
       Axios.post(this.api_upload,formData).then(response =>{
@@ -111,11 +112,25 @@ export default {
       this.$emit('back', false)
     },
     handleRemove(file, fileList) {
-      this.dialogImageUrl.forEach((value,index) => {
-        if(value == file.url) {
-          this.dialogImageUrl.splice(index,1)
-        }
-      })
+      if(file.hasOwnProperty('id')){
+        Axios.post(this.api_delete, qs.stringify({
+          id:this.PartyStyle.id,
+          img_id:file.id
+        }))
+          .then(() => {
+            this.$alert('删除成功', '成功')
+          }).catch(e => {
+            this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+          })
+      }
+      else{
+        this.images.forEach((value,index) =>{
+            if(file.uid == value.uid){
+              this.images.splice(index,1)
+              this.$alert('删除成功', '成功')
+            } 
+        })
+      }
     },
     handleUpload (params) {
       const file = params.file

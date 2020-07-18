@@ -251,6 +251,7 @@ export default {
       api_com:'/api/community/manage/commission/',
       api_party:'/api/community/manage/party_branch/',
       api_upload:'/api/community/manage/flow_honeycomb/upload/',
+      api_delete:'/api/community/manage/flow_honeycomb/delete/',
       selectedcommunityInfos:[],
       isLoading:true,
       profileEdit:false,
@@ -285,13 +286,14 @@ export default {
     handleChange(file, fileList) {
       // this.images = fileList
       // console.log(this.images)
-      this.images.push(file.raw)
+      this.images.push(file)
     },
     handleSelect (val) {
       this.selectedcommunityInfos = val
     },
     getData () {
       console.log('type',this.type)
+      this.fileList=[]
       if(this.type == 0 ){
         Axios.get(this.api_intro).then(response => {
           this.profile = response.data.data
@@ -306,8 +308,8 @@ export default {
           this.flowNest = response.data.data
           this.flowNest.images.forEach((value,index) => {
             this.fileList.push({
-              name: this.baseURL+value,
-              url: this.baseURL+value,
+              id: value.id,
+              url: this.baseURL+value.url,
             })
           })
           console.log(response.data)
@@ -356,27 +358,30 @@ export default {
       else{
         let formData = new FormData()
         this.images.forEach((value,index) =>{
-          console.log(value.raw)
+          // console.log(value.raw)
           formData.append('images',value.raw)
         })
         
         formData.append('id',this.flowNest.id)
+        this.images = []
+        this.fileList = []
         Axios.post(this.api_upload,formData).then(response =>{
           console.log(response)
-        })
-        Axios.put(this.api_flow, qs.stringify({
-          id:this.flowNest.id,
-          content:this.flowNest.content
-        }))
-          .then(() => {
-            this.$alert('保存成功', '成功').then(() => {
-              this.flowNestEdit = false
-              this.getData()
+        }).then( () =>{
+          Axios.put(this.api_flow, qs.stringify({
+            id:this.flowNest.id,
+            content:this.flowNest.content
+          }))
+            .then(() => {
+              this.$alert('保存成功', '成功').then(() => {
+                this.flowNestEdit = false
+                this.getData()
+              })
+            }).catch(e => {
+              console.error(e)
+              this.$alert(`错误原因: ${e.message || '未知错误'}`, '保存失败')
             })
-          }).catch(e => {
-            console.error(e)
-            this.$alert(`错误原因: ${e.message || '未知错误'}`, '保存失败')
-          })
+        })
       }
     },
     handleEditFinish (val) {
@@ -428,6 +433,27 @@ export default {
             console.error(e)
             this.$alert(`错误原因: ${e.message || '未知错误'}`, '保存失败')
           })
+      }
+    },
+    handleRemove(file, fileList) {
+      if(file.hasOwnProperty('id')){
+        Axios.post(this.api_delete, qs.stringify({
+          id:this.flowNest.id,
+          img_id:file.id,
+        }))
+          .then(() => {
+            this.$alert('删除成功', '成功')
+          }).catch(e => {
+            this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+          })
+      }
+      else{
+        this.images.forEach((value,index) =>{
+            if(file.uid == value.uid){
+              this.images.splice(index,1)
+              this.$alert('删除成功', '成功')
+            } 
+        })
       }
     },
     deletecommunityInfo (communityInfo) {

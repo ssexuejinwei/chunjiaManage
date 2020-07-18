@@ -43,6 +43,15 @@
               </template>
             </el-table-column>
             <el-table-column
+              label="状态"
+              align="center"
+            >
+              <template slot-scope="scope">
+                <span v-if="scope.row.status==0">待解决 </span>
+                <span v-if="scope.row.status==1">未解决 </span>
+              </template>
+            </el-table-column>
+            <el-table-column
               label="联系电话"
               align="center"
             >

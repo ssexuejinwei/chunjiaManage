@@ -143,7 +143,10 @@ export default {
         console.error(e)
         this.$message.error(`获取信息列表失败: ${e.message || '未知错误'}`)
         this.activityTableData = []
-      }).finally(() => { this.loading = false })
+      }).finally(() => { 
+        this.loading = false
+        this.isEdit = false
+       })
     },
     handleEditFinish (val) {
       if (val) {
@@ -153,7 +156,8 @@ export default {
       }
     },
     backHome (val) {
-      this.isEdit = val
+      // this.isEdit = val
+      // this.$router.go(0)
       this.getData()
     },
     handleEdit(index,row) {
