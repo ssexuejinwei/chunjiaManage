@@ -259,7 +259,7 @@ export default {
       this.getData()
     },
     download(index, row) {
-      let api = '/community/manage/activity/download/'+index+'/'
+      let api = '/community/manage/activity/download/'+this.activityTableData[index].id+'/'
       let link = document.createElement('a');
       link.style.display = 'none';
       link.href = 'http://47.101.181.233:8000'+api;
