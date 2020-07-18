@@ -7,6 +7,7 @@
           <el-table
             :data="workTableData"
             @selection-change="handleSelect"
+            :default-sort ="{prop:'title',order:'descending'}"
             highlight-current-row
             :border="true"
           >

@@ -115,7 +115,7 @@ export default {
       api:'/api/community/manage/work/',
       api_type:'/api/community/manage/work_type/',
       api_upload:'/api/community/manage/work/upload/',
-      api_delete:'/api/community/manage/work/upload/',
+      api_delete:'/api/community/manage/work/delete/',
       fileList: [],
 			files:[],
       defaultwork:{},
