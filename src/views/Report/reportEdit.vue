@@ -39,7 +39,7 @@
           <el-form-item label="状态">
             <el-radio-group v-model="report.status">
                 <el-radio :label="0">待解决</el-radio>
-                <el-radio :label="1">未解决</el-radio>
+                <el-radio :label="1">已解决</el-radio>
               </el-radio-group>
           </el-form-item>
           <!-- <el-form-item label="案件定位">
