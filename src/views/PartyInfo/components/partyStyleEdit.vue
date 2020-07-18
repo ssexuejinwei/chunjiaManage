@@ -88,7 +88,7 @@ export default {
       //调API
       let formData = new FormData()
       this.images.forEach((value,index) =>{
-        formData.append('images',value.raw)
+        formData.append('images',value)
       })
       formData.append('id',this.PartyStyle.id)
       Axios.post(this.api_upload,formData).then(response =>{

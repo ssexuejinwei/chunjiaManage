@@ -108,8 +108,7 @@ export default {
       //调API
       let formData = new FormData()
       this.images.forEach((value,index) =>{
-        console.log(value.raw)
-        formData.append('images',value.raw)
+        formData.append('images',value)
       })
       
       formData.append('id',this.activity.id)
