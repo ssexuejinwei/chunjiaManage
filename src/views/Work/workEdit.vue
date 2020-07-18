@@ -1,5 +1,6 @@
 <template>
-  <div class="workEditInfo">
+  <div class="workEditInfo"  v-loading="loading"
+    element-loading-text="保存中">
     <page-header title="办事详细信息" />
     <el-page-header @back="goBack" />
     <br>
@@ -119,7 +120,8 @@ export default {
       fileList: [],
 			files:[],
       defaultwork:{},
-      typeOptions:[]
+      typeOptions:[],
+      loading:false
     }
   },
   created () {
@@ -173,27 +175,29 @@ export default {
       })
       formData.append('name',name)
       formData.append('id',this.work.id)
+      this.loading = true
       Axios.post(this.api_upload,formData).then(response =>{
-        console.log(response)
-      })
-      Axios.put(this.api, qs.stringify({
-        id:this.work.id,
-        title:this.work.title,
-        type_id:this.work.type.id,
-        service_target:this.work.service_target,
-        apply_material:this.work.apply_material,
-        apply_procedure:this.work.apply_procedure,
-        caution:this.work.caution,
-        policy:this.work.policy
-      }))
-        .then(() => {
-          this.$alert('保存成功', '成功').then(() => {
-            this.$emit('update', true)
+        Axios.put(this.api, qs.stringify({
+          id:this.work.id,
+          title:this.work.title,
+          type_id:this.work.type.id,
+          service_target:this.work.service_target,
+          apply_material:this.work.apply_material,
+          apply_procedure:this.work.apply_procedure,
+          caution:this.work.caution,
+          policy:this.work.policy
+        }))
+          .then(() => {
+            this.loading = false
+            this.$alert('保存成功', '成功').then(() => {
+              this.$emit('update', true)
+            })
+          }).catch(e => {
+            console.error(e)
+            this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
           })
-        }).catch(e => {
-          console.error(e)
-          this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
-        })
+      })
+      
     },
     goBack() {
       this.$emit('back', false)
