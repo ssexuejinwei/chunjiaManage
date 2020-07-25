@@ -98,6 +98,7 @@
            :auto-upload="true"
            >
             <i class="el-icon-plus"></i>
+            <div slot="tip" class="el-upload__tip" style="font:bold;color: #FA7959;">只能上传jpg/png文件</div>
          </el-upload>
        </el-form-item>
          <el-form-item>
