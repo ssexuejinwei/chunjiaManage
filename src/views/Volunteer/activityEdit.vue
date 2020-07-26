@@ -91,6 +91,7 @@
            ref="upload"
            list-type="picture-card"
            :file-list="fileList"
+           :limit="1"
            :on-remove="handleRemove"
            :http-request="handleUpload"
            :on-success="handleUploadSuccess"
@@ -98,7 +99,7 @@
            :auto-upload="true"
            >
            <i class="el-icon-plus"></i>
-           <div slot="tip" class="el-upload__tip" style="font:bold;color: #FA7959;">只能上传jpg/png文件</div>
+           <div slot="tip" class="el-upload__tip" style="font:bold;color: #FA7959;">只能上传单个jpg/png文件</div>
          </el-upload>
        </el-form-item>
          <el-form-item>
@@ -147,11 +148,6 @@ export default {
   created () {
     this.fileList.push({
       name: this.baseURL+this.activity.pic,
-      percentage: 0,
-      raw: {},
-      size: 33049,
-      status: "ready",
-      uid: 1593915945347,
       url: this.baseURL+this.activity.pic,
     })
   },
