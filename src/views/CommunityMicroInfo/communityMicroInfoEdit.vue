@@ -17,7 +17,8 @@
             <el-input v-model="communityMicroInfo.title" />
           </el-form-item>
           <el-form-item label="具体内容">
-            <el-input v-model="communityMicroInfo.content" />
+            <el-input type="textarea" autosize maxlength="2500" v-model="communityMicroInfo.content"> </el-input>
+            <span>(2500字以内)</span>
           </el-form-item>
           <el-form-item label="发布人">
             <el-input v-model="communityMicroInfo.publisher" />

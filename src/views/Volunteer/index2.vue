@@ -140,18 +140,14 @@
           <el-form-item
             label="活动详情"
           >
-            <el-input
-              v-model="volunteerForm.detail"
-              autocomplete="off"
-            />
+          <el-input type="textarea" autosize maxlength="100" v-model="volunteerForm.detail"> </el-input>
+           <span>(100字以内)</span>
           </el-form-item>
           <el-form-item
             label="注意事项"
           >
-            <el-input
-              v-model="volunteerForm.notice"
-              autocomplete="off"
-            />
+          <el-input type="textarea" autosize maxlength="100" v-model="volunteerForm.notice"> </el-input>
+           <span>(100字以内)</span>
           </el-form-item>
 		  <el-form-item
 		    label="活动时间"

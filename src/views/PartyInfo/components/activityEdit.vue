@@ -30,7 +30,8 @@
             />
         </el-form-item>
           <el-form-item label="活动内容">
-            <el-input v-model="activity.content" />
+            <el-input type="textarea" autosize maxlength="2000" v-model="activity.content" ></el-input>
+            (2000字以内)
           </el-form-item>
 
           <el-form-item label="上传活动图片">

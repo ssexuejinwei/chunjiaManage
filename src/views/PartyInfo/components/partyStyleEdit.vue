@@ -17,7 +17,8 @@
             <el-input v-model="PartyStyle.name" />
           </el-form-item>
           <el-form-item label="先进事迹">
-            <el-input type="textarea" rows="10" v-model="PartyStyle.deed"></el-input>
+            <el-input type="textarea" autosize maxlength="1000" v-model="PartyStyle.deed" ></el-input>
+            (1000字以内)
           </el-form-item>
           <el-form-item label="上传图片">
             <el-upload

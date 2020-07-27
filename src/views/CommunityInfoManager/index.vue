@@ -21,7 +21,8 @@
       </div>
       <el-container v-loading="isLoading"  v-if="type == 0">
         <el-main>
-          <el-input type="textarea" rows="10" v-model="profile.content" :disabled="!profileEdit"></el-input>
+          <el-input type="textarea" autosize maxlength="1500" v-model="profile.content" :disabled="!profileEdit"></el-input>
+          <span v-if="profileEdit" >(1500字以内)</span><br/>
           <el-row style="margin-top:1.5rem; ">
             <el-col :span="3">
               <el-button @click='profileEdit=true'>修改</el-button>
@@ -53,7 +54,8 @@
               </el-upload>
             </el-form-item>
             <el-form-item>
-              <el-input type="textarea" rows="20" v-model="flowNest.content" :disabled="!flowNestEdit"></el-input>
+              <el-input type="textarea" autosize maxlength="1500" v-model="flowNest.content" :disabled="!flowNestEdit"></el-input>
+              <span v-if="flowNestEdit">(1500字以内)</span> 
             </el-form-item>
             
           </el-form>

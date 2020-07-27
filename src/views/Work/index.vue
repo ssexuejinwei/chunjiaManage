@@ -110,42 +110,32 @@
           <el-form-item
             label="服务对象"
           >
-          <el-input
-            v-model="workForm.service_target"
-            autocomplete="off"
-          />
+          <el-input type="textarea" autosize maxlength="150" v-model="workForm.service_target"> </el-input>
+          <span>(150字以内)</span>
           </el-form-item>
           <el-form-item
             label="申请材料"
           >
-            <el-input
-              v-model="workForm.apply_material"
-              autocomplete="off"
-            />
+          <el-input type="textarea" autosize maxlength="500" v-model="workForm.apply_material"> </el-input>
+          <span>(500字以内)</span>
           </el-form-item>
           <el-form-item
             label="办理流程"
           >
-          <el-input
-            v-model="workForm.apply_procedure"
-            autocomplete="off"
-          />
+          <el-input type="textarea" autosize maxlength="1500" v-model="workForm.apply_procedure"> </el-input>
+          <span>(1500字以内)</span>
           </el-form-item>
           <el-form-item
             label="注意事项"
           >
-          <el-input
-            v-model="workForm.caution"
-            autocomplete="off"
-          />
+          <el-input type="textarea" autosize maxlength="500" v-model="workForm.caution"> </el-input>
+          <span>(500字以内)</span>
           </el-form-item>
           <el-form-item
             label="相关政策"
           >
-          <el-input
-            v-model="workForm.policy"
-            autocomplete="off"
-          />
+          <el-input type="textarea" autosize maxlength="800" v-model="workForm.policy"> </el-input>
+          <span>(800字以内)</span>
           </el-form-item>
           <!-- <el-form-item
             label="附件上传"

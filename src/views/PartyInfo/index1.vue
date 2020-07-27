@@ -91,12 +91,9 @@
           </el-form-item>
           <el-form-item
             label="活动具体内容"
-            prop="content"
           >
-          <el-input
-            v-model="activityForm.content"
-            autocomplete="off"
-          />
+          <el-input type="textarea" autosize maxlength="2000" v-model="activityForm.content" ></el-input>
+          (2000字以内)
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">

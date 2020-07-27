@@ -94,7 +94,8 @@
             label="先进事迹"
             prop="deed"
           >
-          <el-input type="textarea" rows="15" v-model="PartyStyleForm.deed"></el-input>
+          <el-input type="textarea" autosize maxlength="1000" v-model="PartyStyleForm.deed" ></el-input>
+          (1000字以内)
           </el-form-item>
           <!-- <el-form-item label="照片">
             <el-upload

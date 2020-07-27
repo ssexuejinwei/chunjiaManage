@@ -85,12 +85,9 @@
           </el-form-item>
           <el-form-item
             label="发布内容"
-            prop="content"
           >
-            <el-input
-              v-model="communityMicroInfoForm.content"
-              autocomplete="off"
-            />
+          <el-input type="textarea" autosize maxlength="2500" v-model="communityMicroInfoForm.content"> </el-input>
+          <span>(2500字以内)</span>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">

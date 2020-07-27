@@ -24,52 +24,32 @@
           <el-form-item
             label="服务对象"
           >
-          <el-input
-            v-model="work.service_target"
-            autocomplete="off"
-          />
-          </el-form-item>
-          <el-form-item label="办事类型">
-            <el-select v-model="work.type.id" placeholder="请选择">
-                <el-option
-                  v-for="item in typeOptions"
-                  :key="item.id"
-                  :label="item.type"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+          <el-input type="textarea" autosize maxlength="150" v-model="work.service_target"> </el-input>
+          <span>(150字以内)</span>
           </el-form-item>
           <el-form-item
             label="申请材料"
           >
-            <el-input
-              v-model="work.apply_material"
-              autocomplete="off"
-            />
+          <el-input type="textarea" autosize maxlength="500" v-model="work.apply_material"> </el-input>
+          <span>(500字以内)</span>
           </el-form-item>
           <el-form-item
             label="办理流程"
           >
-          <el-input
-            v-model="work.apply_procedure"
-            autocomplete="off"
-          />
+          <el-input type="textarea" autosize maxlength="1500" v-model="work.apply_procedure"> </el-input>
+          <span>(1500字以内)</span>
           </el-form-item>
           <el-form-item
             label="注意事项"
           >
-          <el-input
-            v-model="work.caution"
-            autocomplete="off"
-          />
+          <el-input type="textarea" autosize maxlength="500" v-model="work.caution"> </el-input>
+          <span>(500字以内)</span>
           </el-form-item>
           <el-form-item
             label="相关政策"
           >
-          <el-input
-            v-model="work.policy"
-            autocomplete="off"
-          />
+          <el-input type="textarea" autosize maxlength="800" v-model="work.policy"> </el-input>
+          <span>(800字以内)</span>
           </el-form-item>
           <el-form-item
             label="附件上传"

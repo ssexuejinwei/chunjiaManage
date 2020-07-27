@@ -17,7 +17,8 @@
             <el-input v-model="discuss.title" />
           </el-form-item>
           <el-form-item label="提议内容">
-            <el-input v-model="discuss.content" />
+						<el-input type="textarea" autosize maxlength="150" v-model="discuss.content"> </el-input>
+						<span>(150字以内)</span>
           </el-form-item>
           <el-form-item label="议题类型">
              <el-select v-model="discuss.type.type" placeholder="请选择">

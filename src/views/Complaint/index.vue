@@ -86,16 +86,14 @@
         style="width:31.25rem;"
       >
         <el-form-item
-          label="处理意见"
+          label="反馈"
           prop="feedback"
         >
-          <el-input
-            v-model="complaint.feedback"
-            autocomplete="off"
-          />
+        <el-input type="textarea" autosize maxlength="100" v-model="complaint.feedback"> </el-input>
+        <span>(100字以内)</span>
         </el-form-item>
         <el-form-item
-          label="处理意见"
+          label="状态"
           prop="advice"
         >
           <el-radio-group v-model="complaint.status">

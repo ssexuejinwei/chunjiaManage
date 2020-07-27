@@ -34,7 +34,8 @@
               </el-radio-group>
           </el-form-item>
           <el-form-item label="报事内容">
-            <el-input v-model="report.content" />
+						<el-input type="textarea" autosize maxlength="200" v-model="report.content"> </el-input>
+						<span>(200字以内)</span>
           </el-form-item>
           <el-form-item label="状态">
             <el-radio-group v-model="report.status">

@@ -92,12 +92,9 @@
           </el-form-item>
           <el-form-item
             label="优惠券详细信息"
-            prop="descr"
           >
-            <el-input
-              v-model="couponForm.descr"
-              autocomplete="off"
-            />
+					<el-input type="textarea" autosize maxlength="80" v-model="couponForm.descr"> </el-input>
+					<span>(80字以内)</span>
           </el-form-item>
           <el-form-item
             label="优惠券数量"
