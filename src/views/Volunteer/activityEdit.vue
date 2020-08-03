@@ -131,7 +131,7 @@ export default {
   },
   data () {
     return {
-      baseURL:'https://www.cjshequ.top:8000/',
+      baseURL:'https://www.cjshequ.top:8000',
       api:'/api/community/manage/activity/',
       api_upload:'/api/community/manage/activity/upload/',
       fileList:[],
