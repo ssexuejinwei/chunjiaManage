@@ -74,7 +74,7 @@ export default {
   },
   data () {
     return {
-      baseURL:'http://47.101.181.233:8000',
+      baseURL:'https://www.cjshequ.top:8000/',
       api:'/api/community/manage/party_activity/',
       api_upload:'/api/community/manage/party_activity/upload/',
       api_delete:'/api/community/manage/party_activity/delete/',

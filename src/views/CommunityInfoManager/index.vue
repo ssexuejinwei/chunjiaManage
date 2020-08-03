@@ -247,7 +247,7 @@ export default {
   },
   data () {
     return {
-      baseURL:'http://47.101.181.233:8000',
+      baseURL:'https://www.cjshequ.top:8000/',
       api_intro:'/api/community/manage/community_intro/',
       api_flow:'/api/community/manage/flow_honeycomb/',
       api_com:'/api/community/manage/commission/',

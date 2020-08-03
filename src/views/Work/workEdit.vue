@@ -92,7 +92,7 @@ export default {
   },
   data () {
     return {
-      baseURL:'http://47.101.181.233:8000',
+      baseURL:'https://www.cjshequ.top:8000/',
       api:'/api/community/manage/work/',
       api_type:'/api/community/manage/work_type/',
       api_upload:'/api/community/manage/work/upload/',

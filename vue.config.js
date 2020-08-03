@@ -2,7 +2,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/api': {
-        target: 'http://47.101.181.233:8000',
+        target: 'https://www.cjshequ.top:8000/',
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''
