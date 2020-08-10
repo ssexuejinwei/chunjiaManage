@@ -38,7 +38,7 @@
           <span>社区信息管理</span>
         </template>
       </el-menu-item>
-			<el-menu-item index="/communityInfo">
+			<el-menu-item index="/party1">
 			  <template slot="title">
 			    <i class="el-icon-s-flag"></i>
 			    <span>党员活动管理</span>

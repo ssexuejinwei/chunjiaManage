@@ -8,6 +8,7 @@ const statusKey = 'chunjiakey'
 const state = {
   username: '',
   status: cookies.get(statusKey)||100,
+	// status: 201,
   loading: false,
   error: null
 }
