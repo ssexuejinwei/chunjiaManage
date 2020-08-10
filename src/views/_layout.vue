@@ -38,7 +38,13 @@
           <span>社区信息管理</span>
         </template>
       </el-menu-item>
-      <el-submenu index="2">
+			<el-menu-item index="/communityInfo">
+			  <template slot="title">
+			    <i class="el-icon-s-flag"></i>
+			    <span>党员活动管理</span>
+			  </template>
+			</el-menu-item>
+      <!-- <el-submenu index="2">
         <template slot="title">
           <i class="el-icon-s-flag"></i>
           <span>党员服务管理</span>
@@ -47,7 +53,7 @@
           <el-menu-item index="/party1">党员活动管理</el-menu-item>
           <el-menu-item index="/party2">党员风采管理</el-menu-item>
         </el-menu-item-group>
-      </el-submenu>
+      </el-submenu> -->
 			<el-menu-item index="/legal">
 			  <template slot="title">
 			    <i class="el-icon-phone"></i>

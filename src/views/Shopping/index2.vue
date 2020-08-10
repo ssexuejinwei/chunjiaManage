@@ -118,7 +118,7 @@ export default {
     handleEdit(index,row) {
       let changeStatus = this.couponUseTableData[index].status == 0?1:0
       Axios.put(this.api, qs.stringify({
-        id:this.couponId,
+        id:this.couponUseTableData[index].id,
         status:changeStatus
         }))
         .then(() => {
