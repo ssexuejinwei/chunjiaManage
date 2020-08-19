@@ -12,28 +12,18 @@
             label-width="100px"
             style="width:31.25rem;"
           >
-            <!-- <el-form-item label="头像">
-              <el-upload
-                class="avatar-uploader"
-                action="#"
-                accept="image/*"
-                :limit="3"
-                :http-request="handleUpload"
-                :on-success="handleUploadSuccess"
-                :on-change="handleUploadChange"
-                :show-file-list="false"
-              >
-                <img
-                  v-if="squareImageUrl==''?false:true"
-                  :src="squareImageUrl"
-                  class="avatar"
-                >
-                <i
-                  v-else
-                  class="el-icon-plus avatar-uploader-icon"
-                />
-              </el-upload>
-            </el-form-item> -->
+					<el-form-item label="头像">
+					  <el-upload
+					    class="avatar-uploader"
+					    action="#"
+					    :on-change="handleChange"
+					    :show-file-list="false"
+					    :auto-upload="false"
+					    >
+					    <img v-if="img_url!==''" :src="img_url" class="avatar">
+					    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+					  </el-upload>
+					</el-form-item>
             <el-form-item
               label="姓名"
               prop="name"
@@ -64,6 +54,18 @@
             label-width="100px"
             style="width:31.25rem;"
           >
+          <el-form-item label="头像">
+            <el-upload
+              class="avatar-uploader"
+              action="#"
+              :on-change="handleChange"
+              :show-file-list="false"
+              :auto-upload="false"
+              >
+              <img v-if="img_url!==''" :src="img_url" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </el-form-item>
             <el-form-item
               label="支部名"
               prop="name"
@@ -128,21 +130,35 @@ export default {
       squareImageUrl:'',
       fileList:{},
       formData:{},
+			api_upload_com:'/api/community/manage/commission/upload/',
+			api_upload_branch:'/api/community/manage/party_branch/upload/',
+			file:0,
+      img_url:'',
     }
   },
   created () {
-    console.log(this.communityInfo)
-    this.squareImageUrl = this.communityInfo.avatar
+    this.img_url = this.$baseURL + this.communityInfo.avatar
   },
   methods: {
+    handleChange(file, fileList) {
+      this.img_url = URL.createObjectURL(file.raw);
+      this.file = file
+    },
     save () {
       //调API
+      if(this.file !== 0) {
+        let formData = new FormData()
+        formData.append('avatar',this.file.raw)
+        formData.append('id',this.communityInfo.id)
+        Axios.post(this.type ==1?this.api_upload_com:this.api_upload_branch,formData).then(response =>{
+          console.log(response)
+        })
+      }
       let form = {}
       if(this.type == 1){ 
         form = {
           id:this.communityInfo.id,
           name:this.communityInfo.name,
-          avatar:'xxxx',
           duty:this.communityInfo.duty
         }
       }

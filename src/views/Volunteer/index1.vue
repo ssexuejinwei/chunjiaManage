@@ -137,8 +137,8 @@
           <el-form-item
             label="活动详情"
           >
-            <el-input type="textarea" autosize maxlength="100" v-model="activityForm.detail"> </el-input>          
-             <span>(100字以内)</span>
+            <el-input type="textarea" autosize maxlength="1000" v-model="activityForm.detail"> </el-input>          
+             <span>(1000字以内)</span>
           </el-form-item>
           <el-form-item
             label="注意事项"

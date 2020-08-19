@@ -46,8 +46,8 @@
            <el-form-item
              label="活动详情"
            >
-           <el-input type="textarea" autosize maxlength="100" v-model="volunteer.detail"> </el-input>
-            <span>(100字以内)</span>
+           <el-input type="textarea" autosize maxlength="1000" v-model="volunteer.detail"> </el-input>
+            <span>(1000字以内)</span>
            </el-form-item>
            <el-form-item
              label="注意事项"
@@ -87,15 +87,11 @@
            ref="upload"
            list-type="picture-card"
            :file-list="fileList"
-					 :limit="1"
            :on-remove="handleRemove"
-           :http-request="handleUpload"
-           :on-success="handleUploadSuccess"
-           :on-change="handleUploadChange"
-           :auto-upload="true"
+           :on-change="handleChange"
+           :auto-upload="false"
            >
             <i class="el-icon-plus"></i>
-            <div slot="tip" class="el-upload__tip" style="font:bold;color: #FA7959;">只能上传单个jpg/png文件</div>
          </el-upload>
        </el-form-item>
          <el-form-item>
@@ -134,6 +130,7 @@ export default {
       baseURL:'https://www.cjshequ.top:8000',
       api:'/api/community/manage/activity/',
       api_upload:'/api/community/manage/activity/upload/',
+      api_delete:'/api/community/manage/activity/delete/',
       imageUrl:'',
       defaultvolunteer:{},
 			fileList:[],
@@ -144,20 +141,48 @@ export default {
     }
   },
   created () {
-    this.fileList.push({
-      name: this.baseURL+this.volunteer.pic,
-      url: this.baseURL+this.volunteer.pic,
+    this.volunteer.pic.forEach((value,index) => {
+      this.fileList.push({
+        id: value.id,
+        url: this.$baseURL+value.url,
+      })
     })
   },
   methods: {
-    handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw);
+    handleChange(file, fileList) {
+      this.images.push(file)
     },
-    beforeAvatarUpload(file) {
-    const isJPG = file.type === 'image/jpeg';
-    const isLt2M = file.size / 1024 / 1024 < 2;
+    handleRemove(file, fileList) {
+      if(file.hasOwnProperty('id')){
+        Axios.post(this.api_delete, qs.stringify({
+          id:this.volunteer.id,
+          img_id:file.id
+        }))
+          .then(() => {
+            this.$alert('删除成功', '成功')
+          }).catch(e => {
+            this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
+          })
+      }
+      else{
+        this.images.forEach((value,index) =>{
+            if(file.uid == value.uid){
+              this.images.splice(index,1)
+              this.$alert('删除成功', '成功')
+            } 
+        })
+      }
     },
     save () {
+      let formData = new FormData()
+      this.images.forEach((value,index) =>{
+        formData.append('images',value.raw)
+      })
+      
+      formData.append('id',this.volunteer.id)
+      Axios.post(this.api_upload,formData).then(response =>{
+        console.log(response)
+      })
       //调API
       delete this.volunteer.pic
       Axios.put(this.api, qs.stringify({
@@ -176,34 +201,6 @@ export default {
     goBack() {
       this.$emit('back', false)
     },
-    handleRemove(file, fileList) {
-      this.dialogImageUrl.forEach((value,index) => {
-        if(value == file.url) {
-          this.dialogImageUrl.splice(index,1)
-        }
-      })
-    },
-    handleUpload (params) {
-      const file = params.file
-      const formData = new FormData()
-      formData.append('image', file)
-      formData.append('id', this.volunteer.id)
-      console.log(formData)
-      return Axios.post(this.api_upload, formData, {
-        onUploadProgress: params.onProgress
-      })
-    },
-    submitUpload (){
-      this.$refs.upload.submit();
-    },
-    handleUploadSuccess (res, rawFile) {
-      if (res?.data?.data?.fileName) {
-        rawFile.url = process.env.VUE_APP_UPLOAD_PUBLIC_URL + res?.data?.data?.fileName
-      }
-    },
-    handleUploadChange (file, fileList) {
-      this.dialogImageUrl.push(file.raw);
-    }
   }
 }
 </script>

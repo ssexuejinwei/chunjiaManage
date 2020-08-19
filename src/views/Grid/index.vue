@@ -43,7 +43,7 @@
               </template>
             </el-table-column>
             <el-table-column
-              label="辅警"
+              label="警辅"
               align="center"
             >
               <template slot-scope="scope">

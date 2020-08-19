@@ -47,7 +47,7 @@
                 </el-option>
               </el-select>
           </el-form-item>
-          <el-form-item label="辅警">
+          <el-form-item label="警辅">
             <el-select v-model="grid.police_id" placeholder="请选择">
                 <el-option
                   v-for="item in options"
