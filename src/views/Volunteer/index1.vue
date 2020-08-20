@@ -265,7 +265,7 @@ export default {
     handleEdit(index,row) {
       this.isEdit = true
       this.activity = this.activityTableData[index]
-      this.activity.activity_time = this.date+this.time
+      // this.activity.activity_time = this.date+this.time
       console.log(index,row)
     },
     addactivity() {

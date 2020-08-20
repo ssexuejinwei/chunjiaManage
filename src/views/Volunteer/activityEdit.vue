@@ -139,13 +139,14 @@ export default {
     }
   },
   created () {
+    console.log(this.activity)
     this.activity.pic.forEach((value,index) => {
       this.fileList.push({
         id: value.id,
         url: this.$baseURL+value.url,
       })
     })
-    console.log(this.fileList)
+    // console.log(this.fileList)
   },
   methods: {
     handleChange(file, fileList) {
@@ -181,11 +182,14 @@ export default {
       })
       
       formData.append('id',this.activity.id)
-      Axios.post(this.api_upload,formData).then(response =>{
-        console.log(response)
-      })
+      if(this.images.length!=0) {
+        Axios.post(this.api_upload,formData).then(response =>{
+          // console.log(response)
+        })
+      }
       //调API
       delete this.activity.pic
+      // console.log(this.activity)
       Axios.put(this.api, qs.stringify({
         ...this.activity,
         type:0
@@ -195,7 +199,7 @@ export default {
             this.$emit('update', true)
           })
         }).catch(e => {
-          console.error(e)
+          // console.error(e)
           this.$alert(`错误原因: ${e.message || '未知错误'}`, '添加失败')
         })
     },
