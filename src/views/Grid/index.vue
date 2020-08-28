@@ -35,7 +35,7 @@
               </template>
             </el-table-column>
             <el-table-column
-              label="居民组长"
+              label="网格员"
               align="center"
             >
               <template slot-scope="scope">
@@ -43,7 +43,7 @@
               </template>
             </el-table-column>
             <el-table-column
-              label="警辅"
+              label="网格员"
               align="center"
             >
               <template slot-scope="scope">
@@ -51,7 +51,7 @@
               </template>
             </el-table-column>
             <el-table-column
-              label="党员先锋户"
+              label="网格员"
               align="center"
             >
               <template slot-scope="scope">

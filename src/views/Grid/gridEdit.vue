@@ -37,7 +37,7 @@
                 </el-option>
               </el-select>
           </el-form-item>
-          <el-form-item label="居民组长">
+          <el-form-item label="网格员">
             <el-select v-model="grid.leader_id" placeholder="请选择">
                 <el-option
                   v-for="item in options"
@@ -47,7 +47,7 @@
                 </el-option>
               </el-select>
           </el-form-item>
-          <el-form-item label="警辅">
+          <el-form-item label="网格员">
             <el-select v-model="grid.police_id" placeholder="请选择">
                 <el-option
                   v-for="item in options"
@@ -57,7 +57,7 @@
                 </el-option>
               </el-select>
           </el-form-item>
-          <el-form-item label="党员先锋户">
+          <el-form-item label="网格员">
             <el-select v-model="grid.pioneer_id" placeholder="请选择">
                 <el-option
                   v-for="item in options"

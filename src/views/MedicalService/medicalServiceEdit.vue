@@ -1,6 +1,6 @@
 <template>
   <div class="medicalServiceEditInfo">
-    <page-header title="服务人员详细信息" />
+    <page-header title="医疗服务人员详细信息" />
     <el-page-header @back="goBack" />
     <br>
     <br>
@@ -15,7 +15,7 @@
               label="姓名"
             >
               <el-input
-                v-model="medicalService.name"
+                v-model="medicalService.doctor"
                 autocomplete="off"
               />
             </el-form-item>
@@ -98,7 +98,7 @@ export default {
       //调API
       Axios.put(this.api, qs.stringify({
         id:this.medicalService.id,
-        name:this.medicalService.name,
+        name:this.medicalService.doctor,
         position:this.medicalService.position,
         skill:this.medicalService.skill,
         service_time:this.medicalService.service_time,
