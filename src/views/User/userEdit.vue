@@ -35,7 +35,7 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="电话">
-            <el-input disabled v-model="user.phone_number" />
+            <el-input v-model="user.phone_number" />
           </el-form-item>
           <el-form-item label="政治面貌">
             <el-select v-model="user.politics_status" placeholder="请选择">
@@ -128,6 +128,7 @@ export default {
       }
       Axios.put(this.api2, qs.stringify({
         user_id:this.user.id,
+        phone_number:this.user.phone_number,
         name:this.user.name,
         ID_number:this.user.ID_number,
         politics_status:this.user.politics_status,
