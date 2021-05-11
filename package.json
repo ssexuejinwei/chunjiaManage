@@ -15,7 +15,7 @@
     "echarts": "^4.6.0",
     "element-ui": "^2.4.5",
     "eslint-plugin-html": "^6.0.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "v-distpicker": "^1.2.2",
     "vue": "^2.6.10",
     "vue-cookies": "^1.7.0",
